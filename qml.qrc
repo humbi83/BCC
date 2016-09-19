@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>MainForm.ui.qml</file>
+        <file alias="main.qml">qml/main.qml</file>
+        <file alias="MainForm.ui.qml">qml/MainForm.ui.qml</file>
+        <file>res/general.png</file>
+        <file>res/misc.png</file>
+        <file alias="BBCAtlas">qml/BBCAtlas.qml</file>
     </qresource>
 </RCC>
