@@ -1,5 +1,5 @@
 //atlas qml
-import QtQuick 2.0
+import QtQuick 2.7
 
 Item {
     property int mIdxX : 0;
@@ -27,6 +27,8 @@ Item {
             y: parent.parent.mOffsetY - parent.parent.mIdxY * parent.height
             id: name
             fillMode: Image.Stretch
+            mipmap : false;
+            smooth: false;
             source: mResPath
         }
     }
