@@ -1,6 +1,7 @@
 import QtQuick 2.0
 
 Item {
+
     id: blalblalb;
     property int mCellW : 13;
     property int mCellH : 13;

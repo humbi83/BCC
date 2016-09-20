@@ -15,9 +15,47 @@ Window {
         id : bbcBoard1
     }
 
-    BBCAtlas{
-        mResPath : "../res/general.png"
+    BBCTank{
+        id: tankPlayer;
     }
+
+    BBCIVec {id: someID; mX : 0; mY : 0}
+    property var someObjectCtor: (function(cX,cY){
+        return new Object({
+                                    x:cX,
+                                    y:cY,
+                                    getX:(function(){ return x;})
+
+                               });
+    });
+
+    property var instance: someObjectCtor(2,2);
+   // property BBCIVec somep : factory.newBBCIVec(1,1)
+   // Component.onCompleted: {
+   //     var _this = new Object();
+   //     _this.prop1 = 1;
+   //     _this.prop2 = 2;
+   //     _this.get1 = (function(){return _this.prop1;});
+   //     _this.set1 = (function(value){return _this.prop1=value;});
+   //     console.log(_this.prop1);
+   //     console.log(_this.get1());
+   //     _this.set1(3);
+   //     console.log(_this.get1());
+   // }
+
+    Component.onCompleted: {
+        var _this = new Object({
+        prop1 : 1,
+        prop2 : 2,
+        get1  : (function(){return _this.prop1;}),
+        set1  : (function(value){return _this.prop1=value;})
+            });
+        console.log(_this.prop1);
+        console.log(_this.get1());
+        _this.set1(3);
+        console.log(_this.get1());
+    }
+
    // MainForm {
    //     anchors.fill: parent
    //     mouseArea.onClicked: {

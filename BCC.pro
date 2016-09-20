@@ -21,4 +21,17 @@ DISTFILES += \
     res/misc.png \
     qml/BBCBoard.qml \
     qml/BBCListElement.qml \
-    qml/BBCList.qml
+    qml/BBCList.qml \
+    qml/BBCTank.qml \
+    qml/BBCLevel.qml \
+    qml/BBCLevel1.qml \
+    qml/BBCLevelCell.qml \
+    qml/BBCDoodad.qml \
+    qml/BBCAtlasFrame.qml \
+    qml/BBCAtlasFrameList.qml \
+    qml/BBCDoodadTank.qml \
+    qml/BBCDoodadEmpty.qml \
+    qml/BBCBase.qml \
+    qml/BBCIVec.qml \
+    qml/BBCRect.qml \
+    qml/BBCFactory.qml
