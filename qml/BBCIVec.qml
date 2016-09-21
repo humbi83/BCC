@@ -10,9 +10,10 @@ BBCBase {
     }
 
     function _BBCIVec_new(iX,iY){
-        var ret = new BBCIVec;
+        var ret = Qt.createComponent("BBCIVec.qml");
         ret.mX = iX;
         ret.mY = iY;
+        return ret;
     }
 
     function bIsInside2iv(){}

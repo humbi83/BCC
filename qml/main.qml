@@ -1,7 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
-
+import "BCCIVec.js" as BCCIVec
+import "BCCGlobal.js" as BCCGlobal
+import "BCCLevel.js" as BCCLevel
 
 
 Window {
@@ -20,6 +22,7 @@ Window {
     }
 
     BBCIVec {id: someID; mX : 0; mY : 0}
+    //property BBCIVec sss : BBCIVec._BBCIVec_new(10,10);
     property var someObjectCtor: (function(cX,cY){
         return new Object({
                                     x:cX,
@@ -28,6 +31,10 @@ Window {
 
                                });
     });
+
+    property var ivec0  : BCCIVec.BCCIVecv();
+    property var ivec10 : BCCIVec.BCCIVec2i(10,10);
+    property var level : BCCLevel.BCCLevel2i(BCCGlobal.LEVEL_NO_CELLS,BCCGlobal.LEVEL_NO_CELLS);
 
     property var instance: someObjectCtor(2,2);
    // property BBCIVec somep : factory.newBBCIVec(1,1)
@@ -48,12 +55,20 @@ Window {
         prop1 : 1,
         prop2 : 2,
         get1  : (function(){return _this.prop1;}),
-        set1  : (function(value){return _this.prop1=value;})
-            });
+        set1  : (function(value){return _this.prop1=value;}),
+        bbcI  : (function(){var ret = Qt.createComponent("BBCIVec.qml"); return BBCIVec._BBCIVec_new(10,10);})
+     //bbcI  : (function(){return new BBCIVec;})
+                               });
         console.log(_this.prop1);
         console.log(_this.get1());
         _this.set1(3);
         console.log(_this.get1());
+       // var bbc = _this.bbcI();
+
+        console.log(ivec10.mX);
+        //not working console.log(ivec0._this.mX);
+        console.log(ivec0.iGetX());
+
     }
 
    // MainForm {

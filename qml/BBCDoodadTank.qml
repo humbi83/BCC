@@ -11,8 +11,8 @@ BCCDoodad {
 
     function canMove(xDelta,yDelta,level)
     {
-        var ret = false;
-        var newX =
+       // var ret = false;
+       // var newX =
     }
 
     function moveUp   (){var changed = false; var cell = mCellY; cell--; cell = clamp(cell,0,13*2); changed = cell != mCellY; return changed;}

@@ -34,4 +34,8 @@ DISTFILES += \
     qml/BBCBase.qml \
     qml/BBCIVec.qml \
     qml/BBCRect.qml \
-    qml/BBCFactory.qml
+    qml/BBCFactory.qml \
+    qml/BCCIVec.js \
+    qml/BCCDoodad.js \
+    qml/BCCLevel.js \
+    qml/BCCGlobal.js
