@@ -5,6 +5,7 @@ import "BCCIVec.js" as BCCIVec
 import "BCCGlobal.js" as BCCGlobal
 import "BCCLevel.js" as BCCLevel
 import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
+import "BCCMain.js" as BCCMain
 
 
 Window {
@@ -15,15 +16,29 @@ Window {
     height: 832
     title: qsTr("Hello World")
 
+        property var myBCCMain : BCCMain.BCCMain();
+
+    Timer {
+        id : _BCCMainTimer
+            interval: 16; running: true; repeat: true;triggeredOnStart: true
+            onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
+        }
+
+
     BBCBoard{
         id : bbcBoard1
     }
 
-    BBCTank{
-        id: tankPlayer;
+    Item {
+    focus: true;
+    Keys.onPressed : myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);
+    Keys.onReleased: myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);
     }
 
     BBCIVec {id: someID; mX : 0; mY : 0}
+
+
+
     //property BBCIVec sss : BBCIVec._BBCIVec_new(10,10);
     property var someObjectCtor: (function(cX,cY){
         return new Object({
@@ -72,7 +87,8 @@ Window {
         console.log(ivec0.iGetX());
 
         var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
-
+        myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
+        _BCCMainTimer.start();
     }
 
    // MainForm {
