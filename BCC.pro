@@ -38,4 +38,6 @@ DISTFILES += \
     qml/BCCIVec.js \
     qml/BCCDoodad.js \
     qml/BCCLevel.js \
-    qml/BCCGlobal.js
+    qml/BCCGlobal.js \
+    qml/BCCSimpleDoodadPainter.js \
+    qml/BCCPainter.js

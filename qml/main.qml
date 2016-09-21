@@ -4,10 +4,12 @@ import QtQuick.Controls 2.0
 import "BCCIVec.js" as BCCIVec
 import "BCCGlobal.js" as BCCGlobal
 import "BCCLevel.js" as BCCLevel
+import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
 
 
 Window {
 
+    id : "root"
     visible: true
     width: 832
     height: 832
@@ -68,6 +70,8 @@ Window {
         console.log(ivec10.mX);
         //not working console.log(ivec0._this.mX);
         console.log(ivec0.iGetX());
+
+        var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
 
     }
 

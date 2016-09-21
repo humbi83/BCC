@@ -1,10 +1,10 @@
 .import "BCCIVec.js" as BCCIVec
-.import "BCCLevel.js" as BCCLevel
 
-function BCCDoodad4i3b(iPosX,iPosY,iDimX,iDimY, bIsMovable, bIsDestroyable, bIsPassable)
+function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsMovable, bIsDestroyable, bIsPassable)
 {
     var ret = new Object({
-                             level          : 0,
+                             mPainter       : oPainter,
+                             mLevel         : oLevel,
                              mPos           : BCCIVec.BCCIVec2i(iPosX,iPosY),
                              mDim           : BCCIVec.BCCIVec2i(iDimX,iDimY),
                              mIsMovable     : bIsMovable,
@@ -14,9 +14,10 @@ function BCCDoodad4i3b(iPosX,iPosY,iDimX,iDimY, bIsMovable, bIsDestroyable, bIsP
                              //function move(deltaX,deltaY){}
 
                          });
+    return ret;
 }
 
-function BCCDoodad4iTTF(iPosX,iPosY,iDimX,iDimY)
+function BCCDoodad2o4iFFT(oPainter, oLevel, iPosX, iPosY, iDimX, iDimY)
 {
-    return BCCDoodad4i3b(iPosX,iPosY,iDimX,iDimY,false,false,true);
+    return BCCDoodad2o4i3b(oPainter, oLevel, iPosX,iPosY,iDimX,iDimY,false,false,true);
 }

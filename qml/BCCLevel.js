@@ -2,23 +2,38 @@
 .import "BCCIVec.js"   as BCCIVec
 .import "BCCDoodad.js" as BCCDoodad
 
+Array.matrix = function(numrows, numcols, initial) {
+    var arr = [];
+    for (var i = 0; i < numrows; ++i) {
+        var columns = [];
+        for (var j = 0; j < numcols; ++j) {
+            columns[j] = initial;
+        }
+        arr[i] = columns;
+    }
+    return arr;
+}
+
 function BCCLevel2i(iDimX,iDimY){
     var ret = new Object({
 
                              mDim: BCCIVec.BCCIVec2i(iDimX,iDimY),
                              //can I do this
-                             mCells : initLevel(mDim),
+                             mCells : null,
 
                              initLevel:(function(){
-                                 var i,j;
-                                 var rows = new Array(this.mDim.mY);
-                                 for(i = 0;i< rows.length;i++)
+                                 var rows = new Array(iDimY);
+
+                                 for(var i = 0; i < rows.length;i++)
                                  {
-                                     rows[i]=new Array(this.mDim.mX);
-                                     for(j=0;j<rows[i].length;i++)
+                                     var col = new Array(iDimX);
+
+                                     for(var j=0;j<col.length;j++)
                                      {
-                                         rows[i][j] = new BCCDoodad.BCCDoodad4iFFT(i,j,1,1);
+                                         col[j] = BCCDoodad.BCCDoodad2o4iFFT(null,this,i,j,1,1);
                                      }
+
+                                     rows[i] = col;
                                  }
                                  return rows;
                              }),
@@ -49,5 +64,8 @@ function BCCLevel2i(iDimX,iDimY){
                              addDoodad: (function(x,y,doodad){})
 
                          });
+    ret.mCells = ret.initLevel();
+
+    console.log(ret.mCells[0][0].mLevel.mDim.mX);
     return ret;
 }

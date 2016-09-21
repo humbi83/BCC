@@ -1,15 +1,16 @@
 import QtQuick 2.0
-
+import "BCCSimpleDoodadPainter" as bla
 Item {
-    property BBCLevel level;
+        id: container
+        width: 300; height: 300
 
-    property int  mCellX      : 0;
-    property int  mCellY      : 0;
-    property int  mCellW      : 1;
-    property int  mCellH      : 1;
-    property bool mIsMovable     : false;
-    property bool mIsDestroyable : false;
-    property bool mIsPassable    : false;
+        function loadButton() {
+            var component = Qt.createComponent("Button.qml");
+            if (component.status == Component.Ready) {
+                var button = component.createObject(container);
+                button.color = "red";
+            }
+        }
 
-    function move(deltaX,deltaY){}
+        Component.onCompleted: loadButton()
 }
