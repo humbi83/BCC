@@ -1,10 +1,12 @@
 import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
-import "BCCIVec.js" as BCCIVec
+
+
+import "BCCVec.js" as Vec
 import "BCCGlobal.js" as BCCGlobal
 import "BCCLevel.js" as BCCLevel
-import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
+//import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
 import "BCCMain.js" as BCCMain
 
 
@@ -24,10 +26,19 @@ Window {
             onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
         }
 
+    //BBCAtlasFrame{
+    //    x:100
+    //    y:100
+    //    mOffsetX: 0
+    //    mOffsetY: 0
+    //    mWidth: 16
+    //    mHeight: 16
+    //}
 
-    BBCBoard{
-        id : bbcBoard1
-    }
+    BBCRectangle{}
+   // BBCBoard{
+   //     id : bbcBoard1
+   // }
 
     Item {
     focus: true;
@@ -37,6 +48,10 @@ Window {
 
     BBCIVec {id: someID; mX : 0; mY : 0}
 
+    //BBCAtlasFrame{
+    //id :someAtlas;
+    //
+    //}
 
 
     //property BBCIVec sss : BBCIVec._BBCIVec_new(10,10);
@@ -49,9 +64,9 @@ Window {
                                });
     });
 
-    property var ivec0  : BCCIVec.BCCIVecv();
-    property var ivec10 : BCCIVec.BCCIVec2i(10,10);
-    property var level : BCCLevel.BCCLevel2i(BCCGlobal.LEVEL_NO_CELLS,BCCGlobal.LEVEL_NO_CELLS);
+    property var ivec0  : Vec.Vec2();
+    property var ivec10 : Vec.Vec2(10,10);
+    property var level : BCCLevel.BCCLevel(BCCGlobal.LEVEL_NO_CELLS,BCCGlobal.LEVEL_NO_CELLS);
 
     property var instance: someObjectCtor(2,2);
    // property BBCIVec somep : factory.newBBCIVec(1,1)
@@ -86,11 +101,17 @@ Window {
         //not working console.log(ivec0._this.mX);
         console.log(ivec0.iGetX());
 
-        var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
+        //var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
         myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
         _BCCMainTimer.start();
     }
 
+//////// KINDA WORKS
+//    Audio {
+//           id: channel1
+//           source: "../res/BCSnd1.mp3"
+//       }
+//
    // MainForm {
    //     anchors.fill: parent
    //     mouseArea.onClicked: {

@@ -1,6 +1,7 @@
-.import "BCCGlobal.js" as BCCGlobal
-.import "BCCIVec.js"   as BCCIVec
-.import "BCCDoodad.js" as BCCDoodad
+.import "BCCGlobal.js" as Global
+.import "BCCVec.js"   as Vec
+.import "BCCDoodad.js" as Doodad
+.import "BCCLevelCell.js" as Cell
 
 Array.matrix = function(numrows, numcols, initial) {
     var arr = [];
@@ -14,13 +15,17 @@ Array.matrix = function(numrows, numcols, initial) {
     return arr;
 }
 
-function BCCLevel2i(iDimX,iDimY){
+function BCCLevel(iDimX,iDimY){
+
+    var pDimX = iDimX == undefined ? Global.LEVEL_NO_CELLS : iDimX;
+    var pDimY = iDimY == undefined ? Global.LEVEL_NO_CELLS : iDimY;
     var ret = new Object({
 
-                             mDim: BCCIVec.BCCIVec2i(iDimX,iDimY),
+                             mDim: Vec.Vec2(pDimX,pDimY),
                              //can I do this
                              mCells : null,
-
+                             mUpdatableDoodads: [],
+                             mPaintableDoodads: [],
                              initLevel:(function(){
                                  var rows = new Array(iDimY);
 
@@ -30,7 +35,7 @@ function BCCLevel2i(iDimX,iDimY){
 
                                      for(var j=0;j<col.length;j++)
                                      {
-                                         col[j] = BCCDoodad.BCCDoodad2o4iFFT(null,this,i,j,1,1);
+                                         col[j] = Cell.BBCLevelCell(j,i,this);
                                      }
 
                                      rows[i] = col;
@@ -38,34 +43,65 @@ function BCCLevel2i(iDimX,iDimY){
                                  return rows;
                              }),
 
+                             update:(function(){
+                                 for(var i = 0; i<this.mUpdatableDoodads.length;i++)
+                                 {
+                                    this.mUpdatableDoodads[i].update();
+                                 }
+                             }),
+
+                             paint:(function() {
+
+                                 for(var i = 0; i<this.mPaintableDoodads.length;i++)
+                                 {
+                                    this.mPaintableDoodads[i].paint();
+                                 }
+                             }),
                              bIsInside2i:(function(iX,iY)
                              {
                                  return true;
                              }),
 
-                             isPassable1iv:(function(position){
-                                 var ret = false;
-                                 var cX = g_f_clamp(x, 0, g_c_LEVEL_NO_CELLS - 1);
-                                 var cY = g_f_clamp(y, 0, g_c_LEVEL_NO_CELLS - 1);
+                             bIsInside1v:(function(vPos){
+                                 return
+                             }),
+                             bIsInside2v:(function(vPos,vDim){
+                                return
+                             }),
 
-                                 if(cX == x && cY == y){
-                                     ret = mData[cX][cY].mDoodad.isPassable;
+
+                             //TODO: add some checks here
+                             removeCellXYDoodad:(function(x,y){
+
+                             }),
+                             //ret false or something on failure
+                             addPixXYDoodad: (function(x,y,eDoodadType){
+                                 var dFact = Doodad.BCCDoodadFactory(this);
+
+                                 var oDoodad = dFact.newInstance(eDoodadType);
+
+                                 oDoodad.setPixXY(x,y);
+                                 if(oDoodad.update != undefined){
+                                     this.mUpdatableDoodads.push(oDoodad);
                                  }
 
-                                 return ret;
-                             }),
+                                 if(oDoodad.paint != undefined){
+                                    this.mPaintableDoodads.push(oDoodad);
+                                 }
 
-                             //editor stuff
-                             canBePlaced: (function(x,y,doodad){
-                                return false;
-                             }),
+                                 for(var i=oDoodad.mCellPos.mX;i<oDoodad.mCellDim.mX;i++)
+                                 {
+                                     for(var j=oDoodad.mCellPos.mY;j<oDoodad.mCellDim.mY;j++)
+                                     {
+                                        mCells[i][j].mStationedDoodad = oDoodad;
+                                     }
+                                 }
 
-
-                             addDoodad: (function(x,y,doodad){})
+                             })
 
                          });
     ret.mCells = ret.initLevel();
 
-    console.log(ret.mCells[0][0].mLevel.mDim.mX);
+    //console.log(ret.mCells[0][0].mLevel.mDim.mX);
     return ret;
 }

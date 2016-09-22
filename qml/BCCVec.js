@@ -1,12 +1,27 @@
 
-function BCCIVec2i(iX,iY) {
+function Vec2(iX,iY) {
+
+    var pX = iX != undefined ?  iX : 0;
+    var pY = iY != undefined ?  iY : 0;
+
     var ret = new Object({
 
-                             mX : iX,
-                             mY : iY,
-                             tSet2i : (function(iX,iY){
-                                 mX=iX;
-                                 mY=iY;
+                             mX : pX,
+                             mY : pY,
+
+                             setXY: (function(x,y){
+                                 this.mX=x;
+                                 this.mY=y;
+                             }),
+
+                             setV: (function(oVec2){
+                                 this.mX = oVec2.mX;
+                                 this.mY = oVec2.mY;
+                             }),
+
+                             mulC: (function(c){
+                                 this.mX *= c;
+                                 this.mY *= c;
                              }),
 
                              //function bIsInside2iv(){}
@@ -34,9 +49,4 @@ function BCCIVec2i(iX,iY) {
 
                          });
     return ret;
-}
-
-
-function BCCIVecv(){
-    return BCCIVec2i(0,0);
 }

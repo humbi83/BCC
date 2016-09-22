@@ -1,11 +1,12 @@
-.import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
-
+//.import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
+.import "BCCColorDoodadPainter.js" as ColorPainter
+.import "BCCMainAtlasDoodadPainter.js" as AtlasPainter
+.import "BCCVec.js" as Vec
+.import "BCCDoodad.js" as Doodad
+.import "BCCLevel.js" as Level
 function BCCMain()
 {
     var ret = new Object({
-
-                             //TODO:ALEX: Move this from here
-                             bla: null,
 
                              NV_E_EVENT       : 0,
                              E_EVENT_INIT     : 1,
@@ -22,14 +23,18 @@ function BCCMain()
 
                              currentGameState: null,
                              pendingGameState: null,
+
+                             mLevel: null,
                              init:(function(){
                                  console.log("init called");
-                                 this.bla = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
-
+                                 this.mLevel = Level.BCCLevel();
+                                 this.mLevel.addPixXYDoodad(16,16,Doodad.E_DOODAD_BRICK_WALL_16x64);
+                                 //this.mLevel.addPixXYDoodad(32,16,Doodad.E_DOODAD_BRICK_WALL_16x64);
                              }),
 
                              update:(function(){
-                                this.bla.paint();
+                                this.mLevel.update();
+                                this.mLevel.paint ();
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){

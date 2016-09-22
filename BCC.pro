@@ -35,10 +35,30 @@ DISTFILES += \
     qml/BBCIVec.qml \
     qml/BBCRect.qml \
     qml/BBCFactory.qml \
-    qml/BCCIVec.js \
     qml/BCCDoodad.js \
     qml/BCCLevel.js \
     qml/BCCGlobal.js \
-    qml/BCCSimpleDoodadPainter.js \
-    qml/BCCPainter.js \
-    qml/BCCMain.js
+    qml/BCCMain.js \
+    qml/BCCLevelCell.js \
+    qml/BCCColorDoodadPainter.js \
+    qml/BCCBaseDoodadPainter.js \
+    qml/BCCMainAtlasDoodadPainter.js \
+    qml/BCCVec.js \
+    qml/BBCRectangle.qml \
+    res/BCSnd1.mp3 \
+    res/BCSnd2.mp3 \
+    res/BCSnd3.mp3 \
+    res/BCSnd4.mp3 \
+    res/BCSnd5.mp3 \
+    res/BCSnd6.mp3 \
+    res/BCSnd7.mp3 \
+    res/BCSnd8.mp3 \
+    res/BCSnd9.mp3 \
+    res/BCSnd10.mp3 \
+    res/BCSnd11.mp3 \
+    res/BCSnd12.mp3 \
+    res/BCSnd13.mp3 \
+    res/BCSnd14.mp3 \
+    res/BCSnd15.mp3 \
+    res/BCSnd16.mp3 \
+    res/BCSnd17.mp3
