@@ -61,4 +61,6 @@ DISTFILES += \
     res/BCSnd14.mp3 \
     res/BCSnd15.mp3 \
     res/BCSnd16.mp3 \
-    res/BCSnd17.mp3
+    res/BCSnd17.mp3 \
+    qml/BCCTank.js \
+    qml/BCCFrameSequencePainter.js

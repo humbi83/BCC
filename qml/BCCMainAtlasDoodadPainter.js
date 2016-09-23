@@ -23,7 +23,6 @@ function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPain
 
         this.qComponentInstance.mXTimes  = this.mRepeat.mX;
         this.qComponentInstance.mYTimes  = this.mRepeat.mY;
-
     });
 
     ret.paint=(function(){

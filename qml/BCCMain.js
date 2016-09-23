@@ -4,6 +4,8 @@
 .import "BCCVec.js" as Vec
 .import "BCCDoodad.js" as Doodad
 .import "BCCLevel.js" as Level
+.import "BCCTank.js" as Tank
+.import "BCCFrameSequencePainter.js" as FSPainter;
 function BCCMain()
 {
     var ret = new Object({
@@ -24,6 +26,7 @@ function BCCMain()
                              currentGameState: null,
                              pendingGameState: null,
 
+                             mTank : null,
                              mLevel: null,
                              init:(function(){
                                  console.log("init called");
@@ -74,6 +77,7 @@ function BCCMain()
 
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
+                                 this.mTank = Tank.newInstance()
                                  //304,32 //ok
                                  //320,32 //lost
                              }),

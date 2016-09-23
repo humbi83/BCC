@@ -27,11 +27,6 @@ Window {
             onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
         }
 
-
-    //BBCBoard{
-    //    id : bbcBoard1
-    //}
-
     Item {
     focus: true;
     Keys.onPressed : myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);

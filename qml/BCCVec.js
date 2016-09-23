@@ -24,6 +24,27 @@ function Vec2(iX,iY) {
                                  this.mY *= c;
                              }),
 
+                             vMulC: (function(c){
+                                 return Vec2(
+                                 this.mX * c,
+                                 this.mY * c
+                                          );
+                             }),
+
+                             vMulCW: (function(oVec2){
+                                 return Vec2(
+                                 this.mX * oVec2.mX,
+                                 this.mY * oVec2.mY
+                                             );
+                             }),
+
+                             vPlus: (function(oVec2){
+                                 return Vec2(
+                                 this.mX + oVec2.mX,
+                                 this.mY + oVec2.mY
+                                             );
+                             }),
+
                              //function bIsInside2iv(){}
                              iGetX:(function(){return this.mX;}),
                              iClampX2i:(function(iLow, iHigh)
