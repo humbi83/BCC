@@ -75,10 +75,10 @@ function BCCLevel(iDimX,iDimY){
 
                              }),
                              //ret false or something on failure
-                             addPixXYDoodad: (function(x,y,eDoodadType){
+                             addPixXYDoodad: (function(x,y,eDoodadType, w,h){
                                  var dFact = Doodad.BCCDoodadFactory(this);
 
-                                 var oDoodad = dFact.newInstance(eDoodadType);
+                                 var oDoodad = dFact.newInstance(eDoodadType, w, h);
 
                                  oDoodad.setPixXY(x,y);
                                  if(oDoodad.update != undefined){

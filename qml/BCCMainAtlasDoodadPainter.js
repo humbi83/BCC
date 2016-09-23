@@ -18,11 +18,11 @@ function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPain
 
         this.qComponentInstance.x        = this.mPos.mX * Global.LEVEL_SCALE;
         this.qComponentInstance.y        = this.mPos.mY * Global.LEVEL_SCALE;
-        this.qComponentInstance.mWidth   = this.mDim.mX;
-        this.qComponentInstance.mHeight  = this.mDim.mY;
+        this.qComponentInstance.mWidth   = this.mDim.mX / this.mRepeat.mX;
+        this.qComponentInstance.mHeight  = this.mDim.mY / this.mRepeat.mY;
 
-        //this.qComponentInstance.mXTimes  = this.mRepeat.mX;
-        //this.qComponentInstance.mYTimes  = this.mRepeat.mY;
+        this.qComponentInstance.mXTimes  = this.mRepeat.mX;
+        this.qComponentInstance.mYTimes  = this.mRepeat.mY;
 
     });
 

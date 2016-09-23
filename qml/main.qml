@@ -16,6 +16,7 @@ Window {
     visible: true
     width: 832
     height: 832
+    color: "black"
     title: qsTr("Hello World")
 
         property var myBCCMain : BCCMain.BCCMain();
@@ -26,19 +27,10 @@ Window {
             onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
         }
 
-    //BBCAtlasFrame{
-    //    x:100
-    //    y:100
-    //    mOffsetX: 0
-    //    mOffsetY: 0
-    //    mWidth: 16
-    //    mHeight: 16
-    //}
 
-    BBCRectangle{}
-   // BBCBoard{
-   //     id : bbcBoard1
-   // }
+    //BBCBoard{
+    //    id : bbcBoard1
+    //}
 
     Item {
     focus: true;
@@ -47,11 +39,6 @@ Window {
     }
 
     BBCIVec {id: someID; mX : 0; mY : 0}
-
-    //BBCAtlasFrame{
-    //id :someAtlas;
-    //
-    //}
 
 
     //property BBCIVec sss : BBCIVec._BBCIVec_new(10,10);

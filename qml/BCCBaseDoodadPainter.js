@@ -14,7 +14,10 @@ function BCCBaseDoodadPainter(sQComponentPath, oPaintee) {
     });
 
     console.log(sQComponentPath);
+
+    //this should be a singleton ... anyway
     ret.qComponentClass = Qt.createComponent(sQComponentPath);
+
 
     if (ret.qComponentClass.status == QQ.Component.Ready) {
         ret.qComponentInstance       = ret.qComponentClass.createObject(root);
