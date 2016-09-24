@@ -71,3 +71,8 @@ function Vec2(iX,iY) {
                          });
     return ret;
 }
+
+
+function cctor(vec) {
+    return Vec2(vec.mX,vec.mY);
+}

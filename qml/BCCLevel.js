@@ -27,15 +27,15 @@ function BCCLevel(iDimX,iDimY){
                              mUpdatableDoodads: [],
                              mPaintableDoodads: [],
                              initLevel:(function(){
-                                 var rows = new Array(iDimY);
+                                 var rows = new Array(pDimY);
 
                                  for(var i = 0; i < rows.length;i++)
                                  {
-                                     var col = new Array(iDimX);
+                                     var col = new Array(pDimX);
 
                                      for(var j=0;j<col.length;j++)
                                      {
-                                         col[j] = Cell.BBCLevelCell(j,i,this);
+                                         col[j] = Cell.BCCLevelCell(j,i,this);
                                      }
 
                                      rows[i] = col;
@@ -57,23 +57,36 @@ function BCCLevel(iDimX,iDimY){
                                     this.mPaintableDoodads[i].paint();
                                  }
                              }),
-                             bIsInside2i:(function(iX,iY)
-                             {
-                                 return true;
-                             }),
 
-                             bIsInside1v:(function(vPos){
-                                 return
-                             }),
                              bIsInside2v:(function(vPos,vDim){
-                                return
+                                 return vPos.mX >= 0 &&
+                                        vPos.mY >= 0 &&
+                                        vPos.mX + vDim.mX <=  this.mDim.mX &&
+                                        vPos.mY + vDim.mY <=  this.mDim.mY ;
                              }),
 
+                             //No check for the moment !!!
+                             collidesOn2v:(function(vPos,vDim){
+                                 var __ret = [];
 
-                             //TODO: add some checks here
-                             removeCellXYDoodad:(function(x,y){
+                                 for(var i = vPos.mY; i < (vPos.mY + vDim.mY );i++ ){
+                                     for(var j = vPos.mX; j < (vPos.mX + vDim.mX) ;j++ )
+                                     {
+                                         var __cell = this.mCells[i][j];
+                                         var __bla = __cell.mStationedDoodad ? __cell.mStationedDoodad : null;
+
+
+                                         if(__bla != null)
+                                         {
+                                            __ret.push(__bla);
+                                         }
+                                     }
+                                 }
+
+                                 return __ret;
 
                              }),
+
                              //ret false or something on failure
                              addPixXYDoodad: (function(x,y,eDoodadType, w,h){
                                  var dFact = Doodad.BCCDoodadFactory(this);
@@ -89,11 +102,11 @@ function BCCLevel(iDimX,iDimY){
                                     this.mPaintableDoodads.push(oDoodad);
                                  }
 
-                                 for(var i=oDoodad.mCellPos.mX;i<oDoodad.mCellDim.mX;i++)
+                                 for(var i=oDoodad.mCellPos.mY;i< (oDoodad.mCellPos.mY + oDoodad.mCellDim.mY) && i < this.mCells.length;i++)
                                  {
-                                     for(var j=oDoodad.mCellPos.mY;j<oDoodad.mCellDim.mY;j++)
+                                     for(var j=oDoodad.mCellPos.mX;j<(oDoodad.mCellPos.mX + oDoodad.mCellDim.mX) && j < this.mCells[i].length;j++)
                                      {
-                                        mCells[i][j].mStationedDoodad = oDoodad;
+                                        this.mCells[i][j].mStationedDoodad = oDoodad;
                                      }
                                  }
 

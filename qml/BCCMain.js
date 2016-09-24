@@ -5,7 +5,9 @@
 .import "BCCDoodad.js" as Doodad
 .import "BCCLevel.js" as Level
 .import "BCCTank.js" as Tank
-.import "BCCFrameSequencePainter.js" as FSPainter;
+.import "BCCFrameSequencePainter.js" as FSPainter
+.import "BCCGlobal.js" as Global
+
 function BCCMain()
 {
     var ret = new Object({
@@ -28,6 +30,7 @@ function BCCMain()
 
                              mTank : null,
                              mLevel: null,
+
                              init:(function(){
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
@@ -77,14 +80,15 @@ function BCCMain()
 
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
-                                 this.mTank = Tank.newInstance()
+                                 this.mTank = Tank.newInstance(this.mLevel);
                                  //304,32 //ok
                                  //320,32 //lost
                              }),
 
                              update:(function(){
-                                this.mLevel.update();
-                                this.mLevel.paint ();
+
+                                 Global.cUpdatePaint(this.mLevel);
+                                 Global.cUpdatePaint(this.mTank);
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){
@@ -92,10 +96,10 @@ function BCCMain()
                                  if(bDown){
                                     switch(oEvent.nativeScanCode)
                                     {
-                                        case this.E_KC_UP   : this.bla.mPos.mY--;break;
-                                        case this.E_KC_DOWN : this.bla.mPos.mY++;break;
-                                        case this.E_KC_LEFT : this.bla.mPos.mX--;break;
-                                        case this.E_KC_RIGHT: this.bla.mPos.mX++;break;
+                                        case this.E_KC_UP   : this.mTank.onMoveEvent(Tank.E_TNK_UP    );break;
+                                        case this.E_KC_DOWN : this.mTank.onMoveEvent(Tank.E_TNK_DOWN  );break;
+                                        case this.E_KC_LEFT : this.mTank.onMoveEvent(Tank.E_TNK_LEFT  );break;
+                                        case this.E_KC_RIGHT: this.mTank.onMoveEvent(Tank.E_TNK_RIGHT );break;
                                         case this.E_KC_FIRE : break;
                                         default:
                                             console.log(oEvent.nativeScanCode); break;

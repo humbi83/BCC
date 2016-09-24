@@ -13,3 +13,17 @@ function clamp(val, min, max)
 function pixXY2CellV(x,y){
 return Vec.Vec2(Math.floor(x/LEVEL_CELL_PIX_SZ),Math.floor(y/LEVEL_CELL_PIX_SZ));
 }
+
+
+function cUpdate(updatable){
+    updatable && updatable.update && updatable.update();
+}
+
+function cPaint(paintable){
+    paintable && paintable.paint && paintable.paint();
+}
+
+function cUpdatePaint(element){
+    cUpdate(element);
+    cPaint(element);
+}

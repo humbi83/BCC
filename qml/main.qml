@@ -48,7 +48,7 @@ Window {
 
     property var ivec0  : Vec.Vec2();
     property var ivec10 : Vec.Vec2(10,10);
-    property var level : BCCLevel.BCCLevel(BCCGlobal.LEVEL_NO_CELLS,BCCGlobal.LEVEL_NO_CELLS);
+  // property var level : BCCLevel.BCCLevel(BCCGlobal.LEVEL_NO_CELLS,BCCGlobal.LEVEL_NO_CELLS);
 
     property var instance: someObjectCtor(2,2);
    // property BBCIVec somep : factory.newBBCIVec(1,1)
