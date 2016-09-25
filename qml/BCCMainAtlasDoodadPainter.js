@@ -25,6 +25,8 @@ function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPain
         this.qComponentInstance.mYTimes  = this.mRepeat.mY;
     });
 
+    ret.paint_BaseDoodadPainter = ret.paint;
+
     ret.paint=(function(){
 
         if(this.mPaintee !== null /*&& oPaintee.isDirty()*/)
@@ -32,9 +34,12 @@ function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPain
             //oPaintee.clean();
             this.mPos.setV(this.mPaintee.mCellPos);this.mPos.mulC(Global.LEVEL_CELL_PIX_SZ);
             this.mDim.setV(this.mPaintee.mCellDim);this.mDim.mulC(Global.LEVEL_CELL_PIX_SZ);
+            //hmm.. data binding.. clean up inheritance
         }
 
         this.apply();
+
+        this.paint_BaseDoodadPainter();
    })
     return ret;
 }

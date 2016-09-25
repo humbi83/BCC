@@ -29,6 +29,7 @@ var E_DOODAD_HQ_2F            =22;
 var E_DOODAD_BULLET           =23;
 var SZ_E_DOODAD               =24;
 
+
 function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsDestroyable, bIsPassable)
 {
     var ret = new Object({
@@ -43,7 +44,23 @@ function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsDestroyable
                                  this.mCellPos = Global.pixXY2CellV(x,y);
                              } ),
                              paint          : (function(){if(this.mPainter !== null){this.mPainter.paint();}}),
-                             update         : (function(tick){})
+                             update         : (function(tick){}),
+                             mLCState       : Global.E_DOODAD_LC_STATE_ALIVE,
+                             //I might have multiple painters ???
+                             onGfxDestroyed : (function(oPainter){
+                                 if(this.mPainter == oPainter)
+                                 {
+                                    console.log("onGfxDestroyed true");
+                                    this.mLCState = Global.E_DOODAD_LC_STATE_DESTROYED;
+                                     //should I do this ???
+                                    this.mPainter = null;
+                                 }
+                                 else
+                                 {
+                                    console.log("onGfxDestroyed false");
+                                 }
+                             })
+
                          });
 
     if(oPainter !== null){

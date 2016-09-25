@@ -17,6 +17,7 @@ function BCCColorDoodadPainter(sColor, oPaintee) {
         this.qComponentInstance.color = this.mColor ;
     });
 
+    ret.paint_BaseDoodadPainter = ret.paint;
     ret.paint = (function(/*bForces*/){
 
         //maybe some sort of repaint/invalidate to force a paint
@@ -26,6 +27,7 @@ function BCCColorDoodadPainter(sColor, oPaintee) {
             //oPaintee.clean();
             this.mPos.setV(this.mPaintee.mCellPos);this.mPos.mulC(Global.LEVEL_CELL_PIX_SZ);
             this.mDim.setV(this.mPaintee.mCellDim);this.mDim.mulC(Global.LEVEL_CELL_PIX_SZ);
+            //I should have some onGfxNode dstr or something !!!
             //invalidateComponentInstance = true;
         }
 
@@ -34,6 +36,8 @@ function BCCColorDoodadPainter(sColor, oPaintee) {
         {
             this.apply();
         }
+
+        this.paint_BaseDoodadPainter();
    });
     return ret;
 }

@@ -10,7 +10,22 @@ function BCCBaseDoodadPainter(sQComponentPath, oPaintee) {
                           mPos: Vec.Vec2(),
                           mDim: Vec.Vec2(),
                           mPaintee: oPaintee == undefined ? null : oPaintee,
-                          paint:(function(){console.log("empty paint");})
+                          mLCState: Global.E_DOODAD_LC_STATE_ALIVE,
+                          paint:(function(){
+
+                              if(this.mPaintee != null){
+
+                                  this.mLCState = this.mPaintee.mLCState;
+                              }
+
+                              if(this.mLCState == Global.E_DOODAD_LC_STATE_DESTORY_REQ  ){
+                                    this.qComponentInstance.destroy(16);
+                                    this.mPaintee.onGfxDestroyed(this);
+                                    this.mPaintee = null;
+                                    this.mLCState = Global.E_DOODAD_LC_STATE_DESTORYED;
+                              }
+                          })
+
     });
 
     console.log(sQComponentPath);

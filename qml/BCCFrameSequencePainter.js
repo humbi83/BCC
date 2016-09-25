@@ -5,10 +5,10 @@ function newInstance(vFirstFrameOffsetInAtlas, vFrameDimInAtlas, vSequenceSpan) 
     var ret = AtlasPainter.BCCMainAtlasDooodadPainter(vFirstFrameOffsetInAtlas,vFrameDimInAtlas);
     ret.mFirstFrameOffsetInAtlas = vFirstFrameOffsetInAtlas;
     ret.mSequenceSpan = vSequenceSpan;
-    ret._base_paint = ret.paint != undefined ? ret.paint : null;
+    ret.paint_BCCMainAtlasDooodadPainter = ret.paint != undefined ? ret.paint : null;
     ret.paint = (function(){
         this.mOffsetInAtlas = this.mFirstFrameOffsetInAtlas.vPlus(this.mPaintee.mSelectedFrame.vMulCW(this.mDim));
-        this._base_paint();
+        this.paint_BCCMainAtlasDooodadPainter();
     });
     return ret;
 }

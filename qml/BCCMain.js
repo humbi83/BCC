@@ -89,9 +89,9 @@ function BCCMain()
 
                              update:(function(){
 
-                                 console.log(Global.T_tick);
+                                 //console.log(Global.T_tick);
                                  Global.T_tick = Global.T_tick+1;
-                                 console.log(Global.T_tick);
+                                 //console.log(Global.T_tick);
 
                                  //hmm .. this is not good !!!
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );

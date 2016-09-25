@@ -15,6 +15,11 @@ var SZ_E_DIR    =  4;
 var T_tick = 0 ;
 var T_LEN  = 16;
 
+// I should have some cb with gfx node destroyed
+var E_DOODAD_LC_STATE_ALIVE       = 0;
+var E_DOODAD_LC_STATE_DESTROY_REQ = 1;
+var E_DOODAD_LC_STATE_DESTROYED   = 2;
+
 function clamp(val, min, max)
 {
     return val < min ? min : val > max? max : val;
@@ -25,10 +30,10 @@ function dirAndSpdToVec(eDir, mag)
     var ret = Vec.Vec2();
     switch(eDir)
     {
-        case E_DIR_UP    : ret.setXY( 0,-1);
-        case E_DIR_LEFT  : ret.setXY(-1, 0);
-        case E_DIR_DOWN  : ret.setXY( 0, 1);
-        case E_DIR_RIGHT : ret.setXY( 1, 0);
+        case E_DIR_UP    : ret.setXY( 0,-1);break;
+        case E_DIR_LEFT  : ret.setXY(-1, 0);break;
+        case E_DIR_DOWN  : ret.setXY( 0, 1);break;
+        case E_DIR_RIGHT : ret.setXY( 1, 0);break;
     }
 
     ret.mulC(mag);
