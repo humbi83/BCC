@@ -32,6 +32,8 @@ function BCCMain()
                              mLevel: null,
 
                              init:(function(){
+                                 Global.T_tick = 0;
+
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
 
@@ -87,23 +89,40 @@ function BCCMain()
 
                              update:(function(){
 
+                                 Global.T_tick++;
                                  Global.cUpdatePaint(this.mLevel);
                                  Global.cUpdatePaint(this.mTank);
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){
 
+                                 console.log(bDown, oEvent.isAutoRepeat);
+
                                  if(bDown){
                                     switch(oEvent.nativeScanCode)
                                     {
-                                        case this.E_KC_UP   : this.mTank.onMoveEvent(Tank.E_TNK_UP    );break;
-                                        case this.E_KC_DOWN : this.mTank.onMoveEvent(Tank.E_TNK_DOWN  );break;
-                                        case this.E_KC_LEFT : this.mTank.onMoveEvent(Tank.E_TNK_LEFT  );break;
-                                        case this.E_KC_RIGHT: this.mTank.onMoveEvent(Tank.E_TNK_RIGHT );break;
-                                        case this.E_KC_FIRE : break;
+                                        case this.E_KC_UP   : this.mTank.onMoveEvent(Global.E_DIR_UP    );break;
+                                        case this.E_KC_DOWN : this.mTank.onMoveEvent(Global.E_DIR_DOWN  );break;
+                                        case this.E_KC_LEFT : this.mTank.onMoveEvent(Global.E_DIR_LEFT  );break;
+                                        case this.E_KC_RIGHT: this.mTank.onMoveEvent(Global.E_DIR_RIGHT );break;
+                                        case this.E_KC_FIRE : this.mTank.onFire(); break;
                                         default:
                                             console.log(oEvent.nativeScanCode); break;
                                     }
+                                 }
+                                 else if(!bDown && !oEvent.isAutoRepeat)
+                                 {
+
+                                     switch(oEvent.nativeScanCode)
+                                     {
+                                         case this.E_KC_UP   :
+                                         case this.E_KC_DOWN :
+                                         case this.E_KC_LEFT :
+                                         case this.E_KC_RIGHT:
+                                         case this.E_KC_FIRE :
+                                             this.mTank.onMoveEvent(Global.NV_E_DIR); break;
+                                     }
+
                                  }
                              }),
 

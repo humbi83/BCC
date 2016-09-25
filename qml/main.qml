@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
+import QtMultimedia 5.5
 
 
 import "BCCVec.js" as Vec
@@ -89,11 +90,11 @@ Window {
     }
 
 //////// KINDA WORKS
-//    Audio {
-//           id: channel1
-//           source: "../res/BCSnd1.mp3"
-//       }
-//
+    Audio {
+           id: channel1
+           source: "../res/BCSnd1.mp3"
+       }
+
    // MainForm {
    //     anchors.fill: parent
    //     mouseArea.onClicked: {

@@ -26,7 +26,8 @@ var E_DOODAD_STONE_WALL_16x8  =19;
 var E_DOODAD_STONE_WALL       =20;
 var E_DOODAD_BRICK_WALL       =21;
 var E_DOODAD_HQ_2F            =22;
-var SZ_E_DOODAD               =23;
+var E_DOODAD_BULLET           =23;
+var SZ_E_DOODAD               =24;
 
 function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsDestroyable, bIsPassable)
 {

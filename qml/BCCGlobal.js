@@ -5,9 +5,35 @@ var LEVEL_CELL_PIX_SZ   =  4;
 var TANK_PIX_SZ         = 16;
 var LEVEL_NO_CELLS      = 13 * TANK_PIX_SZ / LEVEL_CELL_PIX_SZ;
 
+var NV_E_DIR    = -1;
+var E_DIR_UP    =  0;
+var E_DIR_LEFT  =  1;
+var E_DIR_DOWN  =  2;
+var E_DIR_RIGHT =  3;
+var SZ_E_DIR    =  4;
+
+var T_tick = 0 ;
+var T_LEN  = 16;
+
 function clamp(val, min, max)
 {
     return val < min ? min : val > max? max : val;
+}
+
+function dirAndSpdToVec(eDir, mag)
+{
+    var ret = Vec.Vec2();
+    switch(eDir)
+    {
+        case E_DIR_UP    : return Vec.Vec2( 0,-1);
+        case E_DIR_LEFT  : return Vec.Vec2(-1, 0);
+        case E_DIR_DOWN  : return Vec.Vec2( 0, 1);
+        case E_DIR_RIGHT : return Vec.Vec2( 1, 0);
+    }
+
+    ret.mulC(mag);
+
+    return ret;
 }
 
 function pixXY2CellV(x,y){

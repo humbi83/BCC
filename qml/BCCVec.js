@@ -45,6 +45,12 @@ function Vec2(iX,iY) {
                                              );
                              }),
 
+                             plus: (function(oVec2){
+                                 this.mX += oVec2.mX;
+                                 this.mY += oVec2.mY;
+                                 return this;
+                             }),
+
                              //function bIsInside2iv(){}
                              iGetX:(function(){return this.mX;}),
                              iClampX2i:(function(iLow, iHigh)
@@ -57,15 +63,25 @@ function Vec2(iX,iY) {
                                  return g_f_clamp(mY, iLow, iHigh);
                              }),
 
-                             ivClampXY4i:(function(iLowX, iHighX, iLowY, iHighY){
-                                 var ret = new BBCIVec2;
-                                 ret.mX = clampX2i(iLowX,iHighX);
-                                 ret.mY = clampY2i(iLowY,iHighY);
-                                 return ret;
+                             vClampXY4i:(function(iLowX, iHighX, iLowY, iHighY){
+                                 return Vec2(
+                                             clampX2i(iLowX,iHighX),
+                                             clampY2i(iLowY,iHighY)
+                                             );
                              }),
                              ivClampXY2iv:(function(iv2Low, iv2High)
                              {
                                  return clampXY4i(iv2Low.mX,iv2High.mX,iv2Low.mY,iv2High.mY);
+                             }),
+
+                             floor: (function(){
+                                Math.floor(this.mX);
+                                Math.floor(this.mY);
+                                return this;
+                             }),
+
+                             vFloor: (function(){
+                                 return cctor(this).floor();
                              })
 
                          });

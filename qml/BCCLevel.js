@@ -23,6 +23,8 @@ function BCCLevel(iDimX,iDimY){
 
                              mDim: Vec.Vec2(pDimX,pDimY),
                              //can I do this
+                             mDynObjects: [],
+                             mFreeDynObjects: 0,
                              mCells : null,
                              mUpdatableDoodads: [],
                              mPaintableDoodads: [],
@@ -48,6 +50,10 @@ function BCCLevel(iDimX,iDimY){
                                  {
                                     this.mUpdatableDoodads[i].update();
                                  }
+
+                                 for(var i=0; i<this.mDynObjects.length;i++){
+                                     this.mDynObjects[i].update();
+                                 }
                              }),
 
                              paint:(function() {
@@ -56,8 +62,43 @@ function BCCLevel(iDimX,iDimY){
                                  {
                                     this.mPaintableDoodads[i].paint();
                                  }
+
+                                 for(var i=0; i<this.mDynObjects.length;i++){
+                                     this.mDynObjects[i].paint();
+                                 }
                              }),
 
+                             addDynObj:(function(object){
+                                 if(this.mFreeDynObjects > 0){
+                                    for(var i = 0; i< this.mDynObjects.length;i++)
+                                    {
+                                        if(this.mDynObjects[i] == null)
+                                        {
+                                            this.mDynObjects[i] = object;
+                                            this.mFreeDynObjects-- ;
+                                            break;
+                                        }
+                                    }
+                                 }else{
+                                     this.mDynObject.push(object);
+                                 }
+                             }),
+
+                             remDynObj:(function(object){
+                                 var ret = false;
+
+                                 for(var i = 0; i< this.mDynObjects.length;i++)
+                                 {
+                                    if(this.mDynObject[i] == object)
+                                    {
+                                        this.mDynObject[i] = null;
+                                        this.mFreeDynObjects++;
+                                        ret = true;
+                                        break;
+                                    }
+                                 }
+                                 return ret;
+                             }),
                              bIsInside2v:(function(vPos,vDim){
                                  return vPos.mX >= 0 &&
                                         vPos.mY >= 0 &&
