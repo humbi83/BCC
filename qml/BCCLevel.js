@@ -45,14 +45,18 @@ function BCCLevel(iDimX,iDimY){
                                  return rows;
                              }),
 
-                             update:(function(){
+                             update:(function(tick){
                                  for(var i = 0; i<this.mUpdatableDoodads.length;i++)
                                  {
-                                    this.mUpdatableDoodads[i].update();
+                                     if(this.mUpdatableDoodads[i] != null){
+                                        this.mUpdatableDoodads[i].update(tick);
+                                     }
                                  }
 
                                  for(var i=0; i<this.mDynObjects.length;i++){
-                                     this.mDynObjects[i].update();
+                                     if(this.mDynObjects[i] != null){
+                                        this.mDynObjects[i].update(tick);
+                                     }
                                  }
                              }),
 
@@ -60,11 +64,15 @@ function BCCLevel(iDimX,iDimY){
 
                                  for(var i = 0; i<this.mPaintableDoodads.length;i++)
                                  {
-                                    this.mPaintableDoodads[i].paint();
+                                     if(this.mPaintableDoodads[i] != null){
+                                        this.mPaintableDoodads[i].paint();
+                                     }
                                  }
 
                                  for(var i=0; i<this.mDynObjects.length;i++){
-                                     this.mDynObjects[i].paint();
+                                     if(this.mDynObjects[i] != null){
+                                        this.mDynObjects[i].paint();
+                                     }
                                  }
                              }),
 
@@ -80,7 +88,7 @@ function BCCLevel(iDimX,iDimY){
                                         }
                                     }
                                  }else{
-                                     this.mDynObject.push(object);
+                                     this.mDynObjects.push(object);
                                  }
                              }),
 
@@ -89,9 +97,9 @@ function BCCLevel(iDimX,iDimY){
 
                                  for(var i = 0; i< this.mDynObjects.length;i++)
                                  {
-                                    if(this.mDynObject[i] == object)
+                                    if(this.mDynObjects[i] == object)
                                     {
-                                        this.mDynObject[i] = null;
+                                        this.mDynObjects[i] = null;
                                         this.mFreeDynObjects++;
                                         ret = true;
                                         break;

@@ -89,9 +89,13 @@ function BCCMain()
 
                              update:(function(){
 
-                                 Global.T_tick++;
-                                 Global.cUpdatePaint(this.mLevel);
-                                 Global.cUpdatePaint(this.mTank);
+                                 console.log(Global.T_tick);
+                                 Global.T_tick = Global.T_tick+1;
+                                 console.log(Global.T_tick);
+
+                                 //hmm .. this is not good !!!
+                                 Global.cUpdatePaint(this.mLevel, Global.T_tick );
+                                 Global.cUpdatePaint(this.mTank , Global.T_tick );
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){

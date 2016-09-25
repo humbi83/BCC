@@ -6,7 +6,7 @@
 
 //we consider 16ms / update
 
-var SPEED_PER_TICK = 4 / (1000 / Global.T_LEN);
+var SPEED_CELLS_PER_TICK = 0.1;
 
 function newInstance(oTank) {
 
@@ -21,20 +21,29 @@ function newInstance(oTank) {
                 true , true
                 );
 
+    __ret.mSelectedFrame = Vec.Vec2(oTank.currDir,0);
     __ret.mSpawningTank = oTank;
     __ret.mVel = vVel;
     __ret.mStartPos = vPos;
     __ret.mStartTick = Global.T_tick;
-    __ret.update = (function(){
-        this.mCellPos = mStartPos.vMulC(Global.T_tick - this.mStartTick).
+    __ret.update = (function(tick){
+
+        //hmm .. globals .. not ok..
+        if(this.mStartTick == 0){
+            this.mStartTick = tick;
+        }
+
+        var dT = tick - this.mStartTick;
+        //console.log(this.mStartTick, Global.T_tick , dT);
+        this.mCellPos = this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)).
         floor();
 
         if(!this.mLevel.bIsInside2v(this.mCellPos, this.mCellDim))
         {
-            this.mLevel.remDynObj(this);
+           this.mLevel.remDynObj(this);
         }
     });
 
-    oLevel.addDynObj(ret);
-    return ret;
+    __ret.mLevel.addDynObj(__ret);
+    return __ret;
 }

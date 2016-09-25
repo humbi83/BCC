@@ -25,10 +25,10 @@ function dirAndSpdToVec(eDir, mag)
     var ret = Vec.Vec2();
     switch(eDir)
     {
-        case E_DIR_UP    : return Vec.Vec2( 0,-1);
-        case E_DIR_LEFT  : return Vec.Vec2(-1, 0);
-        case E_DIR_DOWN  : return Vec.Vec2( 0, 1);
-        case E_DIR_RIGHT : return Vec.Vec2( 1, 0);
+        case E_DIR_UP    : ret.setXY( 0,-1);
+        case E_DIR_LEFT  : ret.setXY(-1, 0);
+        case E_DIR_DOWN  : ret.setXY( 0, 1);
+        case E_DIR_RIGHT : ret.setXY( 1, 0);
     }
 
     ret.mulC(mag);
@@ -41,15 +41,15 @@ return Vec.Vec2(Math.floor(x/LEVEL_CELL_PIX_SZ),Math.floor(y/LEVEL_CELL_PIX_SZ))
 }
 
 
-function cUpdate(updatable){
-    updatable && updatable.update && updatable.update();
+function cUpdate(updatable, tick){
+    updatable && updatable.update && updatable.update(tick);
 }
 
 function cPaint(paintable){
     paintable && paintable.paint && paintable.paint();
 }
 
-function cUpdatePaint(element){
-    cUpdate(element);
+function cUpdatePaint(element, tick){
+    cUpdate(element, tick);
     cPaint(element);
 }

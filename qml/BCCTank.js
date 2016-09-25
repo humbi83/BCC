@@ -14,7 +14,10 @@ function newInstance(oLevel) {
                 oLevel,0,0, 4, 4,true,false
                 );
 
+    //needed by FSPainter ... I need some clear interfaces !!!
     ret.mSelectedFrame = Vec.Vec2();
+
+
     ret.mIsKeyPressed  = false;
     ret.mPrevTick      = 0;
 //todo mCurrDir

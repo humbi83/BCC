@@ -43,7 +43,7 @@ function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsDestroyable
                                  this.mCellPos = Global.pixXY2CellV(x,y);
                              } ),
                              paint          : (function(){if(this.mPainter !== null){this.mPainter.paint();}}),
-                             update         : (function(){})
+                             update         : (function(tick){})
                          });
 
     if(oPainter !== null){

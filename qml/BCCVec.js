@@ -12,16 +12,19 @@ function Vec2(iX,iY) {
                              setXY: (function(x,y){
                                  this.mX=x;
                                  this.mY=y;
+                                 return this;
                              }),
 
                              setV: (function(oVec2){
                                  this.mX = oVec2.mX;
                                  this.mY = oVec2.mY;
+                                 return this;
                              }),
 
                              mulC: (function(c){
                                  this.mX *= c;
                                  this.mY *= c;
+                                 return this;
                              }),
 
                              vMulC: (function(c){
