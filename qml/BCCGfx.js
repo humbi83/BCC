@@ -122,7 +122,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
         {
             var frameCount= Math.floor(dT / ANIM_FRAME_LEN[this.mType]);
             var frameNo = frameCount % ANIM_SEQZ[this.mType].length
-            console.log(frameNo);
+            //console.log(frameNo);
 
             this.mCurrentLoop = Math.floor(frameCount / ANIM_SEQZ[this.mType].length);
 

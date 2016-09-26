@@ -48,7 +48,7 @@ function newInstance(oLevel, iX, iY, ePU) {
 
         this.mIsVisible = (computedVal % 2 == 0);
 
-        console.log(this.mIsVisible, tick, this.mStartTick, dT, computedVal );
+        //console.log(this.mIsVisible, tick, this.mStartTick, dT, computedVal );
         //will die on timeout or pickup by player
         //this.mLCState = Global.E_DOODAD_LC_STATE_DESTORY_REQ;
 

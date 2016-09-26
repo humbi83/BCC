@@ -12,17 +12,18 @@ Item {
     property string mResPath: "../res/general.png";
     //property int    mScale   : 1;
 
-    Row{
+    Row{        
         Repeater{
             model:mXTimes;
             Column{
                Repeater{
-                    model: mYTimes;
+                    model: mYTimes;                    
                     Rectangle{
                         clip    : true   ;
                         width   : mWidth ;
                         height  : mHeight;
-                        Image {
+                        color   : "#00000000";
+                        Image {                            
                             x       : -mOffsetX;
                             y       : -mOffsetY;
                             fillMode: Image.Stretch;

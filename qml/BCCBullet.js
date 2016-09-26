@@ -103,7 +103,7 @@ function newInstance(oTank) {
                     var cExp = this.canExplode();
                     var b2 = this.mKilledBy == null;
 
-                    console.log("bul", cExp, b2 );
+                    //console.log("bul", cExp, b2 );
 
                     if(
                             //this.canExplode() &&

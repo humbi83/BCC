@@ -90,12 +90,12 @@ function BCCMain()
 
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel,0,32,false);
+                                 this.mTank = Tank.newInstance(this.mLevel,0,20,true);
 
                                  this.mEnemyTanks.push(
                                             Tank.newInstance(
                                               this.mLevel,
-                                              8,0,
+                                              8,4,
                                               true)
                                           );
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
@@ -116,11 +116,19 @@ function BCCMain()
                                  //hmm .. this is not good !!!
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );
+
+                                 for(var i = 0; i < this.mEnemyTanks.length ; i++ )
+                                 {
+                                    if(this.mEnemyTanks[i] != null)
+                                    {
+                                        Global.cUpdatePaint(this.mEnemyTanks[i] , Global.T_tick );
+                                    }
+                                 }
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){
 
-                                 console.log(bDown, oEvent.isAutoRepeat);
+                                 //console.log(bDown, oEvent.isAutoRepeat);
 
                                  if(bDown){
                                     switch(oEvent.nativeScanCode)

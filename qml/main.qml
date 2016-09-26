@@ -74,13 +74,13 @@ Window {
         bbcI  : (function(){var ret = Qt.createComponent("BBCIVec.qml"); return BBCIVec._BBCIVec_new(10,10);})
      //bbcI  : (function(){return new BBCIVec;})
                                });
-        console.log(_this.prop1);
-        console.log(_this.get1());
-        _this.set1(3);
-        console.log(_this.get1());
+        //console.log(_this.prop1);
+        //console.log(_this.get1());
+        //_this.set1(3);
+        //console.log(_this.get1());
        // var bbc = _this.bbcI();
 
-        console.log(ivec10.mX);
+        //console.log(ivec10.mX);
         //not working console.log(ivec0._this.mX);
 
 

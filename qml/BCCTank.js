@@ -220,6 +220,8 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
     });
 
+    ret.mLevel.addDynObj(ret);
+
     return ret;
 }
 
