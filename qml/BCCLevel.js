@@ -118,6 +118,8 @@ function BCCLevel(iDimX,iDimY){
                              collidesOn2v:(function(vPos,vDim){
                                  var __ret = [];
 
+                                 vPos = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+
                                  for(var i = vPos.mY; i < (vPos.mY + vDim.mY );i++ ){
                                      for(var j = vPos.mX; j < (vPos.mX + vDim.mX) ;j++ )
                                      {

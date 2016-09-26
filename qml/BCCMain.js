@@ -7,6 +7,8 @@
 .import "BCCTank.js" as Tank
 .import "BCCFrameSequencePainter.js" as FSPainter
 .import "BCCGlobal.js" as Global
+.import "BCCPUp.js" as PU
+.import "BCCGfx.js" as GFX
 
 function BCCMain()
 {
@@ -83,6 +85,12 @@ function BCCMain()
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
                                  this.mTank = Tank.newInstance(this.mLevel);
+
+                                 //PU.newInstance(this.mLevel, 20 , 20 , 0);
+                                 //GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
+                                 //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);
+                                 //GFX.newInstance(this.mLevel, 25, 34 , GFX.E_GFX_TELEPORT, -1 , null);
+                                 //GFX.newInstance(this.mLevel, 30, 34 , GFX.E_GFX_BIG_EXP, -1 , null);
                                  //304,32 //ok
                                  //320,32 //lost
                              }),

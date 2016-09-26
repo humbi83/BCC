@@ -1,0 +1,32 @@
+map dim 13x13 tanks
+
+
+- you can kill your base
+
+tank:
+sh 3 sec
+no more than 4 tanks on screen
+tele 1-2 sec
+every 4th tank is a powup ?? no ..
+spawn on every 2 sec, max 4 on screen
+
+
+PowerUps
+1. Flashing tank - >on dest powup
+types :
+at least 10 sec
+    tank -> 1up
+    start- >1x shoot faster, 2x 2 alive shells,  3x destroy steel
+    bomb -> ds all ene
+    clock-> ene tanks frozen for some time (10sec)
+    shovel - >steel walls around base for a time
+    shield -> inv for some time (3-4 sec)
+
+gfx :
+
+shell:
+
+shell vs shell & shell vs brick & shell vs steel (3x stars)
+<2 stars only one shell
+1> stars 2 shells
+

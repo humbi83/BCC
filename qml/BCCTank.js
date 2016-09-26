@@ -8,6 +8,28 @@ var E_CELLS_PER_SECOND=10;
 var TNK_FRAMES_PER_DIR= 2;
 //u01/l23/d45/r67
 
+
+//2 sec
+var E_TANK_STATE_TELEPORTING   = 0;
+
+//3 sec
+var E_TANK_STATE_SHIELDED      = 1;
+
+var E_TANK_STATE_NORMAL        = 2;
+
+//shell only small exp
+//small exp + big exp
+
+//flashes red, I need 2 painters
+var E_TANK_HAS_POWUP           = 4;
+
+var E_TANK_STATE_EXPLODING     = 3;
+
+
+
+
+//I will need 2 paintes
+
 function newInstance(oLevel) {
     var ret = Doodad.BCCDoodad2o4i3b(
                 FSPainter.newInstance(Vec.Vec2(0,0),Vec.Vec2(16, 16),Vec.Vec2(1,8)),

@@ -11,15 +11,22 @@ function BCCBaseDoodadPainter(sQComponentPath, oPaintee) {
                           mDim: Vec.Vec2(),
                           mPaintee: oPaintee == undefined ? null : oPaintee,
                           mLCState: Global.E_DOODAD_LC_STATE_ALIVE,
+                          mIsVisible:true,
                           paint:(function(){
 
                               if(this.mPaintee != null){
 
                                   this.mLCState = this.mPaintee.mLCState;
+                                  this.mIsVisible = this.mPaintee.mIsVisible;
                               }
 
+                              if(this.mLCState != Global.E_DOODAD_LC_STATE_DESTORYED){
+                                    this.qComponentInstance.visible = this.mIsVisible;
+                              }else
                               if(this.mLCState == Global.E_DOODAD_LC_STATE_DESTORY_REQ  ){
                                     this.qComponentInstance.destroy(16);
+                                    this.qComponentInstance = null;
+
                                     this.mPaintee.onGfxDestroyed(this);
                                     this.mPaintee = null;
                                     this.mLCState = Global.E_DOODAD_LC_STATE_DESTORYED;

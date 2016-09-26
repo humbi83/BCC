@@ -65,4 +65,8 @@ DISTFILES += \
     qml/BCCTank.js \
     qml/BCCFrameSequencePainter.js \
     qml/BCCBullet.js \
-    qml/BCCPUp.js
+    qml/BCCPUp.js \
+    qml/BCCGfx.js \
+    Req.txt \
+    qml/BCCVGfx.js \
+    qml/BCCVPainter.js

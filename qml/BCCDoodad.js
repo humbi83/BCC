@@ -43,6 +43,7 @@ function BCCDoodad2o4i3b(oPainter,oLevel,iPosX,iPosY,iDimX,iDimY, bIsDestroyable
                              setPixXY          : (function(x,y){
                                  this.mCellPos = Global.pixXY2CellV(x,y);
                              } ),
+                             mIsVisible     : true,
                              paint          : (function(){if(this.mPainter !== null){this.mPainter.paint();}}),
                              update         : (function(tick){}),
                              mLCState       : Global.E_DOODAD_LC_STATE_ALIVE,

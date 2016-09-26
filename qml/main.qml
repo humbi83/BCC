@@ -82,7 +82,7 @@ Window {
 
         console.log(ivec10.mX);
         //not working console.log(ivec0._this.mX);
-        console.log(ivec0.iGetX());
+
 
         //var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
         myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);

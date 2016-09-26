@@ -20,6 +20,7 @@ var E_DOODAD_LC_STATE_ALIVE       = 0;
 var E_DOODAD_LC_STATE_DESTROY_REQ = 1;
 var E_DOODAD_LC_STATE_DESTROYED   = 2;
 
+//Move to some math js
 function clamp(val, min, max)
 {
     return val < min ? min : val > max? max : val;

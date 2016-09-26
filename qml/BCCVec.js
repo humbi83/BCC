@@ -1,4 +1,9 @@
 
+function clamp(val, min, max)
+{
+    return val < min ? min : val > max? max : val;
+}
+
 function Vec2(iX,iY) {
 
     var pX = iX != undefined ?  iX : 0;
@@ -48,38 +53,43 @@ function Vec2(iX,iY) {
                                              );
                              }),
 
+                             vPlusXY: (function(iX,iY){
+                                 return Vec2(
+                                 this.mX + iX,
+                                 this.mY + iY
+                                             );
+                             }),
+
                              plus: (function(oVec2){
                                  this.mX += oVec2.mX;
                                  this.mY += oVec2.mY;
                                  return this;
                              }),
 
-                             //function bIsInside2iv(){}
-                             iGetX:(function(){return this.mX;}),
                              iClampX2i:(function(iLow, iHigh)
                              {
-                                 return g_f_clamp(mX, iLow, iHigh);
+                                 return clamp(this.mX, iLow, iHigh);
                              }),
 
                              iClampY2i: (function ( iLow, iHigh)
                              {
-                                 return g_f_clamp(mY, iLow, iHigh);
+                                 return clamp(this.mY, iLow, iHigh);
                              }),
 
                              vClampXY4i:(function(iLowX, iHighX, iLowY, iHighY){
                                  return Vec2(
-                                             clampX2i(iLowX,iHighX),
-                                             clampY2i(iLowY,iHighY)
+                                             this.iClampX2i(iLowX,iHighX),
+                                             this.iClampY2i(iLowY,iHighY)
                                              );
                              }),
                              ivClampXY2iv:(function(iv2Low, iv2High)
                              {
-                                 return clampXY4i(iv2Low.mX,iv2High.mX,iv2Low.mY,iv2High.mY);
+                                 return this.vClampXY4i(iv2Low.mX,iv2High.mX,iv2Low.mY,iv2High.mY);
                              }),
 
                              floor: (function(){
-                                Math.floor(this.mX);
-                                Math.floor(this.mY);
+                                this.mX = Math.floor(this.mX);
+                                this.mY = Math.floor(this.mY);
                                 return this;
                              }),
 
