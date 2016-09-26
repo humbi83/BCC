@@ -119,9 +119,11 @@ function BCCLevel(iDimX,iDimY){
                                  var __ret = [];
 
                                  vPos = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+                                 var iLimit = Global.clamp((vPos.mY + vDim.mY ),0,this.mDim.mY);
+                                 var jLimit = Global.clamp((vPos.mX + vDim.mX ),0,this.mDim.mX);
 
-                                 for(var i = vPos.mY; i < (vPos.mY + vDim.mY );i++ ){
-                                     for(var j = vPos.mX; j < (vPos.mX + vDim.mX) ;j++ )
+                                 for(var i = vPos.mY; i < iLimit;i++ ){
+                                     for(var j = vPos.mX; j < jLimit ;j++ )
                                      {
                                          var __cell = this.mCells[i][j];
                                          var __bla = __cell.mStationedDoodad ? __cell.mStationedDoodad : null;
