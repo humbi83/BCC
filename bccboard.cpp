@@ -61,27 +61,40 @@ static int    verticesSz = 0;
 static float* vertices   = NULL;
 
 static int             indicesSz = 0;
-static unsigned short* indexes   = NULL;
+static unsigned short* indices   = NULL;
 
-static char* genBuffer(int w, int h){
+static void genBuffers(int w, int h){
 
+    char buff[2048];
+
+    int idx = 0;
 
     verticesSz = (w+1) * (h+1) * 2;
     vertices   = new float[verticesSz];
-
-    for(int i = 0; i < h + 1 ; i++){
-        int lineOffset = i*(w+1)*2;
-        for(int j = 0; j < w + 1; j++){
-            vertices[lineOffset + j*2    ] = (float)j;
-            vertices[lineOffset + j*2 + 1] = (float)i;
-        }
-    }
 
     //(4+ (w-1) * 2) * h + 2*(h-1)
     indicesSz = 4*h + 2*h*w - 2;
     indices = new unsigned short[indicesSz];
 
-    int idx = 0;
+    sprintf(buff,"%d %d %d %d\n",w, h, verticesSz, indicesSz );
+    qDebug()<<buff;
+
+    for(int i = 0; i < h + 1 ; i++){
+        for(int j = 0; j < w + 1; j++){
+
+            vertices[idx++] = (float)j;
+            vertices[idx++] = (float)i;
+
+
+            sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1),j,i);
+            qDebug()<<buff;//<<"\n";
+        }
+    }
+
+
+    idx = 0;
+qDebug()<<"\n";
+
     const int wp1 = w+1;
     for(int i=0;i<h;i++)
     {
@@ -89,18 +102,28 @@ static char* genBuffer(int w, int h){
         //int a2 = a * 2;
         for(int j=0;j<wp1;j++)
         {
+            const int jp1 = i * wp1 + j + 1;
 
-            int limit =
-                    j==0 && i   > 0 || //first on 1+ line
-                    j==w && i+1 < h    //last entry on h-1 line
-                    ? 2 : 1;
-            for(int k =0 ; k<limit;k++){
-                indices[ idx++ ] = j+1;
-                indices[ idx++ ] = j+1 + wp1;
+            if(j == 0 && i > 0){
+                indices[ idx++ ] = jp1;
+                sprintf(buff, "[%d] = {%d}", (idx-1), indices[idx-1] );
+                qDebug()<<buff;//<<"\n";
+            }
+
+
+            indices[ idx++ ] = jp1;
+            indices[ idx++ ] = jp1 + wp1;
+
+            sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1), indices[idx-2], indices[idx-1] );
+            qDebug()<<buff;//<<"\n";
+
+            if(j == w && i+1 < h){
+                indices[ idx++ ] = jp1 + wp1;
+                sprintf(buff, "[%d] = {%d}",(idx-1),indices[idx-1] );
+                qDebug()<<buff;//<<"\n";
             }
         }
     }
-
 }
 
 void SquircleRenderer::paint()
@@ -108,6 +131,9 @@ void SquircleRenderer::paint()
 
 
     if (!m_program) {
+
+        genBuffers(4,2);
+
         initializeOpenGLFunctions();
 
 
