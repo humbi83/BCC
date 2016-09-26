@@ -10,6 +10,7 @@
 .import "BCCPUp.js" as PU
 .import "BCCGfx.js" as GFX
 
+.import "BCCLevelCell2.js" as Cell
 function BCCMain()
 {
     var ret = new Object({
@@ -33,7 +34,41 @@ function BCCMain()
                              mTank       : null,
                              mEnemyTanks : [],
                              mLevel      : null,
+//============
+                             mCellsTmp   : [],
 
+                             initLevel:(function(){
+                                 var rows = new Array(1);
+
+                                 for(var i = 0; i < rows.length;i++)
+                                 {
+                                     var col = new Array(1);
+
+                                     for(var j=0;j<col.length;j++)
+                                     {
+                                         col[j] = Cell.newInstance(j,i,/*!!!!*/null);
+                                     }
+
+                                     rows[i] = col;
+                                 }
+                                 return rows;
+                             }),
+
+                             updateLevel:(function(){
+                                 var rows = this.mCellsTmp;
+
+                                 for(var i = 0; i < rows.length;i++)
+                                 {
+                                     var col = rows[i];
+
+                                     for(var j=0;j<col.length;j++)
+                                     {
+                                         Global.cUpdatePaint(col[j]);
+                                     }
+
+                                 }
+                             }),
+//================
                              mAvailableEnemyTanks : 20,
                              onTankDied  : (function(oTank)
                              {
@@ -45,50 +80,52 @@ function BCCMain()
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
 
-                                 this.mLevel.addPixXYDoodad( 16, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 this.mLevel.addPixXYDoodad( 16, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 48, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 this.mLevel.addPixXYDoodad( 48, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 80, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad( 80, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 96, 48, Doodad.E_DOODAD_STONE_WALL, 16,16);
-                                 this.mLevel.addPixXYDoodad(112, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad(112, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad(144, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 this.mLevel.addPixXYDoodad(144, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad(176, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 this.mLevel.addPixXYDoodad(176, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 80, 88, Doodad.E_DOODAD_BRICK_WALL, 16,16);
-                                 this.mLevel.addPixXYDoodad(112, 88, Doodad.E_DOODAD_BRICK_WALL, 12,16);
+                                 this.mCellsTmp = this.initLevel();
 
-                                 this.mLevel.addPixXYDoodad(  0,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 32,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
-                                 this.mLevel.addPixXYDoodad(144,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
-                                 this.mLevel.addPixXYDoodad(191,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
-
-                                 this.mLevel.addPixXYDoodad( 16, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad( 16, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad( 48, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad( 48, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-
-
-                                 this.mLevel.addPixXYDoodad(144, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad(144, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-
-                                 this.mLevel.addPixXYDoodad( 80, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
-                                 this.mLevel.addPixXYDoodad( 96, 128, Doodad.E_DOODAD_BRICK_WALL, 16, 16);
-                                 this.mLevel.addPixXYDoodad(112, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
-
-
-                                 this.mLevel.addPixXYDoodad(176, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 this.mLevel.addPixXYDoodad(176, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-
-
-                                 this.mLevel.addPixXYDoodad( 88, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
-                                 this.mLevel.addPixXYDoodad( 96, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 this.mLevel.addPixXYDoodad(112, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
-
-                                 this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
+                                 //this.mLevel.addPixXYDoodad( 16, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
+                                 //this.mLevel.addPixXYDoodad( 16, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 48, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
+                                 //this.mLevel.addPixXYDoodad( 48, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 80, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad( 80, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 96, 48, Doodad.E_DOODAD_STONE_WALL, 16,16);
+                                 //this.mLevel.addPixXYDoodad(112, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad(112, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad(144, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
+                                 //this.mLevel.addPixXYDoodad(144, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad(176, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
+                                 //this.mLevel.addPixXYDoodad(176, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 80, 88, Doodad.E_DOODAD_BRICK_WALL, 16,16);
+                                 //this.mLevel.addPixXYDoodad(112, 88, Doodad.E_DOODAD_BRICK_WALL, 12,16);
+                                 //
+                                 //this.mLevel.addPixXYDoodad(  0,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 32,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
+                                 //this.mLevel.addPixXYDoodad(144,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
+                                 //this.mLevel.addPixXYDoodad(191,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
+                                 //
+                                 //this.mLevel.addPixXYDoodad( 16, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad( 16, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad( 48, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad( 48, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //
+                                 //
+                                 //this.mLevel.addPixXYDoodad(144, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad(144, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //
+                                 //this.mLevel.addPixXYDoodad( 80, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
+                                 //this.mLevel.addPixXYDoodad( 96, 128, Doodad.E_DOODAD_BRICK_WALL, 16, 16);
+                                 //this.mLevel.addPixXYDoodad(112, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
+                                 //
+                                 //
+                                 //this.mLevel.addPixXYDoodad(176, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
+                                 //this.mLevel.addPixXYDoodad(176, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //
+                                 //
+                                 //this.mLevel.addPixXYDoodad( 88, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
+                                 //this.mLevel.addPixXYDoodad( 96, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
+                                 //this.mLevel.addPixXYDoodad(112, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
+                                 //
+                                 //this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
                                  this.mTank = Tank.newInstance(this.mLevel,0,20,false);
 
@@ -98,6 +135,7 @@ function BCCMain()
                                               8,4,
                                               true)
                                           );
+
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
                                  //GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
                                  //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);
@@ -113,6 +151,7 @@ function BCCMain()
                                  Global.T_tick = Global.T_tick+1;
                                  //console.log(Global.T_tick);
 
+                                 this.updateLevel();
                                  //hmm .. this is not good !!!
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );
@@ -168,6 +207,7 @@ function BCCMain()
                                 }
                              })
                          });
+//=========================
     return ret;
 }
 

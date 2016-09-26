@@ -3,7 +3,8 @@ TEMPLATE = app
 QT += qml quick
 CONFIG += c++11
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    bccboard.cpp
 
 #RESOURCES +=
 
@@ -70,4 +71,9 @@ DISTFILES += \
     Req.txt \
     qml/BCCVGfx.js \
     qml/BCCVPainter.js \
-    qml/BCCTankAI.js
+    qml/BCCTankAI.js \
+    qml/BCCLevelCell2.js \
+    qml/BCCLevel2.js
+
+HEADERS += \
+    bccboard.h

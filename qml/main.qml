@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
 import QtMultimedia 5.5
+import OpenGLUnderQML 1.0
 
 
 import "BCCVec.js" as Vec
@@ -64,6 +65,15 @@ Window {
    //     _this.set1(3);
    //     console.log(_this.get1());
    // }
+
+    Squircle {
+            SequentialAnimation on t {
+                NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
+                NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
+                loops: Animation.Infinite
+                running: true
+            }
+        }
 
     Component.onCompleted: {
         var _this = new Object({
