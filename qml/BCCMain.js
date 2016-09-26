@@ -90,7 +90,7 @@ function BCCMain()
 
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel,0,20,true);
+                                 this.mTank = Tank.newInstance(this.mLevel,0,20,false);
 
                                  this.mEnemyTanks.push(
                                             Tank.newInstance(

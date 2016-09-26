@@ -69,4 +69,5 @@ DISTFILES += \
     qml/BCCGfx.js \
     Req.txt \
     qml/BCCVGfx.js \
-    qml/BCCVPainter.js
+    qml/BCCVPainter.js \
+    qml/BCCTankAI.js

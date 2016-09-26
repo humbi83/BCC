@@ -4,6 +4,7 @@
 .import "BCCBullet.js" as Bullet
 .import "BCCGlobal.js" as Global
 .import "BCCGfx.js" as GFX
+.import "BCCTankAI.js" as AI
 
 var E_CELLS_PER_SECOND=10;
 var TNK_FRAMES_PER_DIR= 2;
@@ -46,6 +47,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
     //see what I should do regarding interfaces !!!
     //explode, canExplode
+    ret.mAI = pEnemy ? AI.newInstance(ret) : null;
     ret.explode = (function(){
         var ret = false;
 
@@ -66,7 +68,15 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             this.mCurrentState ==  E_STATE_NORMAL ||
             this.mCurrentState ==  E_STATE_POWUP );
     });
-
+/*
+    if(this.mAI != null){
+        this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_TELEPORTING);
+    }
+    if(this.mAI != null){
+        this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_MOVABLE);
+        this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_DEAD);
+    }
+  */
     ret.onAnimSeqFinished = (function (oAnimSeq){
         switch(this.mCurrentState)
         {
@@ -87,6 +97,9 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             {
                 this.mCurrentState = E_STATE_NORMAL;
                 this.mIsVisible = true;
+                if(this.mAI != null){
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_MOVABLE);
+                }
             }
         } break;
         case E_STATE_SHIELDED    : {
@@ -99,6 +112,9 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         {
             //do things
             if(this.isEnemy){
+                if(this.mAI != null){
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_DEAD);
+                }
             }else
             {
             }
@@ -180,9 +196,18 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
                 if(collidingCells != null && collidingCells.length > 0){
                 //for the moment, do not update
+
+                    if(this.mAI != null){
+                        this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
+                    }
+
                 }else
                 {
                     this.mCellPos = newPos;
+                }
+            }else{
+                if(this.mAI != null){
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
                 }
             }
         }
@@ -197,6 +222,12 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     });
 
     ret.update = (function(tick){
+
+        //move this to the updatable list
+        if(this.mAI != null){
+            this.mAI.update(tick);
+        }
+
         //hmm .. globals .. not ok..
         if(this.mStartTick == 0){
             this.mStartTick = tick;
@@ -213,7 +244,6 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             case E_STATE_NORMAL     :{}break;
             case E_STATE_POWUP      :{}break;
             case E_STATE_EXPLODING  :{
-
             }break;
             default: console.log("BBCTank::update::default!");
         }
