@@ -20,28 +20,28 @@ BBCBase {
         return rows;
     }
 
-    function bIsInside2i(iX,iY)
-    {
-        BBCIVec._new(iX,iY).
-    }
-
-    function isPassable1iv(position){
-        var ret = false;
-        var cX = g_f_clamp(x, 0, g_c_LEVEL_NO_CELLS - 1);
-        var cY = g_f_clamp(y, 0, g_c_LEVEL_NO_CELLS - 1);
-
-        if(cX == x && cY == y){
-            ret = mData[cX][cY].mDoodad.isPassable;
-        }
-
-        return ret;
-    }
-
-
-    function canBePlaced(x,y,doodad){
-
-    }
+    //function bIsInside2i(iX,iY)
+    //{
+    //    BBCIVec._new(iX,iY).
+    //}
+    //
+    //function isPassable1iv(position){
+    //    var ret = false;
+    //    var cX = g_f_clamp(x, 0, g_c_LEVEL_NO_CELLS - 1);
+    //    var cY = g_f_clamp(y, 0, g_c_LEVEL_NO_CELLS - 1);
+    //
+    //    if(cX == x && cY == y){
+    //        ret = mData[cX][cY].mDoodad.isPassable;
+    //    }
+    //
+    //    return ret;
+    //}
 
 
-    function addDoodad(x,y,doodad)
+//    function canBePlaced(x,y,doodad){
+//
+//    }
+//
+//
+//    function addDoodad(x,y,doodad)
 }

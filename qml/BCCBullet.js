@@ -87,12 +87,15 @@ function newInstance(oTank) {
                             switch(dynObj.mDoodadType){
 
                             case Doodad.E_DOODAD_BULLET:{
-                                this.mKilledBy = dynObj;
-                                dynObj.mKilledBy = this;
+                                dynObj.explode();
+                                this.explode();
                             }break;
                             case Doodad.E_DOODAD_BRICK_WALL :{}break;
                             case Doodad.E_DOODAD_TANK       :{
-                                dynObj.explode();
+                                if(dynObj != this.mSpawningTank){
+                                    dynObj.explode();
+                                    this.explode();
+                                }
 
                             }break;
                             default: //do nothing break;
