@@ -51,6 +51,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
     switch(eGFX){
     case E_GFX_TELEPORT :
         __ret = Doodad.BCCDoodad2o4i3b(
+                    Doodad.E_DOODAD_EMPTY,
                     FramePainter.newInstance(Vec.Vec2(255,96),Vec.Vec2(16,16),Vec.Vec2(4,1)),
                     oLevel,
                     iX ,iY,
@@ -60,6 +61,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
         break;
     case E_GFX_SHILED:
         __ret = Doodad.BCCDoodad2o4i3b(
+                    Doodad.E_DOODAD_EMPTY,
                     FramePainter.newInstance(Vec.Vec2(255,96 + 48),Vec.Vec2(16,16),Vec.Vec2(2,1)),
                     oLevel,
                     iX ,iY,
@@ -69,6 +71,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
         break;
      case E_GFX_SMALL_EXP:
          __ret = Doodad.BCCDoodad2o4i3b(
+                     Doodad.E_DOODAD_EMPTY,
                      FramePainter.newInstance(Vec.Vec2(255,96 + 32),Vec.Vec2(16,16),Vec.Vec2(3,1)),
                      oLevel,
                      iX ,iY,
@@ -78,6 +81,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
          break;
     case E_GFX_BIG_EXP:
         __ret = Doodad.BCCDoodad2o4i3b(
+                    Doodad.E_DOODAD_EMPTY,
                     FramePainter.newInstance(Vec.Vec2(255 + 48 ,96 + 32),Vec.Vec2(32,32),Vec.Vec2(2,1)),
                     oLevel,
                     iX ,iY,

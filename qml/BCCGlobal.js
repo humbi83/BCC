@@ -26,6 +26,18 @@ function clamp(val, min, max)
     return val < min ? min : val > max? max : val;
 }
 
+function rectOverlaps( vPos1, vDim1, vPos2, vDim2)
+{
+    //RectA.Left < RectB.Right && RectA.Right > RectB.Left &&
+    //RectA.Top < RectB.Bottom && RectA.Bottom > RectB.Top )
+    var vPos1RB = vPos1.vPlus(vDim1);
+    var vPos2RB = vPos2.vPlus(vDim2);
+
+    return (
+               vPos1.mX < vPos2RB.mX && vPos1RB.mX > vPos2.mX &&
+               vPos1.mY < vPos2RB.mY && vPos1RB.mY > vPos2.mY
+           );
+}
 function dirAndSpdToVec(eDir, mag)
 {
     var ret = Vec.Vec2();

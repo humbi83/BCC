@@ -25,7 +25,7 @@ function BCCLevel(iDimX,iDimY){
                              //can I do this
                              mDynObjects: [],
                              mFreeDynObjects: 0,
-                             mCells : null,
+                             mCells : [],
                              mUpdatableDoodads: [],
                              mPaintableDoodads: [],
                              initLevel:(function(){
@@ -114,11 +114,42 @@ function BCCLevel(iDimX,iDimY){
                                         vPos.mY + vDim.mY <=  this.mDim.mY ;
                              }),
 
+                             //bullets will kill, they will check for collision
+                             //so no check in tank, tanks only for collision with other tanks
+                             collidesWithDynamic2v:(function(oDoodad, vPos, vDim){
+
+                                 var ret = [];
+
+                                 if(oDoodad != null){
+                                    vPos = oDoodad.mCellPos;
+                                    vDim = oDoodad.mCellDim;
+                                 }
+
+                                 var vPosClmp = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+                                 for(var i=0; i < this.mDynObjects.length;i++)
+                                 {
+                                     var dynObj = this.mDynObjects[i];
+
+                                     if( dynObj != null &&
+                                             (oDoodad != null && dynObj != oDoodad || oDoodad == null) &&
+
+                                             Global.rectOverlaps(
+                                                 vPos           , vDim,
+                                                 dynObj.mCellPos, dynObj.mCellDim)
+                                        ){
+                                                 ret.push(dynObj);
+                                          }
+                                 }
+
+                                 return ret;
+
+                             }),
                              //No check for the moment !!!
-                             collidesOn2v:(function(vPos,vDim){
+                             collidesWithStatic2v:(function(vPos,vDim){
                                  var __ret = [];
 
                                  vPos = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+
                                  var iLimit = Global.clamp((vPos.mY + vDim.mY ),0,this.mDim.mY);
                                  var jLimit = Global.clamp((vPos.mX + vDim.mX ),0,this.mDim.mX);
 

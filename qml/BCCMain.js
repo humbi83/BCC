@@ -30,9 +30,15 @@ function BCCMain()
                              currentGameState: null,
                              pendingGameState: null,
 
-                             mTank : null,
-                             mLevel: null,
+                             mTank       : null,
+                             mEnemyTanks : [],
+                             mLevel      : null,
 
+                             mAvailableEnemyTanks : 20,
+                             onTankDied  : (function(oTank)
+                             {
+                                    //chek if we still have tanks
+                             }),
                              init:(function(){
                                  Global.T_tick = 0;
 
@@ -84,8 +90,14 @@ function BCCMain()
 
                                  this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel);
+                                 this.mTank = Tank.newInstance(this.mLevel,0,32,false);
 
+                                 this.mEnemyTanks.push(
+                                            Tank.newInstance(
+                                              this.mLevel,
+                                              8,0,
+                                              true)
+                                          );
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
                                  //GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
                                  //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);

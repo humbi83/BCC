@@ -19,6 +19,7 @@ function newInstance(oLevel, iX, iY, ePU) {
 
 
     var __ret = Doodad.BCCDoodad2o4i3b(
+                Doodad.E_DOODAD_POWUP,
                 FramePainter.newInstance(Vec.Vec2(255,112),Vec.Vec2(16,16),Vec.Vec2(7,1)),
                 oLevel,
                 iX ,iY,
