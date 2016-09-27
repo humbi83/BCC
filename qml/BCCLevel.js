@@ -3,6 +3,14 @@
 .import "BCCDoodad.js" as Doodad
 .import "BCCLevelCell.js" as Cell
 
+var NV_E_BRUSH         = 0;
+var E_BRUSH_EMPTY      = 1;
+var E_BRUSH_BRICK_WALL = 2;
+var E_BRUSH_STONE_WALL = 3;
+var E_BRUSH_HQ_ALIVE   = 4;
+var E_BRUSH_HQ_DEAD    = 5;
+var SZ_E_BRUSH         = 6;
+
 Array.matrix = function(numrows, numcols, initial) {
     var arr = [];
     for (var i = 0; i < numrows; ++i) {
@@ -171,6 +179,18 @@ function BCCLevel(iDimX,iDimY){
 
                              }),
 
+
+                             applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix)
+                             {
+                                 switch(eBrushType){
+                                    case E_BRUSH_HQ_ALIVE   : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 304, 32, 16,16,1,1); break;
+                                    case E_BRUSH_HQ_DEAD    : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 320, 32, 16,16,1,1); break;
+                                    case E_BRUSH_BRICK_WALL : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_STONE_WALL : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_EMPTY      : //fall through
+                                    default                 : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                 }
+                             }),
                              //ret false or something on failure
                              addPixXYDoodad: (function(x,y,eDoodadType, w,h){
                                  var dFact = Doodad.BCCDoodadFactory(this);

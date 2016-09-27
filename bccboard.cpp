@@ -525,7 +525,19 @@ void SquircleRenderer::applyBrush(const BrushCall& params)
 
     TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
 
-    //qDebug() << cellX <<" " << cellY << " " << (52 - (cellY + tH/4)) << " "<< repeatX <<" "<< repeatY;
+    char buff[512];
+    sprintf(buff, "%d %d %d %d %d %d %d %d",
+            _cellX  ,
+            _cellY  ,
+            _tX     ,
+            _tY     ,
+            _tW     ,
+            _tH     ,
+            _repeatX,
+            _repeatY
+            );
+    qDebug() << buff;
+
     //52 - (cellY + tH/4)
 
     TexBrush::preCopy(this,*m_textureBuffer);
@@ -619,39 +631,6 @@ void SquircleRenderer::paint()
         m_textureBuffer->allocate(tex,texSz* sizeof(float));
         m_textureBuffer->release();
 
-        //printFBuffer(*m_textureBuffer);
-
-        //TexCoords tC; tC.setT(256,0,16,16,image.width(), image.height());
-        //setCell(0,0,tC,*m_textureBuffer);
-
-
-
-        //not necessarly here, but for clarity
-        TexBrush::preCopy(this,*m_textureBuffer);
-
-
-        TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,m_imageW,m_imageH);
-        for(int i=0;i<7;i++)
-        {
-            for(int j=0;j<13;j++)
-            {
-                tb->copyTo(j*4,i*4);
-            }
-        }
-
-        TexBrush::postCopy(this,*m_textureBuffer);
-
-
-
-        TexBrush* tb2 = TexBrush::newInstanceT(256,16,16,16,m_imageW,m_imageH);
-        tb2->applyTo(this,*m_textureBuffer,16,16);
-
-
-        //someQ.applyBrush(16,16,256,0,16,16);
-
-        //TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,image.width(),image.height(),4,4);
-        //tb->applyTo(this,*m_textureBuffer,0,0,__W, __H);
-
         m_program = new QOpenGLShaderProgram();
 
 
@@ -678,35 +657,12 @@ void SquircleRenderer::paint()
         m_program->bindAttributeLocation("vertices", 0);
 
 
-
-#if 0
-
-        m_program->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                           "attribute highp vec4 vertices;"
-                                           "varying highp vec2 coords;"
-                                           "void main() {"
-                                           "    gl_Position = vertices;"
-                                           "    coords = vertices.xy;"
-                                           "}");
-        m_program->addShaderFromSourceCode(QOpenGLShader::Fragment,
-                                           "uniform lowp float t;"
-                                           "varying highp vec2 coords;"
-                                           "void main() {"
-                                           "    lowp float i = 1. - (pow(abs(coords.x), 4.) + pow(abs(coords.y), 4.));"
-                                           "    i = smoothstep(t - 0.8, t + 0.8, i);"
-                                           "    i = floor(i * 20.) / 20.;"
-                                           "    gl_FragColor = vec4(coords * .5 + .5, i, i);"
-                                           "}");
-
-        m_program->bindAttributeLocation("vertices", 0);
-#endif
         m_program->link();
         g_smLocation = m_program->uniformLocation("sm");
         g_texCoordsLocation = m_program->attributeLocation("aTexCoords");
     }
 
 
-    //for(int i=0 ;i)
 
     while(m_callQueue.size() > 0)
     {
@@ -715,8 +671,8 @@ void SquircleRenderer::paint()
     }
 
     m_program->bind();
-
     m_vertexBuffer->bind();
+
     glVertexAttribPointer(0,2,GL_FLOAT,0,0,0);
     m_program->enableAttributeArray(0);
 
@@ -737,21 +693,11 @@ void SquircleRenderer::paint()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-
-
-#if 0
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
-#else
-
     glDrawArrays(GL_TRIANGLES, 0, vertSz);
 
 
-    //glDrawElements(GL_TRIANGLES,indicesSz,GL_UNSIGNED_SHORT,indices);
-
-#endif
-
-    glBindBuffer(GL_ARRAY_BUFFER        ,0);
-    glBindTexture(GL_TEXTURE_2D,0);
+    glBindBuffer (GL_ARRAY_BUFFER ,0);
+    glBindTexture(GL_TEXTURE_2D   ,0);
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
     m_program->disableAttributeArray(0);

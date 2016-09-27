@@ -82,50 +82,44 @@ function BCCMain()
 
                                  this.mCellsTmp = this.initLevel();
 
-                                 //this.mLevel.addPixXYDoodad( 16, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 //this.mLevel.addPixXYDoodad( 16, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 48, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 //this.mLevel.addPixXYDoodad( 48, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 80, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad( 80, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 96, 48, Doodad.E_DOODAD_STONE_WALL, 16,16);
-                                 //this.mLevel.addPixXYDoodad(112, 16, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad(112, 64, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad(144, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 //this.mLevel.addPixXYDoodad(144, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad(176, 16, Doodad.E_DOODAD_BRICK_WALL, 16,64);
-                                 //this.mLevel.addPixXYDoodad(176, 80, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 80, 88, Doodad.E_DOODAD_BRICK_WALL, 16,16);
-                                 //this.mLevel.addPixXYDoodad(112, 88, Doodad.E_DOODAD_BRICK_WALL, 12,16);
-                                 //
-                                 //this.mLevel.addPixXYDoodad(  0,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 32,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
-                                 //this.mLevel.addPixXYDoodad(144,104, Doodad.E_DOODAD_BRICK_WALL, 32,16);
-                                 //this.mLevel.addPixXYDoodad(191,112, Doodad.E_DOODAD_STONE_WALL, 16, 8);
-                                 //
-                                 //this.mLevel.addPixXYDoodad( 16, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad( 16, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad( 48, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad( 48, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //
-                                 //
-                                 //this.mLevel.addPixXYDoodad(144, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad(144, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //
-                                 //this.mLevel.addPixXYDoodad( 80, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
-                                 //this.mLevel.addPixXYDoodad( 96, 128, Doodad.E_DOODAD_BRICK_WALL, 16, 16);
-                                 //this.mLevel.addPixXYDoodad(112, 120, Doodad.E_DOODAD_BRICK_WALL, 16, 48);
-                                 //
-                                 //
-                                 //this.mLevel.addPixXYDoodad(176, 136, Doodad.E_DOODAD_BRICK_WALL, 16,48);
-                                 //this.mLevel.addPixXYDoodad(176, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //
-                                 //
-                                 //this.mLevel.addPixXYDoodad( 88, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
-                                 //this.mLevel.addPixXYDoodad( 96, 184, Doodad.E_DOODAD_BRICK_WALL, 16, 8);
-                                 //this.mLevel.addPixXYDoodad(112, 184, Doodad.E_DOODAD_BRICK_WALL, 8, 48);
-                                 //
-                                 //this.mLevel.addPixXYDoodad( 96, 192, Doodad.E_DOODAD_HQ_2F, 0, 0);//handle undefined
+                                 this.mLevel.applyBrush( 16,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
+                                 this.mLevel.applyBrush( 16,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 48,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
+                                 this.mLevel.applyBrush( 48,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 80,  16, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush( 80,  64, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 96,  48, Level.E_BRUSH_STONE_WALL, 16,16);
+                                 this.mLevel.applyBrush(112,  16, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush(112,  64, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush(144,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
+                                 this.mLevel.applyBrush(144,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush(176,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
+                                 this.mLevel.applyBrush(176,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 80,  88, Level.E_BRUSH_BRICK_WALL, 16,16);
+                                 this.mLevel.applyBrush(112,  88, Level.E_BRUSH_BRICK_WALL, 12,16);// newl
+                                 this.mLevel.applyBrush(  0, 112, Level.E_BRUSH_STONE_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 32, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
+                                 this.mLevel.applyBrush(144, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
+                                 this.mLevel.applyBrush(191, 112, Level.E_BRUSH_STONE_WALL, 16, 8);//newl
+                                 this.mLevel.applyBrush( 16, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush( 16, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 48, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush( 48, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
+                                 this.mLevel.applyBrush(144, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush(144, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
+                                 this.mLevel.applyBrush( 80, 120, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush( 96, 128, Level.E_BRUSH_BRICK_WALL, 16,16);
+                                 this.mLevel.applyBrush(112, 120, Level.E_BRUSH_BRICK_WALL, 16,48);//newl
+                                 this.mLevel.applyBrush(176, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
+                                 this.mLevel.applyBrush(176, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
+
+                                 //this.mLevel.applyBrush( 88, 184, Level.E_BRUSH_BRICK_WALL,  8,48);//fails
+
+                                 this.mLevel.applyBrush( 96, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);
+
+                                 //this.mLevel.applyBrush(112, 184, Level.E_BRUSH_BRICK_WALL,  8,48);//newl//fails
+
+                                 this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
                                  this.mTank = Tank.newInstance(this.mLevel,0,20,false);
 

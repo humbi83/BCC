@@ -73,7 +73,8 @@ DISTFILES += \
     qml/BCCVPainter.js \
     qml/BCCTankAI.js \
     qml/BCCLevelCell2.js \
-    qml/BCCLevel2.js
+    qml/BCCLevel2.js \
+    qml/BCCLevelPainter.js
 
 HEADERS += \
     bccboard.h
