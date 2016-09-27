@@ -36,6 +36,7 @@ Window {
     }
 
     Squircle {
+        id : someQ;
             SequentialAnimation on t {
                 NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
                 NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
@@ -47,6 +48,7 @@ Window {
     Component.onCompleted: {     
         myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
         _BCCMainTimer.start();
+        someQ.applyBrush(10,10,256,0,16,16);
     }
 
 //////// KINDA WORKS

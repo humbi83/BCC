@@ -102,6 +102,9 @@ static float* tex = NULL;
 #define __W 52
 #define __H 52
 
+#define __CELL_W 4
+#define __CELL_H 4
+
 #define DO_LOGGING
 
 #ifdef DO_LOGGING
@@ -389,6 +392,7 @@ struct TexCoords
 
 
 
+
 struct TexBrush
 {
     typedef float* TFptr;
@@ -396,7 +400,8 @@ struct TexBrush
     int szCW;
     int szCH;
 
-    static TexBrush* newInstanceT(int tX, int tY, int tW, int tH, int texW, int texH, int cellW, int cellH){
+    //TODO: CHECKS
+    static TexBrush* newInstanceT(int tX, int tY, int tW, int tH, int texW, int texH, int cellW = __CELL_W, int cellH = __CELL_W){
         int szCW = tW/cellW/*4*/;
         int szCH = tH/cellH/*4*/;
 
@@ -490,6 +495,43 @@ static int g_smLocation;
 static int g_texCoordsLocation;
 #include "QFileInfo"
 
+#define _CLAMP(v,l,h) (v < l ? l : ( v > h ? h : v))
+#define CLAMP(v,l,h) _CLAMP((v),(l),(h))
+
+void SquircleRenderer::applyBrush(
+        qreal cellX  ,
+        qreal cellY  ,
+        qreal tX     ,
+        qreal tY     ,
+        qreal tW     ,
+        qreal tH     ,
+        qreal repeatX,
+        qreal repeatY)
+{
+
+    int _cellX   = int(floorf(CLAMP(float(cellX  ),0.0f ,__CELL_W)));
+    int _cellY   = int(floorf(CLAMP(float(cellY  ),0.0f ,__CELL_H)));
+    int _tX      = int(floorf(CLAMP(float(tX     ),0.0f ,    1024)));
+    int _tY      = int(floorf(CLAMP(float(tY     ),0.0f ,    1024)));
+    int _tW      = int(floorf(CLAMP(float(tW     ),1.0f ,    1024)));
+    int _tH      = int(floorf(CLAMP(float(tH     ),1.0f ,    1024)));
+    int _repeatX = int(floorf(CLAMP(float(repeatX),1.0f ,      10)));
+    int _repeatY = int(floorf(CLAMP(float(repeatY),1.0f ,      10)));
+
+    //TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
+    //tb->applyTo(this,*m_textureBuffer,_cellX,_cellY);
+    //delete tb;
+}
+//called before paint !
+void Squircle::applyBrush(
+        qreal cellX, qreal cellY,
+        qreal tX, qreal tY,
+        qreal tW, qreal tH,
+        qreal repeatX,
+        qreal repeatY)
+{
+    m_renderer->applyBrush(cellX, cellY, tX,tY,tW,tH,repeatX,repeatY);
+}
 
 void SquircleRenderer::paint()
 {
@@ -504,20 +546,23 @@ void SquircleRenderer::paint()
         genTex(__W,__H);
         genBuffers2(__W,__H);
 
-        QFile file("../res/general.png");
-        QFileInfo fInfo("../res/general.png");
 
+        QFileInfo fInfo("./res/general.png");
 
-        qDebug() <<file.exists() << fInfo.absoluteFilePath();
+        qDebug() <<fInfo.exists() << fInfo.absoluteFilePath();
         QImage image("./res/general.png");
 
+        m_imageW = image.width();
+        m_imageH = image.height();
+
+        //make this a QOpenGLTexture ... why ???
         glGenTextures(1,&g_texId);
         glBindTexture(GL_TEXTURE_2D,g_texId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,m_imageW,m_imageH,0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
         glBindTexture(GL_TEXTURE_2D,0);
 
 
@@ -546,7 +591,8 @@ void SquircleRenderer::paint()
         //not necessarly here, but for clarity
         TexBrush::preCopy(this,*m_textureBuffer);
 
-        TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,image.width(),image.height(),4,4);
+
+        TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,m_imageW,m_imageH);
         for(int i=0;i<13;i++)
         {
             for(int j=0;j<13;j++)

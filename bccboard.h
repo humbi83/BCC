@@ -10,12 +10,14 @@ class SquircleRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0) { }
+    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0), m_imageW(0), m_imageH(0) { }
     ~SquircleRenderer();
 
     void setT(qreal t) { m_t = t; }
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setWindow(QQuickWindow *window) { m_window = window; }
+
+    void applyBrush(qreal cellX, qreal cellY, qreal tX, qreal tY, qreal tW, qreal tH , qreal repeatX = 1 , qreal repeatY = 1 );
 
 public slots:
     void paint();
@@ -28,7 +30,8 @@ private:
 
     QOpenGLBuffer* m_vertexBuffer;
     QOpenGLBuffer* m_textureBuffer;
-//    QOpenGLBuffer* m_textureBuffer[2];
+    int m_imageW;
+    int m_imageH;
 };
 
 class Squircle : public QQuickItem
@@ -42,6 +45,11 @@ public:
     qreal t() const { return m_t; }
     void setT(qreal t);
 
+    //======== MY STUFF ========
+    //One shot
+    Q_INVOKABLE void applyBrush(qreal cellX, qreal cellY, qreal tX, qreal tY, qreal tW, qreal tH, qreal repeatX = 1 , qreal repeatY = 1 );
+    //I should either expose the brush or at least ret a handle
+    // how about repeat functionality ???.. anyway
 signals:
     void tChanged();
 
