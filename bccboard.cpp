@@ -44,6 +44,8 @@ void Squircle::cleanup()
 SquircleRenderer::~SquircleRenderer()
 {
     delete m_program;
+    delete m_vertexBuffer;
+    delete m_textureBuffer;
 }
 
 void Squircle::sync()
@@ -98,7 +100,7 @@ static int texSz = 0;
 static float* tex = NULL;
 
 #define __W 2
-#define __H 2
+#define __H 1
 
 static void genBuffers2(int w, int h)
 {
@@ -160,28 +162,28 @@ static void genTex(int w,int h){
             //1,  1,
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 0;
-//            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
 
 
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 1;
-
-
-            tex[ idx++ ] = 1;
-            tex[ idx++ ] = 0;
-
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
 
             tex[ idx++ ] = 1;
             tex[ idx++ ] = 0;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
 
+            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 0;
+                sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
 
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 1;
-
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
 
             tex[ idx++ ] = 1;
             tex[ idx++ ] = 1;
-
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
         }
     }
 
@@ -351,9 +353,11 @@ void SquircleRenderer::paint()
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
                 glBindTexture(GL_TEXTURE_2D,0);
-                //glGenBuffers(SZ_E_Buffers,g_glBuffs);
-                //glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
-                //glBufferData(GL_ARRAY_BUFFER,verticesSz*sizeof(float),vertices,GL_STATIC_DRAW);
+
+                glGenBuffers(SZ_E_Buffers,g_glBuffs);
+                glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
+                glBufferData(GL_ARRAY_BUFFER,vertSz*sizeof(float),vert,GL_STATIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER,0);
                 //
                 //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_glBuffs[E_B_INDEX]);
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSz*sizeof(unsigned short),indices,GL_STATIC_DRAW);
@@ -365,11 +369,68 @@ void SquircleRenderer::paint()
                 //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
         //==========
 
+                float values[] = {
+                    //non mirrored
+                    //0,  1,
+                    //0,  0,
+                    //1,  1,
+
+                    0,  0,
+                    0,  1,
+                    1,  0,
+
+                    1,  0,
+                    0,  1,
+                    1,  1,
+
+                    0,  0,
+                    0,  1,
+                    1,  0,
+
+                    1,  0,
+                    0,  1,
+                    1,  1
+                };
+
+                //vert coords OK
+                float values2[] = {
+                    0,  0,
+                    0,  1,
+                    1,  0,
+
+                    1,  0,
+                    0,  1,
+                    1,  1,
+
+                    1,  0,
+                    1,  1,
+                    2,  0,
+
+                    2,  0,
+                    1,  1,
+                    2,  1
+                };
+
+        m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+        m_vertexBuffer->create();
+        m_vertexBuffer->bind();
+        m_vertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+        m_vertexBuffer->allocate(vert,vertSz * sizeof(float));
+        //m_vertexBuffer->allocate(values2,sizeof(values2));
+        m_vertexBuffer->release();
+
+        m_textureBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+        m_textureBuffer->create();
+        m_textureBuffer->bind();
+        m_textureBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+        m_textureBuffer->allocate(tex,texSz* sizeof(float));
+        m_textureBuffer->release();
+
         m_program = new QOpenGLShaderProgram();
 
 
         m_program->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                           "uniform   highp vec2 uDivs     ;\n"
+                                           "uniform   highp vec2 uDivs    ;\n"
                                            "attribute highp vec4 vertices ;\n"
                                            "varying   highp vec2 coords;\n"
                                            "attribute highp vec2 aTexCoords;\n"
@@ -419,10 +480,12 @@ void SquircleRenderer::paint()
 
 
     }
+
+
     m_program->bind();
 
-    m_program->enableAttributeArray(0);
-    m_program->enableAttributeArray(g_texCoordsLocation);
+
+
 
 #if 0
     float values[] = {
@@ -442,47 +505,7 @@ m_program->setAttributeArray(0, GL_FLOAT, values, 2);
 //    1, 1
 //};
 
-float values[] = {
-    //non mirrored
-    //0,  1,
-    //0,  0,
-    //1,  1,
 
-    0,  0,
-    0,  1,
-    1,  0,
-
-    1,  0,
-    0,  1,
-    1,  1,
-
-    0,  0,
-    0,  1,
-    1,  0,
-
-    1,  0,
-    0,  1,
-    1,  1
-};
-
-//vert coords OK
-float values2[] = {
-    0,  0,
-    0,  1,
-    1,  0,
-
-    1,  0,
-    0,  1,
-    1,  1,
-
-    1,  0,
-    1,  1,
-    2,  0,
-
-    2,  0,
-    1,  1,
-    2,  1
-};
 //float vert[] = {
 //    0,0,
 //    0,1,
@@ -502,16 +525,24 @@ float values2[] = {
     //m_program->setAttributeArray(0,GL_FLOAT,values2/*values*/,2);
     //m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,values/*values*/,2);
 
-    m_program->setAttributeArray(0                  ,GL_FLOAT,vert,2);
-    m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,tex ,2);
+//kinda works
+    //m_program->setAttributeArray(0                  ,GL_FLOAT,vert,2);
+    //glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
 
-    //m_program->setUniformValue("t", (float) m_t);
+    //m_program->setAttributeBuffer(0,GL_FLOAT,0,2,0);
+
+    m_vertexBuffer->bind();
+    glVertexAttribPointer(0,2,GL_FLOAT,0,0,0);
+    m_program->enableAttributeArray(0);
+
+    m_textureBuffer->bind();
+    glVertexAttribPointer(g_texCoordsLocation,2,GL_FLOAT,0,0,0);
+    m_program->enableAttributeArray(g_texCoordsLocation);
+
     glBindTexture(GL_TEXTURE_2D,g_texId);
     m_program->setUniformValue("sm",0);
 
     m_program->setUniformValue("uDivs",(float)__W,(float)__H);
-
-    //glViewport(0, -m_viewportSize.height(), m_viewportSize.width(), m_viewportSize.height());
 
     glDisable(GL_DEPTH_TEST);
 
@@ -529,11 +560,13 @@ float values2[] = {
 
     glDrawArrays(GL_TRIANGLES, 0, vertSz);
 
+
     //glDrawElements(GL_TRIANGLES,indicesSz,GL_UNSIGNED_SHORT,indices);
 
 #endif
 
-    //glBindBuffer(GL_ARRAY_BUFFER        ,0);
+    glBindBuffer(GL_ARRAY_BUFFER        ,0);
+    glBindTexture(GL_TEXTURE_2D,0);
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
     m_program->disableAttributeArray(0);

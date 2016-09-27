@@ -4,12 +4,13 @@
 #include <QtQuick/QQuickItem>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLFunctions>
+#include <QtGui/QOpenGLBuffer>
 
 class SquircleRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    SquircleRenderer() : m_t(0), m_program(0) { }
+    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0) { }
     ~SquircleRenderer();
 
     void setT(qreal t) { m_t = t; }
@@ -24,6 +25,10 @@ private:
     qreal m_t;
     QOpenGLShaderProgram *m_program;
     QQuickWindow *m_window;
+
+    QOpenGLBuffer* m_vertexBuffer;
+    QOpenGLBuffer* m_textureBuffer;
+//    QOpenGLBuffer* m_textureBuffer[2];
 };
 
 class Squircle : public QQuickItem
