@@ -112,7 +112,7 @@ static float* tex = NULL;
 #define __CELL_W 4
 #define __CELL_H 4
 
-#define DO_LOGGING
+//#define DO_LOGGING
 
 #ifdef DO_LOGGING
 #define BLOG1() sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff
@@ -203,6 +203,8 @@ static void genTex(int w,int h){
     }
 #endif
 }
+
+#if 0
 static void genBuffers(int w, int h){
 
     char buff[2048];
@@ -222,8 +224,8 @@ static void genBuffers(int w, int h){
 
     indices = new unsigned short[indicesSz];
 
-    sprintf(buff,"%d %d %d %d\n",w, h, verticesSz, indicesSz );
-    qDebug()<<buff;
+    //sprintf(buff,"%d %d %d %d\n",w, h, verticesSz, indicesSz );
+    //qDebug()<<buff;
 
     for(int i = 0; i < h + 1 ; i++){
         for(int j = 0; j < w + 1; j++){
@@ -232,8 +234,8 @@ static void genBuffers(int w, int h){
             vertices[idx++] = (float)i;
 
 
-            sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1),j,i);
-            qDebug()<<buff;//<<"\n";
+            //sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1),j,i);
+            //qDebug()<<buff;//<<"\n";
         }
     }
 
@@ -323,6 +325,9 @@ for(int i=0;i<h;i++)
 #endif
 }
 
+#endif
+
+
 void printFBuffer(float* fBuff, int buffsz)
 {
     char buff[256];
@@ -374,7 +379,7 @@ struct TexCoords
         buff[10] = float(x+w) / float(texW);
         buff[11] = float(y+h) / float(texH);
 
-        printFBuffer(buff,12);
+        //printFBuffer(buff,12);
 
         return buff;
     }
@@ -485,7 +490,7 @@ void setCell(const int cellX, int const cellY, const TexCoords& texCoords, QOpen
 
     buffer.release();
 
-    printFBuffer(buffer);
+    //printFBuffer(buffer);
 }
 
 enum E_Buffers{
@@ -508,17 +513,37 @@ static int g_texCoordsLocation;
 void SquircleRenderer::applyBrush(const BrushCall& params)
 {
 
-    int _cellX   = int(floorf(CLAMP(float(params.cellX  ),0.0f ,__CELL_W)));
-    int _cellY   = int(floorf(CLAMP(float(params.cellY  ),0.0f ,__CELL_H)));
-    int _tX      = int(floorf(CLAMP(float(params.tX     ),0.0f ,    1024)));
-    int _tY      = int(floorf(CLAMP(float(params.tY     ),0.0f ,    1024)));
-    int _tW      = int(floorf(CLAMP(float(params.tW     ),1.0f ,    1024)));
-    int _tH      = int(floorf(CLAMP(float(params.tH     ),1.0f ,    1024)));
-    int _repeatX = int(floorf(CLAMP(float(params.repeatX),1.0f ,      10)));
-    int _repeatY = int(floorf(CLAMP(float(params.repeatY),1.0f ,      10)));
+    //TODO:ALEX add real bounds !
+    int _cellX   = int(floorf(CLAMP(float(params.cellX  ),0.0f , __W)));
+    int _cellY   = int(floorf(CLAMP(float(params.cellY  ),0.0f , __H)));
+    int _tX      = int(floorf(CLAMP(float(params.tX     ),0.0f , 1024)));
+    int _tY      = int(floorf(CLAMP(float(params.tY     ),0.0f , 1024)));
+    int _tW      = int(floorf(CLAMP(float(params.tW     ),1.0f , 1024)));
+    int _tH      = int(floorf(CLAMP(float(params.tH     ),1.0f , 1024)));
+    int _repeatX = int(floorf(CLAMP(float(params.repeatX),1.0f ,   10)));
+    int _repeatY = int(floorf(CLAMP(float(params.repeatY),1.0f ,   10)));
 
     TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
-    tb->applyTo(this,*m_textureBuffer,_cellX,_cellY);
+
+    //qDebug() << cellX <<" " << cellY << " " << (52 - (cellY + tH/4)) << " "<< repeatX <<" "<< repeatY;
+    //52 - (cellY + tH/4)
+
+    TexBrush::preCopy(this,*m_textureBuffer);
+
+    int thd4 = _tH/4;
+    int twd4 = _tW/4;
+    for(int i=0;i<_repeatY;i++)
+    {
+        int y = _cellY+ i * thd4;
+        int yRev = __H - y - thd4;
+        for(int j=0;j<_repeatX;j++)
+        {
+            tb->copyTo(_cellX+j*twd4, yRev );
+        }
+    }
+
+    TexBrush::postCopy(this,*m_textureBuffer);
+
     delete tb;
 }
 //called before paint !
@@ -530,8 +555,10 @@ void Squircle::applyBrush(
         qreal repeatY)
 {
     //I might need to invalidate stuff in order for the repaint to happen
-    BrushCall brushCall={cellX, cellY, tX,tY,tW,tH,repeatX,repeatY};
+
+    BrushCall brushCall={cellX, cellY , tX,tY,tW,tH,repeatX,repeatY};
     m_callQueue.append(brushCall);
+
 }
 
 void SquircleRenderer::paint()
@@ -575,6 +602,16 @@ void SquircleRenderer::paint()
         //m_vertexBuffer->allocate(values2,sizeof(values2));
         m_vertexBuffer->release();
 
+        //Hmm.. not nice.. I have to upload
+        //52*52*12*4 .. 120k ... per update.. anyway .. pc
+
+        //but in fragment sh ..
+        //16/3 ... 52/3 ->18 per line * 52 = 936 <1k on update
+        // 5b - > 31 types ... mmm
+        //8/1 52*52 ~ 2k-3k per update + 256 * 4 * 4 + 4k LUT .. resonable
+        //2 orders of mag lower busload
+        //not now
+
         m_textureBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
         m_textureBuffer->create();
         m_textureBuffer->bind();
@@ -582,7 +619,7 @@ void SquircleRenderer::paint()
         m_textureBuffer->allocate(tex,texSz* sizeof(float));
         m_textureBuffer->release();
 
-        printFBuffer(*m_textureBuffer);
+        //printFBuffer(*m_textureBuffer);
 
         //TexCoords tC; tC.setT(256,0,16,16,image.width(), image.height());
         //setCell(0,0,tC,*m_textureBuffer);
@@ -594,7 +631,7 @@ void SquircleRenderer::paint()
 
 
         TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,m_imageW,m_imageH);
-        for(int i=0;i<13;i++)
+        for(int i=0;i<7;i++)
         {
             for(int j=0;j<13;j++)
             {
@@ -603,6 +640,14 @@ void SquircleRenderer::paint()
         }
 
         TexBrush::postCopy(this,*m_textureBuffer);
+
+
+
+        TexBrush* tb2 = TexBrush::newInstanceT(256,16,16,16,m_imageW,m_imageH);
+        tb2->applyTo(this,*m_textureBuffer,16,16);
+
+
+        //someQ.applyBrush(16,16,256,0,16,16);
 
         //TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,image.width(),image.height(),4,4);
         //tb->applyTo(this,*m_textureBuffer,0,0,__W, __H);
@@ -662,7 +707,12 @@ void SquircleRenderer::paint()
 
 
     //for(int i=0 ;i)
-    //m_callQueue
+
+    while(m_callQueue.size() > 0)
+    {
+        applyBrush(m_callQueue.first());
+        m_callQueue.removeFirst();
+    }
 
     m_program->bind();
 

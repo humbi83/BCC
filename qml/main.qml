@@ -48,7 +48,7 @@ Window {
     Component.onCompleted: {     
         myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
         _BCCMainTimer.start();
-        someQ.applyBrush(10,10,256,0,16,16);
+        someQ.applyBrush(16,16,256,0,16,16,2,3);
     }
 
 //////// KINDA WORKS
