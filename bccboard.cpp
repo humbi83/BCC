@@ -102,6 +102,14 @@ static float* tex = NULL;
 #define __W 2
 #define __H 1
 
+#ifdef DO_LOGGING
+#define BLOG1() sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff
+#define BLOG2() sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff
+#else
+#define BLOG1() Q_UNUSED(0)
+#define BLOG2() Q_UNUSED(0)
+#endif
+
 static void genBuffers2(int w, int h)
 {
     vertSz = w*h*12;
@@ -119,27 +127,27 @@ static void genBuffers2(int w, int h)
             int jp1 = j+1;
             vert[ idx++ ] = j;
             vert[ idx++ ] = i;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
 
             vert[ idx++ ] = j;
             vert[ idx++ ] = ip1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
 
             vert[ idx++ ] = jp1;
             vert[ idx++ ] = i;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
 
             vert[ idx++ ] = jp1;
             vert[ idx++ ] = i;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
 
             vert[ idx++ ] = j;
             vert[ idx++ ] = ip1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
 
             vert[ idx++ ] = jp1;
             vert[ idx++ ] = ip1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+            BLOG1();
         }
     }
 }
@@ -153,37 +161,31 @@ static void genTex(int w,int h){
     {
         for(int j=0;j<w;j++)
         {
-            //0,  0,
-            //0,  1,
-            //1,  0,
-            //
-            //1,  0,
-            //0,  1,
-            //1,  1,
+
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 0;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
 
 
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
 
             tex[ idx++ ] = 1;
             tex[ idx++ ] = 0;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
 
             tex[ idx++ ] = 1;
             tex[ idx++ ] = 0;
-                sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
 
             tex[ idx++ ] = 0;
             tex[ idx++ ] = 1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
 
             tex[ idx++ ] = 1;
             tex[ idx++ ] = 1;
-            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+            BLOG2();
         }
     }
 
@@ -308,6 +310,172 @@ for(int i=0;i<h;i++)
 #endif
 }
 
+void printFBuffer(float* fBuff, int buffsz)
+{
+    char buff[256];
+    sprintf(buff,"%d",buffsz);
+    qDebug()<<buff;
+
+    for(int i=0;i<buffsz;i+=2)
+    {
+        sprintf(buff,"%f %f",fBuff[i],fBuff[i+1]);
+        qDebug()<<buff;
+    }
+}
+void printFBuffer(QOpenGLBuffer& buffer)
+{
+    buffer.bind();
+    char buff[256];
+
+    sprintf(buff,"%d",buffer.size());
+    qDebug()<<buff;
+
+    float* mF = (float*) buffer.mapRange(0,buffer.size(),QOpenGLBuffer::RangeRead);
+
+    for(int i=0;i<buffer.size()/sizeof(float);i+=2)
+    {
+        sprintf(buff,"%f %f",mF[i],mF[i+1]);
+        qDebug()<<buff;
+    }
+
+    buffer.unmap();
+    buffer.release();
+}
+
+
+struct TexCoords
+{
+    float texCoords[12];
+
+    static float* sSetB(float* buff, int x, int y, int w, int h, int texW, int texH){
+        buff[ 0] = float(x)   / texW;
+        buff[ 1] = float(y)   / texH;
+        buff[ 2] = float(x)   / texW;
+        buff[ 3] = float(y+h) / texH;
+        buff[ 4] = float(x+w) / texW;
+        buff[ 5] = float(y  ) / texH;
+        buff[ 6] = float(x+w) / texW;
+        buff[ 7] = float(y  ) / texH;
+        buff[ 8] = float(x)   / texW;
+        buff[ 9] = float(y+h) / texH;
+        buff[10] = float(x+w) / texW;
+        buff[11] = float(y+h) / texH;
+
+        printFBuffer(buff,12);
+
+        return buff;
+    }
+
+    static float* sSetT(float* buff,int x, int y, int w, int h, int texW, int texH)
+    {
+        return sSetB(buff, x,texH - y - h,w,h,texW,texH);
+    }
+
+    void  setB(int x, int y, int w, int h, int texW, int texH)
+    {
+
+        sSetB(texCoords, x, y, w, h, texW, texH);
+    }
+
+    void  setT(int x, int y, int w, int h, int texW, int texH)
+    {
+        sSetB(texCoords,x,texH - y - h,w,h,texW,texH);
+    }
+
+};
+
+struct TexBrush
+{
+    typedef float* TFptr;
+    TFptr* texCoords;
+    int szCW;
+    int szCH;
+
+
+
+    static TexBrush* newInstanceT(int tX, int tY, int tW, int tH, int texW, int texH, int cellW, int cellH){
+        int szCW = tW/cellW/*4*/;
+        int szCH = tH/cellH/*4*/;
+
+        TFptr* texCoords = new TFptr[szCH];
+        for(int i = 0; i< szCH ; i++)
+        {
+            texCoords[i] = new float[szCW * 12];
+            for(int j = 0; j<szCW ; j++)
+            {
+                TexCoords::sSetT(texCoords[i] + j * 12,
+                        tX + j * cellW, tY + i * cellH,
+                        cellW, cellH,
+                        texW , texH );
+            }
+        }
+
+        TexBrush* ret= new TexBrush{};
+        ret->texCoords = texCoords;
+        ret->szCW = szCW;
+        ret->szCH = szCH;
+
+        return ret;
+    }
+
+
+   // I should prob dbuff
+    void applyTo(QOpenGLBuffer& buffer, int cellX, int cellY, int noCellW, int noCellH, bool flush = true)
+    {
+        Q_UNUSED(flush);
+        buffer.bind();
+
+        float* mF = (float*) buffer.mapRange(0, buffer.size(),QOpenGLBuffer::RangeWrite /*| QOpenGLBuffer::RangeFlushExplicit*/);
+
+        int segmentSz = szCW * sizeof(TexCoords);
+
+        for(int i = cellY; i< szCH ; i++)
+        {
+
+            int offset = sizeof(TexCoords) * (noCellW * cellY  + cellX);
+            memcpy( mF + offset, texCoords[i], segmentSz);
+            //here or after unmap ??
+            //I do not whant a context
+            //wglGetCurrentContext(void);
+            //QOpenGLFunctions_3_0_CoreBackend::FlushMappedBufferRange(GL_ARRAY_BUFFER,offset,segmentSz);
+        }
+
+        buffer.unmap();
+
+        buffer.release();
+
+        printFBuffer(buffer);
+    }
+};
+
+void setCell(const int cellX, int const cellY, const TexCoords& texCoords, QOpenGLBuffer& buffer)
+{
+    buffer.bind();
+
+    int offset = 12 * (cellY * __W + cellX );
+
+    float* mF = (float*) buffer.mapRange(offset, sizeof(TexCoords),QOpenGLBuffer::RangeWrite);
+    memcpy(mF,&texCoords,sizeof(TexCoords));
+
+    buffer.unmap();
+
+    buffer.release();
+
+    printFBuffer(buffer);
+}
+
+
+void fillBuffer(
+                int cellX, int cellY ,
+                int rX, int rY, int rW,int rH,
+                QOpenGLBuffer& buffer,
+                int tW, int tH,int noCellsW, int noCellsH)
+{
+    const int mulstuff = sizeof(float);
+    int offset = cellY * noCellsW * mulstuff/*floats*/ * 3/*vert*/ * 2/*triang*/ + cellX * mulstuff*6;
+    //float* ptr = (float*)buffer.mapRange(offset,6 * mulstuff);
+}
+
 enum E_Buffers{
 
     E_B_VERTEX = 0,
@@ -349,8 +517,8 @@ void SquircleRenderer::paint()
                 glBindTexture(GL_TEXTURE_2D,g_texId);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                 glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
                 glBindTexture(GL_TEXTURE_2D,0);
 
@@ -425,6 +593,15 @@ void SquircleRenderer::paint()
         m_textureBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
         m_textureBuffer->allocate(tex,texSz* sizeof(float));
         m_textureBuffer->release();
+
+        printFBuffer(*m_textureBuffer);
+
+        //TexCoords tC; tC.setT(256,0,16,16,image.width(), image.height());
+        //setCell(0,0,tC,*m_textureBuffer);
+
+        //interesant .. se fac 4 ?? ?cum asa ??
+        TexBrush* tb = TexBrush::newInstanceT(0,0,8,4,image.width(),image.height(),4,4);
+        tb->applyTo(*m_textureBuffer,0,0,__W, __H);
 
         m_program = new QOpenGLShaderProgram();
 
