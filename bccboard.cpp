@@ -99,8 +99,8 @@ static float* vert  = NULL;
 static int texSz = 0;
 static float* tex = NULL;
 
-#define __W 4
-#define __H 4
+#define __W 52
+#define __H 52
 
 #define DO_LOGGING
 
@@ -156,7 +156,8 @@ static void genBuffers2(int w, int h)
 
 static void genTex(int w,int h){
     texSz = w*h*12;
-    tex = new float[texSz];
+    tex = new float[texSz]{0.0f};
+#if 0
     int idx = 0;
     char buff[2048];
     for(int i=0;i<h;i++)
@@ -190,7 +191,7 @@ static void genTex(int w,int h){
             BLOG2();
         }
     }
-
+#endif
 }
 static void genBuffers(int w, int h){
 
@@ -395,8 +396,6 @@ struct TexBrush
     int szCW;
     int szCH;
 
-
-
     static TexBrush* newInstanceT(int tX, int tY, int tW, int tH, int texW, int texH, int cellW, int cellH){
         int szCW = tW/cellW/*4*/;
         int szCH = tH/cellH/*4*/;
@@ -423,30 +422,41 @@ struct TexBrush
     }
 
 
-    void copyTo(float* buffer, int cellX, int cellY, int noCellW, int noCellH)
+    void copyTo(int cellX, int cellY, float* buffer = tex, int noCellW = __W , int noCellH = __H)
     {
-        int iLimit = cellY + szCH;
+        Q_UNUSED(noCellH);
         int scanLine = szCW * 12 * sizeof(float);
-        for(int i = cellY ; i < iLimit ; i++)
+        for(int i = 0 ; i < szCH; i++)
         {
-            float* offBuff= buffer + (i * noCellW + cellX) * 12;
-            memcpy(offBuff, texCoords[i], scanLine );
+            int idxTexCoords = szCH - i -1;
+            float* offBuff= buffer + ((i+cellY) * noCellW + cellX) * 12;
+            memcpy(offBuff, texCoords[idxTexCoords], scanLine );
         }
     }
 
-   // I should prob dbuff
-    void applyTo(QOpenGLFunctions* stuff, QOpenGLBuffer& buffer, int cellX, int cellY, int noCellW, int noCellH)
-    {    
+
+    //so I can do multiple modifs/copyTo on host side && then manually do apply
+    static void preCopy (QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer)
+    {
 
         buffer.bind();
-        stuff->glBufferData(buffer.type(), buffer.size(), NULL, buffer.usagePattern());
+        oglFunc->glBufferData(buffer.type(), buffer.size(), NULL, buffer.usagePattern());
+    }
 
-        ///!!!! tex is global !!!!
-        copyTo(tex,cellX,cellY,noCellW,noCellH);
 
-        stuff->glBufferData(buffer.type(), buffer.size(), tex, buffer.usagePattern());
-
+    static void postCopy(QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer, float* srcBuff = tex)
+    {
+        oglFunc->glBufferData(buffer.type(), buffer.size(), srcBuff, buffer.usagePattern());
         buffer.release();
+    }
+
+    void applyTo(QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer, int cellX, int cellY, float* srcBuff = tex, int noCellW =__W, int noCellH = __H)
+    {    
+        preCopy(oglFunc, buffer);
+
+        copyTo(cellX,cellY,srcBuff,noCellW,noCellH);
+
+        postCopy(oglFunc, buffer);
     }
 };
 
@@ -464,18 +474,6 @@ void setCell(const int cellX, int const cellY, const TexCoords& texCoords, QOpen
     buffer.release();
 
     printFBuffer(buffer);
-}
-
-
-void fillBuffer(
-                int cellX, int cellY ,
-                int rX, int rY, int rW,int rH,
-                QOpenGLBuffer& buffer,
-                int tW, int tH,int noCellsW, int noCellsH)
-{
-    const int mulstuff = sizeof(float);
-    int offset = cellY * noCellsW * mulstuff/*floats*/ * 3/*vert*/ * 2/*triang*/ + cellX * mulstuff*6;
-    //float* ptr = (float*)buffer.mapRange(offset,6 * mulstuff);
 }
 
 enum E_Buffers{
@@ -502,27 +500,25 @@ void SquircleRenderer::paint()
         initializeOpenGLFunctions();
 
         //==========
-                //genBuffers  (__W,__H);
-                //genTexCoords(__W,__H);
 
-                genTex(__W,__H);
-                genBuffers2(__W,__H);
+        genTex(__W,__H);
+        genBuffers2(__W,__H);
 
-                QFile file("../res/general.png");
-                QFileInfo fInfo("../res/general.png");
+        QFile file("../res/general.png");
+        QFileInfo fInfo("../res/general.png");
 
 
-                qDebug() <<file.exists() << fInfo.absoluteFilePath();
-                QImage image("./res/general.png");
+        qDebug() <<file.exists() << fInfo.absoluteFilePath();
+        QImage image("./res/general.png");
 
-                glGenTextures(1,&g_texId);
-                glBindTexture(GL_TEXTURE_2D,g_texId);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
-                glBindTexture(GL_TEXTURE_2D,0);
+        glGenTextures(1,&g_texId);
+        glBindTexture(GL_TEXTURE_2D,g_texId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
+        glBindTexture(GL_TEXTURE_2D,0);
 
 
         m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -545,9 +541,24 @@ void SquircleRenderer::paint()
         //TexCoords tC; tC.setT(256,0,16,16,image.width(), image.height());
         //setCell(0,0,tC,*m_textureBuffer);
 
-        //interesant .. se fac 4 ?? ?cum asa ??
-        TexBrush* tb = TexBrush::newInstanceT(256,0,16,16,image.width(),image.height(),4,4);
-        tb->applyTo(this,*m_textureBuffer,0,0,__W, __H);
+
+
+        //not necessarly here, but for clarity
+        TexBrush::preCopy(this,*m_textureBuffer);
+
+        TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,image.width(),image.height(),4,4);
+        for(int i=0;i<13;i++)
+        {
+            for(int j=0;j<13;j++)
+            {
+                tb->copyTo(j*4,i*4);
+            }
+        }
+
+        TexBrush::postCopy(this,*m_textureBuffer);
+
+        //TexBrush* tb = TexBrush::newInstanceT(0,0,16,16,image.width(),image.height(),4,4);
+        //tb->applyTo(this,*m_textureBuffer,0,0,__W, __H);
 
         m_program = new QOpenGLShaderProgram();
 
@@ -600,59 +611,10 @@ void SquircleRenderer::paint()
         m_program->link();
         g_smLocation = m_program->uniformLocation("sm");
         g_texCoordsLocation = m_program->attributeLocation("aTexCoords");
-
-
     }
 
 
     m_program->bind();
-
-
-
-
-#if 0
-    float values[] = {
-        -1, -1,
-        1, -1,
-        -1, 1,
-        1, 1
-    };
-m_program->setAttributeArray(0, GL_FLOAT, values, 2);
-#endif
-
-
-//float values[] = {
-//    -1, -1,
-//    1, -1,
-//    -1, 1,
-//    1, 1
-//};
-
-
-//float vert[] = {
-//    0,0,
-//    0,1,
-//    1,0,
-//
-//    1,0
-//
-//};
-
-    //glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,g_glBuffs[E_B_INDEX]);
-    //m_program->setAttributeBuffer(g_glBuffs[E_B_VERTEX],GL_FLOAT,0,2);
-    //m_program->setAttributeArray(0,GL_FLOAT,values,2);
-    //m_program->setAttributeArray(0,GL_FLOAT,vertices/*values*/,2);
-
-//works
-    //m_program->setAttributeArray(0,GL_FLOAT,values2/*values*/,2);
-    //m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,values/*values*/,2);
-
-//kinda works
-    //m_program->setAttributeArray(0                  ,GL_FLOAT,vert,2);
-    //glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
-
-    //m_program->setAttributeBuffer(0,GL_FLOAT,0,2,0);
 
     m_vertexBuffer->bind();
     glVertexAttribPointer(0,2,GL_FLOAT,0,0,0);
