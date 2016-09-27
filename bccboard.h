@@ -6,6 +6,17 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QOpenGLBuffer>
 
+struct BrushCall{
+    qreal cellX;
+    qreal cellY;
+    qreal tX;
+    qreal tY;
+    qreal tW;
+    qreal tH;
+    qreal repeatX;
+    qreal repeatY;
+};
+
 class SquircleRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -17,12 +28,15 @@ public:
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setWindow(QQuickWindow *window) { m_window = window; }
 
-    void applyBrush(qreal cellX, qreal cellY, qreal tX, qreal tY, qreal tW, qreal tH , qreal repeatX = 1 , qreal repeatY = 1 );
+    //copy on sync & I'll dequeue on paint
+    void applyBrush(const BrushCall& callParams);
+
+    QList<BrushCall> m_callQueue;
 
 public slots:
     void paint();
 
-private:
+private:    
     QSize m_viewportSize;
     qreal m_t;
     QOpenGLShaderProgram *m_program;
@@ -39,6 +53,7 @@ class Squircle : public QQuickItem
     Q_OBJECT
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
 
+    QList<BrushCall> m_callQueue;
 public:
     Squircle();
 
@@ -50,12 +65,15 @@ public:
     Q_INVOKABLE void applyBrush(qreal cellX, qreal cellY, qreal tX, qreal tY, qreal tW, qreal tH, qreal repeatX = 1 , qreal repeatY = 1 );
     //I should either expose the brush or at least ret a handle
     // how about repeat functionality ???.. anyway
+
 signals:
     void tChanged();
 
 public slots:
     void sync();
     void cleanup();
+
+
 
 private slots:
     void handleWindowChanged(QQuickWindow *win);

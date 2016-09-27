@@ -54,9 +54,16 @@ void Squircle::sync()
         m_renderer = new SquircleRenderer();
         connect(window(), &QQuickWindow::beforeRendering, m_renderer, &SquircleRenderer::paint, Qt::DirectConnection);
     }
+
+    m_renderer->m_callQueue.clear();
+    m_renderer->m_callQueue.append(m_callQueue);
+    m_callQueue.clear();
+
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
     m_renderer->setT(m_t);
     m_renderer->setWindow(window());
+
+
 }
 
 static int    verticesSz = 0;
@@ -498,29 +505,21 @@ static int g_texCoordsLocation;
 #define _CLAMP(v,l,h) (v < l ? l : ( v > h ? h : v))
 #define CLAMP(v,l,h) _CLAMP((v),(l),(h))
 
-void SquircleRenderer::applyBrush(
-        qreal cellX  ,
-        qreal cellY  ,
-        qreal tX     ,
-        qreal tY     ,
-        qreal tW     ,
-        qreal tH     ,
-        qreal repeatX,
-        qreal repeatY)
+void SquircleRenderer::applyBrush(const BrushCall& params)
 {
 
-    int _cellX   = int(floorf(CLAMP(float(cellX  ),0.0f ,__CELL_W)));
-    int _cellY   = int(floorf(CLAMP(float(cellY  ),0.0f ,__CELL_H)));
-    int _tX      = int(floorf(CLAMP(float(tX     ),0.0f ,    1024)));
-    int _tY      = int(floorf(CLAMP(float(tY     ),0.0f ,    1024)));
-    int _tW      = int(floorf(CLAMP(float(tW     ),1.0f ,    1024)));
-    int _tH      = int(floorf(CLAMP(float(tH     ),1.0f ,    1024)));
-    int _repeatX = int(floorf(CLAMP(float(repeatX),1.0f ,      10)));
-    int _repeatY = int(floorf(CLAMP(float(repeatY),1.0f ,      10)));
+    int _cellX   = int(floorf(CLAMP(float(params.cellX  ),0.0f ,__CELL_W)));
+    int _cellY   = int(floorf(CLAMP(float(params.cellY  ),0.0f ,__CELL_H)));
+    int _tX      = int(floorf(CLAMP(float(params.tX     ),0.0f ,    1024)));
+    int _tY      = int(floorf(CLAMP(float(params.tY     ),0.0f ,    1024)));
+    int _tW      = int(floorf(CLAMP(float(params.tW     ),1.0f ,    1024)));
+    int _tH      = int(floorf(CLAMP(float(params.tH     ),1.0f ,    1024)));
+    int _repeatX = int(floorf(CLAMP(float(params.repeatX),1.0f ,      10)));
+    int _repeatY = int(floorf(CLAMP(float(params.repeatY),1.0f ,      10)));
 
-    //TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
-    //tb->applyTo(this,*m_textureBuffer,_cellX,_cellY);
-    //delete tb;
+    TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
+    tb->applyTo(this,*m_textureBuffer,_cellX,_cellY);
+    delete tb;
 }
 //called before paint !
 void Squircle::applyBrush(
@@ -530,7 +529,9 @@ void Squircle::applyBrush(
         qreal repeatX,
         qreal repeatY)
 {
-    m_renderer->applyBrush(cellX, cellY, tX,tY,tW,tH,repeatX,repeatY);
+    //I might need to invalidate stuff in order for the repaint to happen
+    BrushCall brushCall={cellX, cellY, tX,tY,tW,tH,repeatX,repeatY};
+    m_callQueue.append(brushCall);
 }
 
 void SquircleRenderer::paint()
@@ -659,6 +660,9 @@ void SquircleRenderer::paint()
         g_texCoordsLocation = m_program->attributeLocation("aTexCoords");
     }
 
+
+    //for(int i=0 ;i)
+    //m_callQueue
 
     m_program->bind();
 
