@@ -99,8 +99,10 @@ static float* vert  = NULL;
 static int texSz = 0;
 static float* tex = NULL;
 
-#define __W 2
-#define __H 1
+#define __W 4
+#define __H 4
+
+#define DO_LOGGING
 
 #ifdef DO_LOGGING
 #define BLOG1() sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff
@@ -122,7 +124,7 @@ static void genBuffers2(int w, int h)
     for(int i=0;i<h;i++)
     {
         int ip1 = i+1;
-        for(int j=0;j<w;j++)
+        for(float j=0;j<w;j++)
         {
             int jp1 = j+1;
             vert[ idx++ ] = j;
@@ -168,23 +170,23 @@ static void genTex(int w,int h){
 
 
             tex[ idx++ ] = 0;
-            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1 / float(w-j);
             BLOG2();
 
-            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1/float(w-j);
             tex[ idx++ ] = 0;
             BLOG2();
 
-            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1/float(w-j);
             tex[ idx++ ] = 0;
             BLOG2();
 
             tex[ idx++ ] = 0;
-            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1/float(w-j);
             BLOG2();
 
-            tex[ idx++ ] = 1;
-            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1/float(w-j);
+            tex[ idx++ ] = 1/float(w-j);
             BLOG2();
         }
     }
@@ -348,18 +350,18 @@ struct TexCoords
     float texCoords[12];
 
     static float* sSetB(float* buff, int x, int y, int w, int h, int texW, int texH){
-        buff[ 0] = float(x)   / texW;
-        buff[ 1] = float(y)   / texH;
-        buff[ 2] = float(x)   / texW;
-        buff[ 3] = float(y+h) / texH;
-        buff[ 4] = float(x+w) / texW;
-        buff[ 5] = float(y  ) / texH;
-        buff[ 6] = float(x+w) / texW;
-        buff[ 7] = float(y  ) / texH;
-        buff[ 8] = float(x)   / texW;
-        buff[ 9] = float(y+h) / texH;
-        buff[10] = float(x+w) / texW;
-        buff[11] = float(y+h) / texH;
+        buff[ 0] = float(x)   / float(texW);
+        buff[ 1] = float(y)   / float(texH);
+        buff[ 2] = float(x)   / float(texW);
+        buff[ 3] = float(y+h) / float(texH);
+        buff[ 4] = float(x+w) / float(texW);
+        buff[ 5] = float(y  ) / float(texH);
+        buff[ 6] = float(x+w) / float(texW);
+        buff[ 7] = float(y  ) / float(texH);
+        buff[ 8] = float(x)   / float(texW);
+        buff[ 9] = float(y+h) / float(texH);
+        buff[10] = float(x+w) / float(texW);
+        buff[11] = float(y+h) / float(texH);
 
         printFBuffer(buff,12);
 
@@ -383,6 +385,8 @@ struct TexCoords
     }
 
 };
+
+
 
 struct TexBrush
 {
@@ -419,32 +423,30 @@ struct TexBrush
     }
 
 
-   // I should prob dbuff
-    void applyTo(QOpenGLBuffer& buffer, int cellX, int cellY, int noCellW, int noCellH, bool flush = true)
+    void copyTo(float* buffer, int cellX, int cellY, int noCellW, int noCellH)
     {
-        Q_UNUSED(flush);
-        buffer.bind();
-
-        float* mF = (float*) buffer.mapRange(0, buffer.size(),QOpenGLBuffer::RangeWrite /*| QOpenGLBuffer::RangeFlushExplicit*/);
-
-        int segmentSz = szCW * sizeof(TexCoords);
-
-        for(int i = cellY; i< szCH ; i++)
+        int iLimit = cellY + szCH;
+        int scanLine = szCW * 12 * sizeof(float);
+        for(int i = cellY ; i < iLimit ; i++)
         {
-
-            int offset = sizeof(TexCoords) * (noCellW * cellY  + cellX);
-            memcpy( mF + offset, texCoords[i], segmentSz);
-            //here or after unmap ??
-            //I do not whant a context
-            //wglGetCurrentContext(void);
-            //QOpenGLFunctions_3_0_CoreBackend::FlushMappedBufferRange(GL_ARRAY_BUFFER,offset,segmentSz);
+            float* offBuff= buffer + (i * noCellW + cellX) * 12;
+            memcpy(offBuff, texCoords[i], scanLine );
         }
+    }
 
-        buffer.unmap();
+   // I should prob dbuff
+    void applyTo(QOpenGLFunctions* stuff, QOpenGLBuffer& buffer, int cellX, int cellY, int noCellW, int noCellH)
+    {    
+
+        buffer.bind();
+        stuff->glBufferData(buffer.type(), buffer.size(), NULL, buffer.usagePattern());
+
+        ///!!!! tex is global !!!!
+        copyTo(tex,cellX,cellY,noCellW,noCellH);
+
+        stuff->glBufferData(buffer.type(), buffer.size(), tex, buffer.usagePattern());
 
         buffer.release();
-
-        printFBuffer(buffer);
     }
 };
 
@@ -522,62 +524,6 @@ void SquircleRenderer::paint()
                 glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,image.width(),image.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,image.mirrored(false,true).bits());
                 glBindTexture(GL_TEXTURE_2D,0);
 
-                glGenBuffers(SZ_E_Buffers,g_glBuffs);
-                glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_VERTEX]);
-                glBufferData(GL_ARRAY_BUFFER,vertSz*sizeof(float),vert,GL_STATIC_DRAW);
-                glBindBuffer(GL_ARRAY_BUFFER,0);
-                //
-                //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_glBuffs[E_B_INDEX]);
-                //glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSz*sizeof(unsigned short),indices,GL_STATIC_DRAW);
-                //
-                //glBindBuffer(GL_ARRAY_BUFFER,g_glBuffs[E_B_TEX]);
-                //glBufferData(GL_ARRAY_BUFFER,texturesSz*sizeof(float),textures,GL_STATIC_DRAW);
-                //
-                //glBindBuffer(GL_ARRAY_BUFFER,0);
-                //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-        //==========
-
-                float values[] = {
-                    //non mirrored
-                    //0,  1,
-                    //0,  0,
-                    //1,  1,
-
-                    0,  0,
-                    0,  1,
-                    1,  0,
-
-                    1,  0,
-                    0,  1,
-                    1,  1,
-
-                    0,  0,
-                    0,  1,
-                    1,  0,
-
-                    1,  0,
-                    0,  1,
-                    1,  1
-                };
-
-                //vert coords OK
-                float values2[] = {
-                    0,  0,
-                    0,  1,
-                    1,  0,
-
-                    1,  0,
-                    0,  1,
-                    1,  1,
-
-                    1,  0,
-                    1,  1,
-                    2,  0,
-
-                    2,  0,
-                    1,  1,
-                    2,  1
-                };
 
         m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
         m_vertexBuffer->create();
@@ -600,8 +546,8 @@ void SquircleRenderer::paint()
         //setCell(0,0,tC,*m_textureBuffer);
 
         //interesant .. se fac 4 ?? ?cum asa ??
-        TexBrush* tb = TexBrush::newInstanceT(0,0,8,4,image.width(),image.height(),4,4);
-        tb->applyTo(*m_textureBuffer,0,0,__W, __H);
+        TexBrush* tb = TexBrush::newInstanceT(256,0,16,16,image.width(),image.height(),4,4);
+        tb->applyTo(this,*m_textureBuffer,0,0,__W, __H);
 
         m_program = new QOpenGLShaderProgram();
 
