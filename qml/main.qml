@@ -95,8 +95,9 @@ Window {
 
 
         //var somePainter = BCCSimpleDoodadPainter.BCCSimpleDooodadPainter(null);
-        myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
-        _BCCMainTimer.start();
+        //Enable !!!!!!!!
+       // myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
+       // _BCCMainTimer.start();
     }
 
 //////// KINDA WORKS
