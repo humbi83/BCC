@@ -90,6 +90,102 @@ static void genTexCoords(int w, int h){
         }
     }
 }
+
+static int vertSz = 0;
+static float* vert  = NULL;
+
+static int texSz = 0;
+static float* tex = NULL;
+
+#define __W 2
+#define __H 2
+
+static void genBuffers2(int w, int h)
+{
+    vertSz = w*h*12;
+    vert = new float[vertSz];
+
+    int idx = 0;
+    char buff[2048];
+    const int wp1 = w+1;
+
+    for(int i=0;i<h;i++)
+    {
+        int ip1 = i+1;
+        for(int j=0;j<w;j++)
+        {
+            int jp1 = j+1;
+            vert[ idx++ ] = j;
+            vert[ idx++ ] = i;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+
+            vert[ idx++ ] = j;
+            vert[ idx++ ] = ip1;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+
+            vert[ idx++ ] = jp1;
+            vert[ idx++ ] = i;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+
+            vert[ idx++ ] = jp1;
+            vert[ idx++ ] = i;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+
+            vert[ idx++ ] = j;
+            vert[ idx++ ] = ip1;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+
+            vert[ idx++ ] = jp1;
+            vert[ idx++ ] = ip1;
+            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), vert[idx-2], vert[idx-1] );qDebug()<<buff;
+        }
+    }
+}
+
+static void genTex(int w,int h){
+    texSz = w*h*12;
+    tex = new float[texSz];
+    int idx = 0;
+    char buff[2048];
+    for(int i=0;i<h;i++)
+    {
+        for(int j=0;j<w;j++)
+        {
+            //0,  0,
+            //0,  1,
+            //1,  0,
+            //
+            //1,  0,
+            //0,  1,
+            //1,  1,
+            tex[ idx++ ] = 0;
+            tex[ idx++ ] = 0;
+//            sprintf(buff, "[%d,%d] = {%f,%f}",(idx-2),(idx-1), tex[idx-2], tex[idx-1] );qDebug()<<buff;
+
+
+            tex[ idx++ ] = 0;
+            tex[ idx++ ] = 1;
+
+
+            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 0;
+
+
+            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 0;
+
+
+            tex[ idx++ ] = 0;
+            tex[ idx++ ] = 1;
+
+
+            tex[ idx++ ] = 1;
+            tex[ idx++ ] = 1;
+
+        }
+    }
+
+}
 static void genBuffers(int w, int h){
 
     char buff[2048];
@@ -129,6 +225,8 @@ static void genBuffers(int w, int h){
 qDebug()<<"\n";
 
 #if 1
+
+#if 1
     const int wp1 = w+1;
     for(int i=0;i<h;i++)
     {
@@ -151,6 +249,30 @@ qDebug()<<"\n";
             qDebug()<<buff;
         }
     }
+#else
+const int wp1 = w+1;
+for(int i=0;i<h;i++)
+{
+    //int a = i * (w+1);
+    //int a2 = a * 2;
+    for(int j=0;j<w;j++)
+    {
+        const int jp1 = i * wp1 + j /*+ 1*/;
+
+        indices[ idx++ ] = jp1;
+        indices[ idx++ ] = jp1 + wp1;
+        indices[ idx++ ] = jp1 +1;
+        sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
+        qDebug()<<buff;
+
+        indices[ idx++ ] = jp1 +1;
+        indices[ idx++ ] = jp1 + wp1;
+        indices[ idx++ ] = jp1 + wp1 +1;
+        sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
+        qDebug()<<buff;
+    }
+}
+#endif
 #else
 const int wp1 = w+1;
 for(int i=0;i<h;i++)
@@ -198,8 +320,7 @@ static int g_smLocation;
 static int g_texCoordsLocation;
 #include "QFileInfo"
 
-#define __W 2
-#define __H 1
+
 void SquircleRenderer::paint()
 {
 
@@ -209,8 +330,11 @@ void SquircleRenderer::paint()
         initializeOpenGLFunctions();
 
         //==========
-                genBuffers  (__W,__H);
-                genTexCoords(__W,__H);
+                //genBuffers  (__W,__H);
+                //genTexCoords(__W,__H);
+
+                genTex(__W,__H);
+                genBuffers2(__W,__H);
 
                 QFile file("../res/general.png");
                 QFileInfo fInfo("../res/general.png");
@@ -341,7 +465,7 @@ float values[] = {
     1,  1
 };
 
-
+//vert coords OK
 float values2[] = {
     0,  0,
     0,  1,
@@ -373,9 +497,14 @@ float values2[] = {
     //m_program->setAttributeBuffer(g_glBuffs[E_B_VERTEX],GL_FLOAT,0,2);
     //m_program->setAttributeArray(0,GL_FLOAT,values,2);
     //m_program->setAttributeArray(0,GL_FLOAT,vertices/*values*/,2);
-m_program->setAttributeArray(0,GL_FLOAT,values2/*values*/,2);
 
-    m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,values/*values*/,2);
+//works
+    //m_program->setAttributeArray(0,GL_FLOAT,values2/*values*/,2);
+    //m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,values/*values*/,2);
+
+    m_program->setAttributeArray(0                  ,GL_FLOAT,vert,2);
+    m_program->setAttributeArray(g_texCoordsLocation,GL_FLOAT,tex ,2);
+
     //m_program->setUniformValue("t", (float) m_t);
     glBindTexture(GL_TEXTURE_2D,g_texId);
     m_program->setUniformValue("sm",0);
@@ -398,7 +527,7 @@ m_program->setAttributeArray(0,GL_FLOAT,values2/*values*/,2);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 #else
 
-    glDrawArrays(GL_TRIANGLES, 0, 12);
+    glDrawArrays(GL_TRIANGLES, 0, vertSz);
 
     //glDrawElements(GL_TRIANGLES,indicesSz,GL_UNSIGNED_SHORT,indices);
 
