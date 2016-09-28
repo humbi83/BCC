@@ -1,6 +1,6 @@
 .import "BCCDoodad.js" as Doodad
 .import "BCCMultiFrameDoodad.js" as MFDoodad
-.import "BCCFrameSequencePainter.js" as FramePainter
+.import "BCCFrameSequenceCPPPainter.js" as FramePainter
 .import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
 

@@ -10,6 +10,7 @@
 .import "BCCPUp.js" as PU
 .import "BCCGfx.js" as GFX
 .import "BCCAtlasCPPPainter.js" as CAtlasPainter
+.import "BCCFrameSequenceCPPPainter.js" as CFSPainter
 
 
 function BCCMain()
@@ -93,6 +94,14 @@ function BCCMain()
 
                                  this.mTank = Tank.newInstance(this.mLevel,0,0,false);
 
+                                 //this.mEnemyTanks.push(
+                                 //           Tank.newInstance(
+                                 //             this.mLevel,
+                                 //             8,4,
+                                 //             true)
+                                 //         );
+
+
                                  //this.fsColor = ColorPainter.newInstance("blue",64,64);
                                  //this.fsColor.setPos(Vec.Vec2(100,100));
                                  //this.fsColor.setScale(2);
@@ -121,12 +130,6 @@ function BCCMain()
                                  //this.tmpFP.setIsVisible(true);
 
 
-                                 //this.mEnemyTanks.push(
-                                 //           Tank.newInstance(
-                                 //             this.mLevel,
-                                 //             8,4,
-                                 //             true)
-                                 //         );
 
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
                                  //this.tmpGfx = GFX.newInstance(this.mLevel, 0, 0 , GFX.E_GFX_SMALL_EXP , -1 , null);
@@ -137,9 +140,11 @@ function BCCMain()
                                  //304,32 //ok
                                  //320,32 //lost
 
-                                 this.tmpCpp = CAtlasPainter.newInstance(Vec.Vec2(),Vec.Vec2(16,16),this);
-                                 //max e 208 pe fiecare dir
-                                 this.tmpCpp.setPos(Vec.Vec2(0,0));
+
+
+                                 //this.tmpCpp = CFSPainter.newInstance(Vec.Vec2(),Vec.Vec2(16,16),Vec.Vec2(1,8));
+                                 ////max e 208 pe fiecare dir
+                                 //this.tmpCpp.setPos(Vec.Vec2(0,0));
 
                              }),
 
@@ -148,8 +153,8 @@ function BCCMain()
                                  //console.log(Global.T_tick);
                                  Global.T_tick = Global.T_tick+1;
                                  //console.log(Global.T_tick);
-                                 this.tmpCpp.invalidate();
-                                 this.tmpCpp.paint();
+                                 //this.tmpCpp.setCurrentFrame(Vec.Vec2(Global.T_tick%8,0));
+                                 //this.tmpCpp.paint();
 
                                  //this.updateLevel();
                                  //hmm .. this is not good !!!

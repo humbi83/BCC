@@ -69,7 +69,8 @@ DISTFILES += \
     qml/BCCTankAI.js \
     qml/BCCLevelPainter.js \
     qml/BCCMultiFrameDoodad.js \
-    qml/BCCAtlasCPPPainter.js
+    qml/BCCAtlasCPPPainter.js \
+    qml/BCCFrameSequenceCPPPainter.js
 
 HEADERS += \
     bccboard.h

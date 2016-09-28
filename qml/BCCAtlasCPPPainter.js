@@ -10,12 +10,14 @@ var SZ_E_AIO  = 4;
 
 function newInstance(vOffsetInAtlas, vDimInAtlas, oMain) {
 
+    var pMain = oMain != undefined && oMain != null ? oMain : myBCCMain;
+
     var pOff = vOffsetInAtlas == undefined || vOffsetInAtlas == null ? Vec.Vec2() : vOffsetInAtlas;
     var pDim = vDimInAtlas    == undefined || vDimInAtlas    == null ? Vec.Vec2() : vDimInAtlas;
 
     var __ret = new Object({
-                               mId                : oMain.getNextID(),
-                               mMain              : oMain,
+                               mId                : pMain.getNextID(),
+                               mMain              : pMain,
                                mScale             : Global.LEVEL_SCALE, //to add to if
                                mPos               : Vec.Vec2(),
                                mOffsetInAtlas     : pOff,
