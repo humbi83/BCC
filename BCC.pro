@@ -27,11 +27,8 @@ DISTFILES += \
     qml/BBCLevel.qml \
     qml/BBCLevel1.qml \
     qml/BBCLevelCell.qml \
-    qml/BBCDoodad.qml \
     qml/BBCAtlasFrame.qml \
     qml/BBCAtlasFrameList.qml \
-    qml/BBCDoodadTank.qml \
-    qml/BBCDoodadEmpty.qml \
     qml/BBCBase.qml \
     qml/BBCIVec.qml \
     qml/BBCRect.qml \

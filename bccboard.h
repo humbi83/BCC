@@ -41,7 +41,7 @@ class SquircleRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0), m_imageW(0), m_imageH(0) { }
+    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0), m_dynObjBuffer(0), m_imageW(0), m_imageH(0) { }
     ~SquircleRenderer();
 
     void setT(qreal t) { m_t = t; }
@@ -69,6 +69,8 @@ private:
 
     QOpenGLBuffer* m_vertexBuffer;
     QOpenGLBuffer* m_textureBuffer;
+
+    QOpenGLBuffer* m_dynObjBuffer;
     int m_imageW;
     int m_imageH;
 };

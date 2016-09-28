@@ -46,6 +46,7 @@ SquircleRenderer::~SquircleRenderer()
     delete m_program;
     delete m_vertexBuffer;
     delete m_textureBuffer;
+    delete m_dynObjBuffer;
 }
 
 void Squircle::sync()
@@ -134,6 +135,7 @@ static void genBuffers2(int w, int h)
 
     int idx = 0;
     char buff[2048];
+    Q_UNUSED(buff);
     const int wp1 = w+1;
 
     for(int i=0;i<h;i++)
@@ -579,12 +581,15 @@ void Squircle::applyBrush(
 }
 
 typedef float* fPtr;
-
+typedef QOpenGLBuffer* bPtr;
 //x,y,u,v
-static void genDynVertData(QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer, const QMap<int,AtlasImageOps>& map )
+static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<int,AtlasImageOps>& map )
 {
+
+
     int buffSz = 2* 12* map.size() ;
-    fPtr buffer = new float[buffSz];
+    fPtr buffer = buffSz == 0 ? NULL : new float[buffSz];
+
     int idx = 0;
 
     QMapIterator<int, AtlasImageOps> i(map);
@@ -631,10 +636,24 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer, con
         buffer[ idx++ ] = ty+th;
     }
 
-    buffer.bind();
-    oglFunc->glBufferData(buffer.type(), buffer.size(), NULL, buffer.usagePattern());
-    oglFunc->glBufferData(buffer.type(), buffSz*sizeof(float), buffer, buffer.usagePattern());
-    buffer.release();
+    if(qBuffer){
+      qBuffer->bind();
+      //I presume is considered respecified also in the case that the size is diff (next call)
+      oglFunc->glBufferData(qBuffer->type(), qBuffer->size(), NULL, qBuffer->usagePattern());
+    }
+
+    if(qBuffer == NULL && buffer){
+        qBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+        qBuffer->create();
+        qBuffer->bind();
+        qBuffer->allocate(buffer,buffSz * sizeof(float));
+        qBuffer->setUsagePattern(QOpenGLBuffer::StreamDraw);
+    }
+
+    if(qBuffer){
+        oglFunc->glBufferData(qBuffer->type(), buffSz*sizeof(float), buffer, qBuffer->usagePattern());
+        qBuffer->release();
+    }
 
     delete [] buffer;
 }
@@ -726,6 +745,7 @@ void SquircleRenderer::paint()
         //m_vertexBuffer->allocate(values2,sizeof(values2));
         m_vertexBuffer->release();
 
+
         //Hmm.. not nice.. I have to upload
         //52*52*12*4 .. 120k ... per update.. anyway .. pc
 
@@ -742,6 +762,7 @@ void SquircleRenderer::paint()
         m_textureBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
         m_textureBuffer->allocate(tex,texSz* sizeof(float));
         m_textureBuffer->release();
+
 
         m_program = new QOpenGLShaderProgram();
 
@@ -787,9 +808,11 @@ void SquircleRenderer::paint()
         m_callQueue.removeFirst();
     }
 
-    m_program->bind();
-    m_vertexBuffer->bind();
+    genDynVertData(this,m_dynObjBuffer,m_dynImages);
 
+    m_program->bind();
+
+    m_vertexBuffer->bind();
     glVertexAttribPointer(0,2,GL_FLOAT,0,0,0);
     m_program->enableAttributeArray(0);
 
@@ -812,13 +835,29 @@ void SquircleRenderer::paint()
 
     glDrawArrays(GL_TRIANGLES, 0, vertSz);
 
+    m_program->disableAttributeArray(0);
+    m_program->disableAttributeArray(g_texCoordsLocation);
+
+    if(m_dynObjBuffer != NULL)
+    {
+        m_dynObjBuffer->bind();
+        glVertexAttribPointer(0                  , 2, GL_FLOAT, 0, 4*sizeof(float),(void*)(0              ));
+        glVertexAttribPointer(g_texCoordsLocation, 2, GL_FLOAT, 0, 4*sizeof(float),(void*)(2*sizeof(float)));
+        m_program->enableAttributeArray(0);
+        m_program->enableAttributeArray(g_texCoordsLocation);
+
+        glDrawArrays(GL_TRIANGLES, 0,m_dynObjBuffer->size()/sizeof(float));
+
+        m_program->disableAttributeArray(0);
+        m_program->disableAttributeArray(g_texCoordsLocation);
+    }
+
 
     glBindBuffer (GL_ARRAY_BUFFER ,0);
     glBindTexture(GL_TEXTURE_2D   ,0);
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
-    m_program->disableAttributeArray(0);
-    m_program->disableAttributeArray(g_texCoordsLocation);
+
     m_program->release();
 
     // Not strictly needed for this example, but generally useful for when

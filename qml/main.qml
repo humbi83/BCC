@@ -14,7 +14,7 @@ import "BCCMain.js" as BCCMain
 
 Window {
 
-    id : "root"
+    id : root
     visible: true
     width: 832
     height: 832
