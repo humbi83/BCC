@@ -101,7 +101,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             }else
             {
                 this.mCurrentState = E_STATE_NORMAL;
-                this.mIsVisible( true );
+                this.setVisible( true );
                 if(this.mAI != null){
                     this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_MOVABLE);
                 }
@@ -136,13 +136,13 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
 
     ret.mIsEnemy = pEnemy;
-    //ret.mCurrentGfx = GFX.newInstance(oLevel,pX,pY,GFX.E_GFX_TELEPORT,0,ret);\
-    //ret.mCurrentState = E_STATE_TELEPORTING;
-    //ret.setVisible(false);
+    ret.mCurrentGfx = GFX.newInstance(oLevel,pX,pY,GFX.E_GFX_TELEPORT,0,ret);
+    ret.mCurrentState = E_STATE_TELEPORTING;
+    ret.setVisible(false);
 
-    ret.mCurrentGfx = null;
-    ret.mCurrentState = E_STATE_NORMAL;
-    ret.setVisible(true);
+    //ret.mCurrentGfx = null;
+    //ret.mCurrentState = E_STATE_NORMAL;
+    //ret.setVisible(true);
 
     ret.setCurrentFrame();
     ret.mIsKeyPressed  = false;

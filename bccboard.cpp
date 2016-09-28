@@ -602,39 +602,51 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<
         float h = float(i.value().tH  ) / __CELL_H;
 
         float tx = i.value().tX / 400.0f;
-        float ty = i.value().tY / 256.0f;
+        float ty = (256.0f - i.value().tY - i.value().tH ) / 256.0f;
         float tw = i.value().tW / 400.0f;
         float th = i.value().tH / 256.0f;
 
         buffer[ idx++ ] =  x;
         buffer[ idx++ ] =  y;
         buffer[ idx++ ] = tx;
+
         buffer[ idx++ ] = ty;
+        //buffer[ idx++ ] = ty + th;
 
         buffer[ idx++ ] = x;
         buffer[ idx++ ] = y+h;
         buffer[ idx++ ] = tx;
+
         buffer[ idx++ ] = ty+th;
+        //buffer[ idx++ ] = ty;
 
         buffer[ idx++ ] = x+w;
         buffer[ idx++ ] = y;
         buffer[ idx++ ] = tx+tw;
+
         buffer[ idx++ ] = ty;
+        //buffer[ idx++ ] = ty + th;
 
         buffer[ idx++ ] = x+w;
         buffer[ idx++ ] = y;
         buffer[ idx++ ] = tx+tw;
+
         buffer[ idx++ ] = ty;
+        //buffer[ idx++ ] = ty + th;
 
         buffer[ idx++ ] = x;
         buffer[ idx++ ] = y+h;
         buffer[ idx++ ] = tx;
+
         buffer[ idx++ ] = ty+th;
+        //buffer[ idx++ ] = ty;
 
         buffer[ idx++ ] = x+w;
         buffer[ idx++ ] = y+h;
         buffer[ idx++ ] = tx+tw;
+
         buffer[ idx++ ] = ty+th;
+        //buffer[ idx++ ] = ty;
     }
 
     if(qBuffer){
