@@ -519,7 +519,7 @@ static int g_texCoordsLocation;
 
 void SquircleRenderer::applyBrush(const BrushCall& params)
 {
-
+    //TODO:ALEX make these ints
     //TODO:ALEX add real bounds !
     int _cellX   = int(floorf(CLAMP(float(params.cellX  ),0.0f , __W)));
     int _cellY   = int(floorf(CLAMP(float(params.cellY  ),0.0f , __H)));

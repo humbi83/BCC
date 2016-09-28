@@ -23,11 +23,11 @@ Window {
 
         property var myBCCMain : BCCMain.BCCMain();
 
-    Rectangle{
-        color:"black"
-        width: rootWindow.width;
-        height: rootWindow.height;
-    }
+    //Rectangle{
+    //    color:"black"
+    //    width: rootWindow.width;
+    //    height: rootWindow.height;
+    //}
 
     Timer {
         id : _BCCMainTimer
