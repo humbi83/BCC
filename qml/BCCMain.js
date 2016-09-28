@@ -97,6 +97,10 @@ function BCCMain()
                                  this.tmpDoodadA =     Doodad.newInstance(Doodad.E_DOODAD_TANK,
                                       ColorPainter.newInstance("white",4,4),
                                        this.mLevel, 0,0);
+                                 this.tmpDoodadA.mPainter.setPos(Vec.Vec2(256,256));
+                                 this.tmpDoodadA.mPainter.setDim(Vec.Vec2(16,16));
+                                 this.tmpDoodadA.mPainter.setScale(4);
+
                                  this.tmpDoodad  =
                                       Doodad.newInstance(Doodad.E_DOODAD_TANK,
                                       FSPainter.newInstance(
@@ -105,6 +109,8 @@ function BCCMain()
                                              Vec.Vec2( 1,  8)
                                              ),
                                        this.mLevel, 6,6);
+                                 this.tmpDoodad.mPainter.setScale(4);
+                                 this.tmpDoodad.mPainter.setPos  (Vec.Vec2(128,128));
 
                                  //this.tmpFP.setPos(Vec.Vec2(32,32));
                                  //this.tmpFP.setIsVisible(true);
@@ -118,7 +124,8 @@ function BCCMain()
                                  //         );
 
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
-                                 //this.tmpGfx = GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
+                                 //this.tmpGfx = GFX.newInstance(this.mLevel, 0, 0 , GFX.E_GFX_SMALL_EXP , -1 , null);
+                                 //this.tmpGfx.mPainter.setScale(4);
                                  //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);
                                  //GFX.newInstance(this.mLevel, 25, 34 , GFX.E_GFX_TELEPORT, -1 , null);
                                  //GFX.newInstance(this.mLevel, 30, 34 , GFX.E_GFX_BIG_EXP, -1 , null);
@@ -136,6 +143,10 @@ function BCCMain()
 
                                  //this.updateLevel();
                                  //hmm .. this is not good !!!
+
+                               //  this.tmpGfx.mPainter.setPos(Vec.Vec2(100,100));
+                               //
+                               // Global.cUpdatePaint(this.tmpGfx,Global.T_tick);
                                  //this.tmpGfx.update(Global.T_tick);
                                  //this.tmpGfx.paint();
                                  //Global.cUpdatePaint(this.tmpGfx, Global.T_tick);

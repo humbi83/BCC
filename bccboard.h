@@ -6,6 +6,26 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QOpenGLBuffer>
 
+enum E_AIO{
+  NV_E_AIO = 0,
+  E_AIO_ADD   ,
+  E_AIO_MOV   ,
+  E_AIO_RMV   ,
+  SZ_E_AIO
+};
+
+struct AtlasImageOps
+{
+    int opType;
+    int id    ;
+    int posX  ;
+    int posY  ;
+    int tX    ;
+    int tY    ;
+    int tW    ;
+    int tH    ;
+};
+
 struct BrushCall{
     qreal cellX;
     qreal cellY;
@@ -30,8 +50,13 @@ public:
 
     //copy on sync & I'll dequeue on paint
     void applyBrush(const BrushCall& callParams);
+    void atlasOp   (const AtlasImageOps& callParams);
 
-    QList<BrushCall> m_callQueue;
+    QList<BrushCall>        m_callQueue;
+    QList<AtlasImageOps>    m_callQueueAIOP;
+
+    bool                    m_dynImagesDirty;
+    QMap<int,AtlasImageOps> m_dynImages;
 
 public slots:
     void paint();
@@ -54,6 +79,7 @@ class Squircle : public QQuickItem
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
 
     QList<BrushCall> m_callQueue;
+    QList<AtlasImageOps> m_callQueueAIOP;
 public:
     Squircle();
 
@@ -63,6 +89,16 @@ public:
     //======== MY STUFF ========
     //One shot
     Q_INVOKABLE void applyBrush(qreal cellX, qreal cellY, qreal tX, qreal tY, qreal tW, qreal tH, qreal repeatX = 1 , qreal repeatY = 1 );
+    Q_INVOKABLE void atlasOp   (
+            int opType,
+            int id    ,
+            int posX  ,
+            int posY  ,
+            int tX    ,
+            int tY    ,
+            int tW    ,
+            int tH
+            );
     //I should either expose the brush or at least ret a handle
     // how about repeat functionality ???.. anyway
 

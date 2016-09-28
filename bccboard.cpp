@@ -59,6 +59,11 @@ void Squircle::sync()
     m_renderer->m_callQueue.append(m_callQueue);
     m_callQueue.clear();
 
+
+    m_renderer->m_callQueueAIOP.clear();
+    m_renderer->m_callQueueAIOP.append(m_callQueueAIOP);
+    m_callQueueAIOP.clear();
+
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
     m_renderer->setT(m_t);
     m_renderer->setWindow(window());
@@ -573,6 +578,112 @@ void Squircle::applyBrush(
 
 }
 
+typedef float* fPtr;
+
+//x,y,u,v
+static void genDynVertData(QOpenGLFunctions* oglFunc, QOpenGLBuffer& buffer, const QMap<int,AtlasImageOps>& map )
+{
+    int buffSz = 2* 12* map.size() ;
+    fPtr buffer = new float[buffSz];
+    int idx = 0;
+
+    QMapIterator<int, AtlasImageOps> i(map);
+    while (i.hasNext()) {
+        i.next();
+        float x = i.value().posX;
+        float y = i.value().posY;
+        float w = i.value().tW;
+        float h = i.value().tH;
+
+        float tx = i.value().posX;
+        float ty = i.value().posY;
+        float tw = i.value().tW;
+        float th = i.value().tH;
+
+        buffer[ idx++ ] =  x;
+        buffer[ idx++ ] =  y;
+        buffer[ idx++ ] = tx;
+        buffer[ idx++ ] = ty;
+
+        buffer[ idx++ ] = x;
+        buffer[ idx++ ] = y+h;
+        buffer[ idx++ ] = tx;
+        buffer[ idx++ ] = ty+th;
+
+        buffer[ idx++ ] = x+w;
+        buffer[ idx++ ] = y;
+        buffer[ idx++ ] = tx+tw;
+        buffer[ idx++ ] = ty;
+
+        buffer[ idx++ ] = x+w;
+        buffer[ idx++ ] = y;
+        buffer[ idx++ ] = tx+tw;
+        buffer[ idx++ ] = ty;
+
+        buffer[ idx++ ] = x;
+        buffer[ idx++ ] = y+h;
+        buffer[ idx++ ] = tx;
+        buffer[ idx++ ] = ty+th;
+
+        buffer[ idx++ ] = x+w;
+        buffer[ idx++ ] = y+h;
+        buffer[ idx++ ] = tx+tw;
+        buffer[ idx++ ] = ty+th;
+    }
+
+    buffer.bind();
+    oglFunc->glBufferData(buffer.type(), buffer.size(), NULL, buffer.usagePattern());
+    oglFunc->glBufferData(buffer.type(), buffSz*sizeof(float), buffer, buffer.usagePattern());
+    buffer.release();
+
+    delete [] buffer;
+}
+
+void SquircleRenderer::atlasOp   (const AtlasImageOps& callParams){
+    m_dynImagesDirty = true;
+
+    switch (callParams.opType) {
+    case E_AIO_ADD:{
+        m_dynImages.insert(callParams.id,callParams);
+    }break;
+    case E_AIO_MOV:{
+        auto it = m_dynImages.find(callParams.id);
+        it->posX = callParams.posX;
+        it->posY = callParams.posY;
+    }break;
+    case E_AIO_RMV:{
+        m_dynImages.remove(callParams.id);
+    }break;
+    default:
+        m_dynImagesDirty = false;
+        break;
+    }
+}
+
+void Squircle::atlasOp   (
+        int opType,
+        int id    ,
+        int posX  ,
+        int posY  ,
+        int tX    ,
+        int tY    ,
+        int tW    ,
+        int tH
+        ){
+
+    AtlasImageOps aioCall ={
+        opType,
+        id    ,
+        posX  ,
+        posY  ,
+        tX    ,
+        tY    ,
+        tW    ,
+        tH
+    };
+    m_callQueueAIOP.append(aioCall);
+}
+
 void SquircleRenderer::paint()
 {
 
@@ -664,6 +775,11 @@ void SquircleRenderer::paint()
     }
 
 
+    while(m_callQueueAIOP.size() > 0)
+    {
+        atlasOp(m_callQueueAIOP.first());
+        m_callQueueAIOP.removeFirst();
+    }
 
     while(m_callQueue.size() > 0)
     {
