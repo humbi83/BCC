@@ -99,7 +99,7 @@ function newInstance(sQComponentPath) {
     ret.qComponentClass = Qt.createComponent(sQComponentPath);
 
     if (ret.qComponentClass.status == QQ.Component.Ready) {
-        ret.qComponentInstance       = ret.qComponentClass.createObject(root);        
+        ret.qComponentInstance       = ret.qComponentClass.createObject(rootWindow);
     }else
     {
         console.log(component.errorString());

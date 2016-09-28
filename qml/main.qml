@@ -14,7 +14,7 @@ import "BCCMain.js" as BCCMain
 
 Window {
 
-    id : root
+    id : "rootWindow"
     visible: true
     width: 832
     height: 832
@@ -25,8 +25,8 @@ Window {
 
     Rectangle{
         color:"black"
-        width: root.width;
-        height: root.height;
+        width: rootWindow.width;
+        height: rootWindow.height;
     }
 
     Timer {

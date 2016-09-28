@@ -595,15 +595,15 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<
     QMapIterator<int, AtlasImageOps> i(map);
     while (i.hasNext()) {
         i.next();
-        float x = i.value().posX;
-        float y = i.value().posY;
-        float w = i.value().tW;
-        float h = i.value().tH;
+        float x = i.value().posX / __W;
+        float y = i.value().posY / __H;
+        float w = i.value().tW   / __W;
+        float h = i.value().tH   / __H;
 
-        float tx = i.value().posX;
-        float ty = i.value().posY;
-        float tw = i.value().tW;
-        float th = i.value().tH;
+        float tx = i.value().tX / 400.0f;
+        float ty = i.value().tY / 256.0f;
+        float tw = i.value().tW / 400.0f;
+        float th = i.value().tH / 256.0f;
 
         buffer[ idx++ ] =  x;
         buffer[ idx++ ] =  y;
@@ -705,9 +705,6 @@ void Squircle::atlasOp   (
 
 void SquircleRenderer::paint()
 {
-
-    if(true) return;
-
     if (!m_program) {
 
         initializeOpenGLFunctions();

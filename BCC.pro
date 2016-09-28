@@ -68,7 +68,8 @@ DISTFILES += \
     Req.txt \
     qml/BCCTankAI.js \
     qml/BCCLevelPainter.js \
-    qml/BCCMultiFrameDoodad.js
+    qml/BCCMultiFrameDoodad.js \
+    qml/BCCAtlasCPPPainter.js
 
 HEADERS += \
     bccboard.h

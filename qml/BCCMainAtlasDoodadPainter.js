@@ -3,25 +3,6 @@
 .import "BCCVec.js" as Vec
 .import QtQuick 2.7 as QQ
 
-//I need some sort of a prop class to much c/p
-//ret.mColor = sColor == undefined || sColor == null ? "white" : sColor;
-//ret.mColorInvalid = true;
-//ret.paintMColor =(function(){
-//    if(this.mColorInvalid || this.mIsInvalid){
-//        this.qComponentInstance.color = this.mColor;
-//        this.mColorInvalid = false;
-//    }
-//});
-//
-//ret.setColor = (function(sColor){ if(sColor !== this.mColor){this.mColor = sColor; this.mColorInvalid = true;}});
-//
-//ret.paint_BaseDoodadPainter = ret.paint;
-//ret.paint = (function(){
-//    this.paintMColor();
-//    this.paint_BaseDoodadPainter();
-//});
-
-
 //Make this such that it accepts a string to the png ? and have 2 atlas types
 function newInstance( vOffsetInAtlas, vDimInAtlas) {
     var ret = BaseDoodadPainter.newInstance("BBCAtlasFrame.qml");
@@ -60,6 +41,7 @@ function newInstance( vOffsetInAtlas, vDimInAtlas) {
             this.paint_BaseDoodadPainter();
         }
    });
+
     return ret;
 }
 

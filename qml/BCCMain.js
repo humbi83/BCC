@@ -9,11 +9,15 @@
 .import "BCCGlobal.js" as Global
 .import "BCCPUp.js" as PU
 .import "BCCGfx.js" as GFX
+.import "BCCAtlasCPPPainter.js" as CAtlasPainter
 
 
 function BCCMain()
 {
     var ret = new Object({
+
+                             nextId : 0,
+                             getNextID: (function(){return this.nextId++;}),
 
                              NV_E_EVENT       : 0,
                              E_EVENT_INIT     : 1,
@@ -112,6 +116,7 @@ function BCCMain()
                                  this.tmpDoodad.mPainter.setScale(4);
                                  this.tmpDoodad.mPainter.setPos  (Vec.Vec2(128,128));
 
+
                                  //this.tmpFP.setPos(Vec.Vec2(32,32));
                                  //this.tmpFP.setIsVisible(true);
 
@@ -132,6 +137,8 @@ function BCCMain()
                                  //304,32 //ok
                                  //320,32 //lost
 
+                                 this.tmpCpp = CAtlasPainter.newInstance(Vec.Vec2(),Vec.Vec2(400,256),this);
+                                 this.tmpCpp.setPos(Vec.Vec2(0,0));
 
                              }),
 
@@ -140,6 +147,8 @@ function BCCMain()
                                  //console.log(Global.T_tick);
                                  Global.T_tick = Global.T_tick+1;
                                  //console.log(Global.T_tick);
+                                 this.tmpCpp.invalidate();
+                                 this.tmpCpp.paint();
 
                                  //this.updateLevel();
                                  //hmm .. this is not good !!!
