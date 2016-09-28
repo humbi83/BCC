@@ -95,6 +95,10 @@ function Vec2(iX,iY) {
 
                              vFloor: (function(){
                                  return cctor(this).floor();
+                             }),
+
+                             bEquals: (function(oVec){
+                                return this.mX === oVec.mX && this.mY == oVec.mY;
                              })
 
                          });

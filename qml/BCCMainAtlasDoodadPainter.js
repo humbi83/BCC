@@ -4,12 +4,12 @@
 .import QtQuick 2.7 as QQ
 
 //Make this such that it accepts a string to the png ? and have 2 atlas types
-function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPaintee) {
-    var ret = BaseDoodadPainter.BCCBaseDoodadPainter("BBCAtlasFrame.qml",oPaintee == undefined ? null : oPaintee);
+function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat) {
+    var ret = BaseDoodadPainter.BCCBaseDoodadPainter("BBCAtlasFrame.qml");
 
     ret.mOffsetInAtlas = vOffsetInAtlas == undefined || vOffsetInAtlas == null ? Vec.Vec2()    : vOffsetInAtlas;
-    ret.mDim           = vOffsetInAtlas == undefined || vOffsetInAtlas == null ? Vec.Vec2()    : vDimInAtlas;
-    ret.mRepeat        = vRepeat        == undefined || vOffsetInAtlas == null ? Vec.Vec2(1,1) : vRepeat;
+    ret.mDim           = vDimInAtlas    == undefined || vDimInAtlas    == null ? Vec.Vec2()    : vDimInAtlas;
+    ret.mRepeat        = vRepeat        == undefined || vRepeat        == null ? Vec.Vec2(1,1) : vRepeat;
 
     ret.apply = (function(){
 

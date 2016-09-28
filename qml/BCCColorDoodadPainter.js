@@ -3,44 +3,24 @@
 .import "BCCBaseDoodadPainter.js" as BaseDoodadPainter
 .import QtQuick 2.7 as QQ
 
-function BCCColorDoodadPainter(sColor, oPaintee) {
-    var ret = BaseDoodadPainter.BCCBaseDoodadPainter("BBCRectangle.qml",oPaintee == undefined ? null : oPaintee);
+function BCCColorDoodadPainter(sColor) {
+    var ret = BaseDoodadPainter.BCCBaseDoodadPainter("BBCRectangle.qml");
 
-    //TODO:CHECKS
     ret.mColor = sColor == undefined || sColor == null ? "white" : sColor;
-
-    ret.apply = (function(){
-
-        if(this.qComponentInstance != null){
-            this.qComponentInstance.x     = this.mPos.mX*Global.LEVEL_SCALE;
-            this.qComponentInstance.y     = this.mPos.mY*Global.LEVEL_SCALE;
-            this.qComponentInstance.width = this.mDim.mX;
-            this.qComponentInstance.height= this.mDim.mY;
-            this.qComponentInstance.color = this.mColor ;
-        }
-    });
+    ret.mColorInvalid = true;
+    ret.setColor = (function(sColor){ if(sColor !== this.mColor){this.mColor = sColor; this.mColorInvalid = true;}});
 
     ret.paint_BaseDoodadPainter = ret.paint;
-    ret.paint = (function(/*bForces*/){
 
-        //maybe some sort of repaint/invalidate to force a paint
-//        var invalidateComponentInstance = true /*false*/;
-        if(this.mPaintee !== null /*&& oPaintee.isDirty()*/)
-        {
-            //oPaintee.clean();
-            this.mPos.setV(this.mPaintee.mCellPos);this.mPos.mulC(Global.LEVEL_CELL_PIX_SZ);
-            this.mDim.setV(this.mPaintee.mCellDim);this.mDim.mulC(Global.LEVEL_CELL_PIX_SZ);
-            //I should have some onGfxNode dstr or something !!!
-            //invalidateComponentInstance = true;
-        }
+    ret.paint = (function(){
 
-        //some
-        //if(invalidateComponentInstance)
-        {
-            this.apply();
+        if(this.mColorInvalid || this.mIsInvalid){
+            this.qComponentInstance.color = this.mColor;
+            this.mColorInvalid = false;
         }
 
         this.paint_BaseDoodadPainter();
    });
+
     return ret;
 }
