@@ -137,7 +137,8 @@ function BCCMain()
                                  //304,32 //ok
                                  //320,32 //lost
 
-                                 this.tmpCpp = CAtlasPainter.newInstance(Vec.Vec2(),Vec.Vec2(400,256),this);
+                                 this.tmpCpp = CAtlasPainter.newInstance(Vec.Vec2(),Vec.Vec2(16,16),this);
+                                 //max e 208 pe fiecare dir
                                  this.tmpCpp.setPos(Vec.Vec2(0,0));
 
                              }),

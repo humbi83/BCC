@@ -595,10 +595,11 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<
     QMapIterator<int, AtlasImageOps> i(map);
     while (i.hasNext()) {
         i.next();
-        float x = i.value().posX / __W;
-        float y = i.value().posY / __H;
-        float w = i.value().tW   / __W;
-        float h = i.value().tH   / __H;
+
+        float x = float(i.value().posX) / __CELL_W;
+        float y = (__H * __CELL_H - i.value().posY - i.value().tH)/ __CELL_H;
+        float w = float(i.value().tW  ) / __CELL_W;
+        float h = float(i.value().tH  ) / __CELL_H;
 
         float tx = i.value().tX / 400.0f;
         float ty = i.value().tY / 256.0f;

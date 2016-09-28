@@ -57,14 +57,6 @@ Window {
        // someQ.applyBrush(16,16,256,0,16,16,2,3);
     }
 
-    Rectangle{
-        x : 100
-        y : 100
-        width:  20
-        height: 20
-        //scale : 4
-        color :"red"
-    }
 //////// KINDA WORKS
     Audio {
            id: channel1
