@@ -576,6 +576,7 @@ void Squircle::applyBrush(
 void SquircleRenderer::paint()
 {
 
+    if(true) return;
 
     if (!m_program) {
 

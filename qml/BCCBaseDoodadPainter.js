@@ -8,7 +8,7 @@ function newInstance(sQComponentPath) {
     var ret = sQComponentPath == undefined || sQComponentPath == null ? null :
                                                                         new Object({
 
-                          mScale             : Global.LEVEL_SCALE,
+                          mScale             : 1 ,//Global.LEVEL_SCALE,
                           mScaleInvalid      : true,
                           paintMScale        : (function(){
                               if(this.mScaleInvalid || this.mIsInvalid)
@@ -23,8 +23,8 @@ function newInstance(sQComponentPath) {
                           paintMPos          : (function(){
                               if(this.mPosInvalid || this.mIsInvalid)
                               {
-                                  this.qComponentInstance.x = this.mPos.mX * this.mScale;
-                                  this.qComponentInstance.y = this.mPos.mY * this.mScale;
+                                  this.qComponentInstance.x = this.mPos.mX;// * this.mScale;
+                                  this.qComponentInstance.y = this.mPos.mY;// * this.mScale;
                                   this.mPosInvalid = false;
                               }
                           }),
@@ -34,8 +34,8 @@ function newInstance(sQComponentPath) {
                           paintMDim          :(function(){
                               if(this.mDimInvalid || this.mIsInvalid)
                               {
-                                    this.qComponentInstance.width = this.mDim.mX * this.mScale;
-                                    this.qComponentInstance.height= this.mDim.mY * this.mScale;
+                                    this.qComponentInstance.width = this.mDim.mX;// * this.mScale;
+                                    this.qComponentInstance.height= this.mDim.mY;// * this.mScale;
                                     this.mDimInvalid= false;
                               }
                            }),

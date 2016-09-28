@@ -211,7 +211,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                     }
                 }else
                 {
-                    this.mCellPos = newPos;
+                    this.setCellPos(newPos);
                 }
             }else{
                 if(this.mAI != null){
@@ -255,7 +255,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                     this.mCurrentGfx.mCellPos.setV(this.mCellPos);
                 }
             }break;
-            case E_STATE_NORMAL     :{}break;
+            case E_STATE_NORMAL     :{
+
+                this.mPainter.invalidate();
+            }break;
             case E_STATE_POWUP      :{}break;
             case E_STATE_EXPLODING  :{
             }break;

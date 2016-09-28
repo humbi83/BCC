@@ -87,7 +87,28 @@ function BCCMain()
 
                                  this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel,0,20,false);
+                                 this.mTank = Tank.newInstance(this.mLevel,0,0,false);
+
+                                 this.fsColor = ColorPainter.newInstance("blue",64,64);
+                                 this.fsColor.setPos(Vec.Vec2(100,100));
+                                 this.fsColor.setScale(2);
+
+
+                                 this.tmpDoodadA =     Doodad.newInstance(Doodad.E_DOODAD_TANK,
+                                      ColorPainter.newInstance("white",4,4),
+                                       this.mLevel, 0,0);
+                                 this.tmpDoodad  =
+                                      Doodad.newInstance(Doodad.E_DOODAD_TANK,
+                                      FSPainter.newInstance(
+                                             Vec.Vec2( 0,  0),
+                                             Vec.Vec2(16, 16),
+                                             Vec.Vec2( 1,  8)
+                                             ),
+                                       this.mLevel, 6,6);
+
+                                 //this.tmpFP.setPos(Vec.Vec2(32,32));
+                                 //this.tmpFP.setIsVisible(true);
+
 
                                  //this.mEnemyTanks.push(
                                  //           Tank.newInstance(
@@ -118,6 +139,14 @@ function BCCMain()
                                  //this.tmpGfx.update(Global.T_tick);
                                  //this.tmpGfx.paint();
                                  //Global.cUpdatePaint(this.tmpGfx, Global.T_tick);
+
+                                 this.fsColor.paint();
+                                 this.tmpDoodadA.mPainter.invalidate();
+                                 Global.cUpdatePaint(this.tmpDoodadA, Global.T_tick);
+
+                                 //this.tmpDoodad.setCellPos(Vec.Vec2(Global.T_tick%6 + 6,Global.T_tick%6+6));
+                                 Global.cUpdatePaint(this.tmpDoodad, Global.T_tick);
+
 
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );

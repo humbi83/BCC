@@ -9,7 +9,7 @@ function newInstance(vFirstFrameOffsetInAtlas, vFrameDimInAtlas, vSequenceSpan) 
     ret.mSequenceSpan            = vSequenceSpan;
 
     //This is kinda a prop
-    ret.mCurrentFrame        = Vec.Vec2();
+    ret.mCurrentFrame   = Vec.Vec2();
     ret.setCurrentFrame = (function (vFrame){
         if(!vFrame.bEquals(this.mCurrentFrame)){
 

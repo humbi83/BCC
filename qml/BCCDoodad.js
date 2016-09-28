@@ -43,7 +43,7 @@ function newInstance(
                                      //painter maintains the unfloored values
                                     this.mPainter.setPos(Vec.Vec2(x,y));
                                  }
-                             } ),
+                             }),
 
                              setCellPos     : (function(vPos){
                                this.mCellPos = Vec.cctor(vPos);

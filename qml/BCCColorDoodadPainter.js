@@ -1,10 +1,14 @@
-
+.import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
 .import "BCCBaseDoodadPainter.js" as BaseDoodadPainter
 .import QtQuick 2.7 as QQ
 
-function BCCColorDoodadPainter(sColor) {
+function newInstance(sColor, iW, iH) {
     var ret = BaseDoodadPainter.newInstance("BBCRectangle.qml");
+    var pW = iW != undefined ? iW : 16;
+    var pH = iH != undefined ? iH : 16;
+
+    ret.setDim(Vec.Vec2(pW,pH));
 
     ret.mColor = sColor == undefined || sColor == null ? "white" : sColor;
     ret.mColorInvalid = true;
