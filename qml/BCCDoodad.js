@@ -34,7 +34,7 @@ function BCCDoodad2o4i3b(eType, oPainter, oLevel,iPosX,iPosY,iDimX,iDimY, bIsDes
                              explode        : (function(){console.log("Doodad::explode ", mDoodadType);}),
                              canExplode     : (function(){return false;}),
                              mIsVisible     : true,
-                             paint          : (function(){if(this.mPainter !== null){this.mPainter.paint();}}),
+                             paint          : (function(){if(this.mPainter != null){this.mPainter.paint();}}),
                              mStartTick     : 0,
                              update         : (function(tick){}),
                              mLCState       : Global.E_DOODAD_LC_STATE_ALIVE,

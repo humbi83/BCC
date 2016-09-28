@@ -7,7 +7,9 @@ function newInstance(vFirstFrameOffsetInAtlas, vFrameDimInAtlas, vSequenceSpan) 
     ret.mSequenceSpan = vSequenceSpan;
     ret.paint_BCCMainAtlasDooodadPainter = ret.paint != undefined ? ret.paint : null;
     ret.paint = (function(){
-        this.mOffsetInAtlas = this.mFirstFrameOffsetInAtlas.vPlus(this.mPaintee.mSelectedFrame.vMulCW(this.mDim));
+        if(this.mPaintee != null){
+            this.mOffsetInAtlas = this.mFirstFrameOffsetInAtlas.vPlus(this.mPaintee.mSelectedFrame.vMulCW(this.mDim));
+        }
         this.paint_BCCMainAtlasDooodadPainter();
     });
     return ret;

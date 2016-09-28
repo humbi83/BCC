@@ -13,16 +13,18 @@ function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat, oPain
 
     ret.apply = (function(){
 
-        this.qComponentInstance.mOffsetX = this.mOffsetInAtlas.mX;
-        this.qComponentInstance.mOffsetY = this.mOffsetInAtlas.mY;
+        if(this.qComponentInstance != null){
+            this.qComponentInstance.mOffsetX = this.mOffsetInAtlas.mX;
+            this.qComponentInstance.mOffsetY = this.mOffsetInAtlas.mY;
 
-        this.qComponentInstance.x        = this.mPos.mX * Global.LEVEL_SCALE;
-        this.qComponentInstance.y        = this.mPos.mY * Global.LEVEL_SCALE;
-        this.qComponentInstance.mWidth   = this.mDim.mX / this.mRepeat.mX;
-        this.qComponentInstance.mHeight  = this.mDim.mY / this.mRepeat.mY;
+            this.qComponentInstance.x        = this.mPos.mX * Global.LEVEL_SCALE;
+            this.qComponentInstance.y        = this.mPos.mY * Global.LEVEL_SCALE;
+            this.qComponentInstance.mWidth   = this.mDim.mX / this.mRepeat.mX;
+            this.qComponentInstance.mHeight  = this.mDim.mY / this.mRepeat.mY;
 
-        this.qComponentInstance.mXTimes  = this.mRepeat.mX;
-        this.qComponentInstance.mYTimes  = this.mRepeat.mY;
+            this.qComponentInstance.mXTimes  = this.mRepeat.mX;
+            this.qComponentInstance.mYTimes  = this.mRepeat.mY;
+        }
     });
 
     ret.paint_BaseDoodadPainter = ret.paint;

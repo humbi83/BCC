@@ -71,3 +71,26 @@ function cUpdatePaint(element, tick){
     cUpdate(element, tick);
     cPaint(element);
 }
+
+function remObject(obj, array){
+    var ret = false;
+
+    var i = 0;
+/////////this is not working
+    console.log(array);
+    for(; i < array.length;i++)
+    {
+        var eleI = array[i];
+
+       if(eleI === obj)
+       {
+           console.log(i);
+           array.splice(i, 1);
+           ret = true;
+           break;
+       }
+    }
+
+    console.log(array);
+    return ret;
+}

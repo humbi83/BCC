@@ -35,7 +35,7 @@ function BCCMain()
                              mEnemyTanks : [],
                              mLevel      : null,
 //============
-                             mCellsTmp   : [],
+                             //mCellsTmp   : [],
 
                              initLevel:(function(){
                                  var rows = new Array(1);
@@ -80,7 +80,7 @@ function BCCMain()
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
 
-                                 this.mCellsTmp = this.initLevel();
+                                 //this.mCellsTmp = this.initLevel();
 
                                  this.mLevel.applyBrush( 16,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
                                  this.mLevel.applyBrush( 16,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
@@ -145,7 +145,7 @@ function BCCMain()
                                  Global.T_tick = Global.T_tick+1;
                                  //console.log(Global.T_tick);
 
-                                 this.updateLevel();
+                                 //this.updateLevel();
                                  //hmm .. this is not good !!!
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );

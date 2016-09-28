@@ -105,6 +105,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
     __ret.onGfxDestroyed_BCCDoodad = __ret.onGfxDestroyed;
     __ret.onGfxDestroyed = (function(oPainter){
         this.mLevel.remDynObj(this);
+        this.onGfxDestroyed_BCCDoodad(oPainter);
     });
 
     __ret.update = (function(tick){

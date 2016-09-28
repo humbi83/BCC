@@ -39,6 +39,7 @@ function newInstance(oTank) {
     __ret.onGfxDestroyed_BCCDoodad = __ret.onGfxDestroyed;
     __ret.onGfxDestroyed = (function(oPainter){
         this.mLevel.remDynObj(this);
+        this.onGfxDestroyed_BCCDoodad(oPainter);
     });
     __ret.onAnimSeqFinished = (function(oAnimSeq){
         this.mCurrentState = E_STATE_EXPLODED;
@@ -90,7 +91,10 @@ function newInstance(oTank) {
                                 dynObj.explode();
                                 this.explode();
                             }break;
-                            case Doodad.E_DOODAD_BRICK_WALL :{}break;
+                            case Doodad.E_DOODAD_BRICK_WALL :{
+                            }break;
+                            case Doodad.E_DOODAD_STONE_WALL :{
+                            }break;
                             case Doodad.E_DOODAD_TANK       :{
                                 if(dynObj != this.mSpawningTank){
                                     dynObj.explode();
@@ -117,7 +121,9 @@ function newInstance(oTank) {
                              )
                        )
                        {
+                        //todo: check explode
                            this.explode();
+
                        }
 
             }

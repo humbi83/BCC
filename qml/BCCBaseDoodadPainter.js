@@ -20,16 +20,23 @@ function BCCBaseDoodadPainter(sQComponentPath, oPaintee) {
                                   this.mIsVisible = this.mPaintee.mIsVisible;
                               }
 
-                              if(this.mLCState != Global.E_DOODAD_LC_STATE_DESTORYED){
+                              if(this.mLCState != Global.E_DOODAD_LC_STATE_DESTORYED && this.qComponentInstance != null){
                                     this.qComponentInstance.visible = this.mIsVisible;
                               }else
                               if(this.mLCState == Global.E_DOODAD_LC_STATE_DESTORY_REQ  ){
+
                                     this.qComponentInstance.destroy(16);
                                     this.qComponentInstance = null;
 
-                                    this.mPaintee.onGfxDestroyed(this);
+                                    if(this.mPaintee != null){
+                                      this.mPaintee.onGfxDestroyed(this);
+                                    }
+
+                                  //second issue on destroy see Doodad
                                     this.mPaintee = null;
                                     this.mLCState = Global.E_DOODAD_LC_STATE_DESTORYED;
+
+
                               }
                           })
 

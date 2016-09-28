@@ -10,11 +10,14 @@ function BCCColorDoodadPainter(sColor, oPaintee) {
     ret.mColor = sColor == undefined || sColor == null ? "white" : sColor;
 
     ret.apply = (function(){
-        this.qComponentInstance.x     = this.mPos.mX*Global.LEVEL_SCALE;
-        this.qComponentInstance.y     = this.mPos.mY*Global.LEVEL_SCALE;
-        this.qComponentInstance.width = this.mDim.mX;
-        this.qComponentInstance.height= this.mDim.mY;
-        this.qComponentInstance.color = this.mColor ;
+
+        if(this.qComponentInstance != null){
+            this.qComponentInstance.x     = this.mPos.mX*Global.LEVEL_SCALE;
+            this.qComponentInstance.y     = this.mPos.mY*Global.LEVEL_SCALE;
+            this.qComponentInstance.width = this.mDim.mX;
+            this.qComponentInstance.height= this.mDim.mY;
+            this.qComponentInstance.color = this.mColor ;
+        }
     });
 
     ret.paint_BaseDoodadPainter = ret.paint;

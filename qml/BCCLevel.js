@@ -31,8 +31,7 @@ function BCCLevel(iDimX,iDimY){
 
                              mDim: Vec.Vec2(pDimX,pDimY),
                              //can I do this
-                             mDynObjects: [],
-                             mFreeDynObjects: 0,
+                             mDynObjects: [],                             
                              mCells : [],
                              mUpdatableDoodads: [],
                              mPaintableDoodads: [],
@@ -84,35 +83,41 @@ function BCCLevel(iDimX,iDimY){
                                  }
                              }),
 
-                             addDynObj:(function(object){
-                                 if(this.mFreeDynObjects > 0){
-                                    for(var i = 0; i< this.mDynObjects.length;i++)
-                                    {
-                                        if(this.mDynObjects[i] == null)
-                                        {
-                                            this.mDynObjects[i] = object;
-                                            this.mFreeDynObjects-- ;
-                                            break;
-                                        }
-                                    }
-                                 }else{
-                                     this.mDynObjects.push(object);
-                                 }
+                             //TODO: ALEX: rm also from other lists !!!!!
+                             addDynObj:(function(object){                                 
+                                this.mDynObjects.push(object);
                              }),
 
-                             remDynObj:(function(object){
-                                 var ret = false;
 
-                                 for(var i = 0; i< this.mDynObjects.length;i++)
+                             remDynObj:(function(oDoodad){
+
+                                 var ret = Global.remObject(oDoodad, this.mDynObjects);
+                                     ret = Global.remObject(oDoodad, this.mUpdatableDoodads);
+                                     ret = Global.remObject(oDoodad, this.mPaintableDoodads);
+
+                                 //should be done on doodad side, + have getters, setters to control & validate the values
+                                 var iPosX = Global.clamp(oDoodad.mCellPos.mX,0,Global.LEVEL_NO_CELLS - 1 );
+                                 var jLimit = iPosX + oDoodad.mCellDim.mX;
+
+                                 var iPosY = Global.clamp(oDoodad.mCellPos.mY,0,Global.LEVEL_NO_CELLS - 1 );
+                                 var iLimit = iPosY + oDoodad.mCellDim.mY;
+
+
+
+                                 for(var i=iPosY; i < iLimit && i < this.mCells.length;i++)
                                  {
-                                    if(this.mDynObjects[i] == object)
-                                    {
-                                        this.mDynObjects[i] = null;
-                                        this.mFreeDynObjects++;
-                                        ret = true;
-                                        break;
-                                    }
+                                     var lenI = this.mCells[i].length;
+
+                                     for(var j=iPosX; j < jLimit && j < lenI ;j++)
+                                     {
+                                         var sDoodad = this.mCells[i][j].mStationedDoodad != undefined ? this.mCells[i][j].mStationedDoodad : null;
+                                         if( sDoodad == oDoodad){
+                                            this.mCells[i][j].mStationedDoodad = null;
+                                         }
+                                     }
                                  }
+
+                                    //? -- cells
                                  return ret;
                              }),
                              bIsInside2v:(function(vPos,vDim){
@@ -182,13 +187,35 @@ function BCCLevel(iDimX,iDimY){
 
                              applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix)
                              {
+                                 var eDoodadType = Doodad.E_DOODAD_EMPTY;
+                                 var iPosX   = Math.floor(xInPix/4);
+                                 var iPosY   = Math.floor(yInPix/4);
+                                 var iDimX   = Math.floor(wInPix/4);
+                                 var iDimY   = Math.floor(hInPix/4);
+
+                                 //should be an int, no hits or no stars needed or both
+                                 var bIsDist = false;
+
+                                 ///todo add to factory
                                  switch(eBrushType){
-                                    case E_BRUSH_HQ_ALIVE   : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 304, 32, 16,16,1,1); break;
-                                    case E_BRUSH_HQ_DEAD    : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 320, 32, 16,16,1,1); break;
-                                    case E_BRUSH_BRICK_WALL : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
-                                    case E_BRUSH_STONE_WALL : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_HQ_ALIVE   : eDoodadType = Doodad.E_DOODAD_HQ_2F     ; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 304, 32, 16,16,1,1); break;
+                                    case E_BRUSH_HQ_DEAD    : eDoodadType = Doodad.E_DOODAD_HQ_2F     ; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 320, 32, 16,16,1,1); break;
+                                    case E_BRUSH_BRICK_WALL : eDoodadType = Doodad.E_DOODAD_BRICK_WALL; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_STONE_WALL : eDoodadType = Doodad.E_DOODAD_STONE_WALL; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                     case E_BRUSH_EMPTY      : //fall through
                                     default                 : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                 }
+
+                                 ///Not nice
+                                 var oDoodad = Doodad.BCCDoodad2o4i3b(eDoodadType, null, this, iPosX, iPosY, iDimX, iDimY, bIsDist, false);
+
+                                 //ALEX: Do not forget to remove them !!!!!
+                                 for(var i=oDoodad.mCellPos.mY;i< (oDoodad.mCellPos.mY + oDoodad.mCellDim.mY) && i < this.mCells.length;i++)
+                                 {
+                                     for(var j=oDoodad.mCellPos.mX;j<(oDoodad.mCellPos.mX + oDoodad.mCellDim.mX) && j < this.mCells[i].length;j++)
+                                     {
+                                        this.mCells[i][j].mStationedDoodad = oDoodad;
+                                     }
                                  }
                              }),
                              //ret false or something on failure

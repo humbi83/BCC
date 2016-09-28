@@ -3,7 +3,8 @@ function BCCLevelCell(iPosX, iPosY, oLevel) {
     var ret = new Object({
                              mPos             : Vec.Vec2(iPosX,iPosY),
                              mLevel           : oLevel,
-                             mStationedDoodad : null
+                             mStationedDoodad : null,
+
                          });
 
         return ret;

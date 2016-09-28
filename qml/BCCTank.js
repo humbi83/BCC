@@ -105,7 +105,6 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         case E_STATE_SHIELDED    : {
             this.mCurrentState = E_STATE_NORMAL;
             this.mCurrentGfx = null;
-            //if(something) { this}
 
         } break;
         case E_STATE_EXPLODING:
