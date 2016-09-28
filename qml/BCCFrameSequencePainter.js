@@ -2,15 +2,26 @@
 .import "BCCVec.js" as Vec
 
 function newInstance(vFirstFrameOffsetInAtlas, vFrameDimInAtlas, vSequenceSpan) {
-    var ret = AtlasPainter.BCCMainAtlasDooodadPainter(vFirstFrameOffsetInAtlas,vFrameDimInAtlas);
+    var ret = AtlasPainter.newInstance(vFirstFrameOffsetInAtlas,vFrameDimInAtlas);
+
+    //these are constant for all intents and purposes, no props out of them
     ret.mFirstFrameOffsetInAtlas = vFirstFrameOffsetInAtlas;
-    ret.mSequenceSpan = vSequenceSpan;
-    ret.paint_BCCMainAtlasDooodadPainter = ret.paint != undefined ? ret.paint : null;
-    ret.paint = (function(){
-        if(this.mPaintee != null){
-            this.mOffsetInAtlas = this.mFirstFrameOffsetInAtlas.vPlus(this.mPaintee.mSelectedFrame.vMulCW(this.mDim));
+    ret.mSequenceSpan            = vSequenceSpan;
+
+    //This is kinda a prop
+    ret.mCurrentFrame        = Vec.Vec2();
+    ret.setCurrentFrame = (function (vFrame){
+        if(!vFrame.bEquals(this.mCurrentFrame)){
+
+            //do i need to do this ???
+            ret.mCurrentFrame = Vec.cctor(vFrame);
+
+            this.setOffsetInAtlas(
+                 this.mFirstFrameOffsetInAtlas.vPlus(
+                     this.mCurrentFrame.vMulCW(this.mDim)
+                     ));
         }
-        this.paint_BCCMainAtlasDooodadPainter();
     });
+
     return ret;
 }

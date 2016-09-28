@@ -3,47 +3,65 @@
 .import "BCCVec.js" as Vec
 .import QtQuick 2.7 as QQ
 
+//I need some sort of a prop class to much c/p
+//ret.mColor = sColor == undefined || sColor == null ? "white" : sColor;
+//ret.mColorInvalid = true;
+//ret.paintMColor =(function(){
+//    if(this.mColorInvalid || this.mIsInvalid){
+//        this.qComponentInstance.color = this.mColor;
+//        this.mColorInvalid = false;
+//    }
+//});
+//
+//ret.setColor = (function(sColor){ if(sColor !== this.mColor){this.mColor = sColor; this.mColorInvalid = true;}});
+//
+//ret.paint_BaseDoodadPainter = ret.paint;
+//ret.paint = (function(){
+//    this.paintMColor();
+//    this.paint_BaseDoodadPainter();
+//});
+
+
 //Make this such that it accepts a string to the png ? and have 2 atlas types
-function BCCMainAtlasDooodadPainter( vOffsetInAtlas, vDimInAtlas, vRepeat) {
-    var ret = BaseDoodadPainter.BCCBaseDoodadPainter("BBCAtlasFrame.qml");
+function newInstance( vOffsetInAtlas, vDimInAtlas) {
+    var ret = BaseDoodadPainter.newInstance("BBCAtlasFrame.qml");
 
-    ret.mOffsetInAtlas = vOffsetInAtlas == undefined || vOffsetInAtlas == null ? Vec.Vec2()    : vOffsetInAtlas;
-    ret.mDim           = vDimInAtlas    == undefined || vDimInAtlas    == null ? Vec.Vec2()    : vDimInAtlas;
-    ret.mRepeat        = vRepeat        == undefined || vRepeat        == null ? Vec.Vec2(1,1) : vRepeat;
+    var pOff = vOffsetInAtlas == undefined || vOffsetInAtlas == null ? Vec.Vec2() : vOffsetInAtlas;
+    var pDim = vDimInAtlas    == undefined || vDimInAtlas    == null ? Vec.Vec2() : vDimInAtlas;
 
-    ret.apply = (function(){
-
-        if(this.qComponentInstance != null){
-            this.qComponentInstance.mOffsetX = this.mOffsetInAtlas.mX;
-            this.qComponentInstance.mOffsetY = this.mOffsetInAtlas.mY;
-
-            this.qComponentInstance.x        = this.mPos.mX * Global.LEVEL_SCALE;
-            this.qComponentInstance.y        = this.mPos.mY * Global.LEVEL_SCALE;
-            this.qComponentInstance.mWidth   = this.mDim.mX / this.mRepeat.mX;
-            this.qComponentInstance.mHeight  = this.mDim.mY / this.mRepeat.mY;
-
-            this.qComponentInstance.mXTimes  = this.mRepeat.mX;
-            this.qComponentInstance.mYTimes  = this.mRepeat.mY;
+    ret.mOffsetInAtlas = pOff;
+    ret.mOffsetInAtlasInvalid = true;
+    //Can I have a globla func for this ? have vars bound and just set it ???
+    ret.setOffsetInAtlas  = ( function(vOff)
+    {
+        if(!vOff.bEquals (this.mOffsetInAtlas)){
+            this.mOffsetInAtlas = Vec.cctor(vOff);
+            this.mOffsetInAtlasInvalid = true;
         }
     });
+
+    ret.paintMOffsetInAtlas =(function(){
+        if(this.mOffsetInAtlasInvalid || this.mIsInvalid){
+            this.qComponentInstance.mOffsetX = this.mOffsetInAtlas.mX;
+            this.qComponentInstance.mOffsetY = this.mOffsetInAtlas.mY;
+            this.mOffsetInAtlasInvalid = false;
+        }
+    });
+
+    ret.setDim(pDim);
 
     ret.paint_BaseDoodadPainter = ret.paint;
 
     ret.paint=(function(){
 
-        if(this.mPaintee !== null /*&& oPaintee.isDirty()*/)
+        if(this.canPaint())
         {
-            //oPaintee.clean();
-            this.mPos.setV(this.mPaintee.mCellPos);this.mPos.mulC(Global.LEVEL_CELL_PIX_SZ);
-            this.mDim.setV(this.mPaintee.mCellDim);this.mDim.mulC(Global.LEVEL_CELL_PIX_SZ);
-            //hmm.. data binding.. clean up inheritance
+            this.paintMOffsetInAtlas();
+            this.paint_BaseDoodadPainter();
         }
-
-        this.apply();
-
-        this.paint_BaseDoodadPainter();
-   })
+   });
     return ret;
 }
+
 
 

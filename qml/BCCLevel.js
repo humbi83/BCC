@@ -30,11 +30,8 @@ function BCCLevel(iDimX,iDimY){
     var ret = new Object({
 
                              mDim: Vec.Vec2(pDimX,pDimY),
-                             //can I do this
                              mDynObjects: [],                             
-                             mCells : [],
-                             mUpdatableDoodads: [],
-                             mPaintableDoodads: [],
+                             mCells : [],                             
                              initLevel:(function(){
                                  var rows = new Array(pDimY);
 
@@ -53,73 +50,33 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
                              update:(function(tick){
-                                 for(var i = 0; i<this.mUpdatableDoodads.length;i++)
-                                 {
-                                     if(this.mUpdatableDoodads[i] != null){
-                                        this.mUpdatableDoodads[i].update(tick);
-                                     }
-                                 }
-
+                                 //for the moment I do not update / paint the static stuff
                                  for(var i=0; i<this.mDynObjects.length;i++){
-                                     if(this.mDynObjects[i] != null){
-                                        this.mDynObjects[i].update(tick);
-                                     }
+                                     Global.cUpdate(this.mDynObjects[i], tick)
                                  }
                              }),
 
                              paint:(function() {
-
-                                 for(var i = 0; i<this.mPaintableDoodads.length;i++)
-                                 {
-                                     if(this.mPaintableDoodads[i] != null){
-                                        this.mPaintableDoodads[i].paint();
-                                     }
-                                 }
-
                                  for(var i=0; i<this.mDynObjects.length;i++){
-                                     if(this.mDynObjects[i] != null){
-                                        this.mDynObjects[i].paint();
-                                     }
+                                     Global.cPaint(this.mDynObjects[i])
                                  }
                              }),
+
 
                              //TODO: ALEX: rm also from other lists !!!!!
                              addDynObj:(function(object){                                 
                                 this.mDynObjects.push(object);
                              }),
 
-
                              remDynObj:(function(oDoodad){
-
-                                 var ret = Global.remObject(oDoodad, this.mDynObjects);
-                                     ret = Global.remObject(oDoodad, this.mUpdatableDoodads);
-                                     ret = Global.remObject(oDoodad, this.mPaintableDoodads);
-
-                                 //should be done on doodad side, + have getters, setters to control & validate the values
-                                 var iPosX = Global.clamp(oDoodad.mCellPos.mX,0,Global.LEVEL_NO_CELLS - 1 );
-                                 var jLimit = iPosX + oDoodad.mCellDim.mX;
-
-                                 var iPosY = Global.clamp(oDoodad.mCellPos.mY,0,Global.LEVEL_NO_CELLS - 1 );
-                                 var iLimit = iPosY + oDoodad.mCellDim.mY;
-
-
-
-                                 for(var i=iPosY; i < iLimit && i < this.mCells.length;i++)
-                                 {
-                                     var lenI = this.mCells[i].length;
-
-                                     for(var j=iPosX; j < jLimit && j < lenI ;j++)
-                                     {
-                                         var sDoodad = this.mCells[i][j].mStationedDoodad != undefined ? this.mCells[i][j].mStationedDoodad : null;
-                                         if( sDoodad == oDoodad){
-                                            this.mCells[i][j].mStationedDoodad = null;
-                                         }
-                                     }
-                                 }
-
-                                    //? -- cells
-                                 return ret;
+                                 return Global.remObject(oDoodad, this.mDynObjects);
                              }),
+
+                             onAnimSeqFinished : (function(oDynDoodad){
+                                this.remDynObj(oDynDoodad);
+                                 oDynDoodad.releaseInstance();
+                             }),
+
                              bIsInside2v:(function(vPos,vDim){
                                  return vPos.mX >= 0 &&
                                         vPos.mY >= 0 &&
@@ -135,10 +92,11 @@ function BCCLevel(iDimX,iDimY){
 
                                  if(oDoodad != null){
                                     vPos = oDoodad.mCellPos;
-                                    vDim = oDoodad.mCellDim;
+                                    vDim = oDoodad.getCellDim();
                                  }
 
                                  var vPosClmp = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+
                                  for(var i=0; i < this.mDynObjects.length;i++)
                                  {
                                      var dynObj = this.mDynObjects[i];
@@ -148,7 +106,7 @@ function BCCLevel(iDimX,iDimY){
 
                                              Global.rectOverlaps(
                                                  vPos           , vDim,
-                                                 dynObj.mCellPos, dynObj.mCellDim)
+                                                 dynObj.mCellPos, dynObj.getCellDim())
                                         ){
                                                  ret.push(dynObj);
                                           }
@@ -207,42 +165,21 @@ function BCCLevel(iDimX,iDimY){
                                  }
 
                                  ///Not nice
-                                 var oDoodad = Doodad.BCCDoodad2o4i3b(eDoodadType, null, this, iPosX, iPosY, iDimX, iDimY, bIsDist, false);
+                                 var limitI = iPosY + iDimY;
+                                 var limitJ = iPosX + iDimX;
 
                                  //ALEX: Do not forget to remove them !!!!!
-                                 for(var i=oDoodad.mCellPos.mY;i< (oDoodad.mCellPos.mY + oDoodad.mCellDim.mY) && i < this.mCells.length;i++)
+                                 for(var i=iPosY;i< limitI && i < this.mCells.length;i++)
                                  {
-                                     for(var j=oDoodad.mCellPos.mX;j<(oDoodad.mCellPos.mX + oDoodad.mCellDim.mX) && j < this.mCells[i].length;j++)
+                                     for(var j=iPosX;j<limitJ && j < this.mCells[i].length;j++)
                                      {
+                                        //one doodad per cell, I should cut paint/update ??, Ill do the logic in bullet
+                                         //I will need some hacking for HQ
+                                        var oDoodad = Doodad.newInstance(eDoodadType, null, this, iPosX, iPosY, iDimX, iDimY, bIsDist, false);
                                         this.mCells[i][j].mStationedDoodad = oDoodad;
                                      }
                                  }
-                             }),
-                             //ret false or something on failure
-                             addPixXYDoodad: (function(x,y,eDoodadType, w,h){
-                                 var dFact = Doodad.BCCDoodadFactory(this);
-
-                                 var oDoodad = dFact.newInstance(eDoodadType, w, h);
-
-                                 oDoodad.setPixXY(x,y);
-                                 if(oDoodad.update != undefined){
-                                     this.mUpdatableDoodads.push(oDoodad);
-                                 }
-
-                                 if(oDoodad.paint != undefined){
-                                    this.mPaintableDoodads.push(oDoodad);
-                                 }
-
-                                 for(var i=oDoodad.mCellPos.mY;i< (oDoodad.mCellPos.mY + oDoodad.mCellDim.mY) && i < this.mCells.length;i++)
-                                 {
-                                     for(var j=oDoodad.mCellPos.mX;j<(oDoodad.mCellPos.mX + oDoodad.mCellDim.mX) && j < this.mCells[i].length;j++)
-                                     {
-                                        this.mCells[i][j].mStationedDoodad = oDoodad;
-                                     }
-                                 }
-
                              })
-
                          });
     ret.mCells = ret.initLevel();
 

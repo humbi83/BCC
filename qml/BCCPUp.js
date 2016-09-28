@@ -5,6 +5,8 @@
 
 //we consider 16ms / update
 
+
+///MUST EXTEND MFDoodad
 var FLASH_PER_TICK = 0.2;
 
 var E_PU_HEAD    = 0;
@@ -18,7 +20,7 @@ var E_PU_PISTOL  = 6;
 function newInstance(oLevel, iX, iY, ePU) {
 
 
-    var __ret = Doodad.BCCDoodad2o4i3b(
+    var __ret = Doodad.newInstance(
                 Doodad.E_DOODAD_POWUP,
                 FramePainter.newInstance(Vec.Vec2(255,112),Vec.Vec2(16,16),Vec.Vec2(7,1)),
                 oLevel,
@@ -46,7 +48,7 @@ function newInstance(oLevel, iX, iY, ePU) {
 
         var computedVal = Math.floor(dT * FLASH_PER_TICK ) ;
 
-        this.mIsVisible = (computedVal % 2 == 0);
+        this.setVisible(computedVal % 2 == 0);
 
         //console.log(this.mIsVisible, tick, this.mStartTick, dT, computedVal );
         //will die on timeout or pickup by player

@@ -94,3 +94,11 @@ function remObject(obj, array){
     console.log(array);
     return ret;
 }
+
+function isOV(object)
+{
+    return object != undefined && object != null;
+}
+
+
+

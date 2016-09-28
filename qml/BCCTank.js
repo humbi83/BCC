@@ -1,5 +1,6 @@
 .import "BCCDoodad.js" as Doodad
 .import "BCCFrameSequencePainter.js" as FSPainter
+.import "BCCMultiFrameDoodad.js" as MFDoodad
 .import "BCCVec.js" as Vec
 .import "BCCBullet.js" as Bullet
 .import "BCCGlobal.js" as Global
@@ -28,20 +29,17 @@ var E_STATE_EXPLODED      = 5;
 
 function newInstance(oLevel, iX, iY, bEnemy) {
 
-    var pX = iX != undefined ? iX : 0;
-    var pY = iY != undefined ? iY : 0;
+    var pX     = iX     != undefined ? iX     : 0;
+    var pY     = iY     != undefined ? iY     : 0;
     var pEnemy = bEnemy != undefined ? bEnemy : true;
 
-    var ret = Doodad.BCCDoodad2o4i3b(
+    var ret = MFDoodad.newInstance(
                 Doodad.E_DOODAD_TANK,
-                FSPainter.newInstance(
-                    Vec.Vec2( 0,  0),
-                    Vec.Vec2(16, 16),
-                    Vec.Vec2( 1,  8)
-                    ),
+                Vec.Vec2( 0,  0),
+                Vec.Vec2(16, 16),
+                Vec.Vec2( 1,  8),
                 oLevel,
-                pX,pY,
-                4, 4,
+                pX,pY,                
                 true,false
                 );
 
@@ -57,7 +55,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                      this.mLevel,
                      this.mCellPos.mX, this.mCellPos.mY,
                      1, this);
-            this.mIsVisible    = false;
+            this.setVisible(false);
             ret = true;
         }
         return ret;
@@ -77,26 +75,33 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_DEAD);
     }
   */
+
+    ret.shieldUp = (function(){
+        this.mCurrentState = E_STATE_SHIELDED;
+        this.setVisible(true);
+        this.mCurrentGfx = GFX.newInstance(
+                    this.mLevel     ,
+                    this.mCellPos.mX,
+                    this.mCellPos.mY,
+                    GFX.E_GFX_SHILED,
+                    Math.floor(DT_TANK_SHIELDED / GFX.ANIM_FRAME_LEN[GFX.E_GFX_SHILED]),
+                    this
+                    );
+    })
     ret.onAnimSeqFinished = (function (oAnimSeq){
+        oAnimSeq.releaseInstance();
+        this.mCurrentGfx = null;
+
         switch(this.mCurrentState)
         {
         case E_STATE_TELEPORTING : {
 
             if(!this.mIsEnemy){
-            this.mCurrentState = E_STATE_SHIELDED;
-            this.mIsVisible = true;
-            this.mCurrentGfx = GFX.newInstance(
-                        this.mLevel     ,
-                        this.mCellPos.mX,
-                        this.mCellPos.mY,
-                        GFX.E_GFX_SHILED,
-                        Math.floor(DT_TANK_SHIELDED / GFX.ANIM_FRAME_LEN[GFX.E_GFX_SHILED]),
-                        this
-                        );
+                this.shieldUp();
             }else
             {
                 this.mCurrentState = E_STATE_NORMAL;
-                this.mIsVisible = true;
+                this.mIsVisible( true );
                 if(this.mAI != null){
                     this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_MOVABLE);
                 }
@@ -104,11 +109,12 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         } break;
         case E_STATE_SHIELDED    : {
             this.mCurrentState = E_STATE_NORMAL;
-            this.mCurrentGfx = null;
 
         } break;
         case E_STATE_EXPLODING:
         {
+
+            //TODO: IMPLEMENT RESPAWN
             //do things
             if(this.isEnemy){
                 if(this.mAI != null){
@@ -118,25 +124,27 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             {
             }
 
-            this.mLCState = Global.E_DOODAD_LC_STATE_DESTROY_REQ;
+
             console.log("BCCTank::onAnumSeqFinished::E_STATE_EXPLODING");
         } break;
 
         default                  : console.log("BCCTank::onAnimSeqFinished::default");break;
         }
     });
-    ret.mCurrentGfx = GFX.newInstance(oLevel,pX,pY,GFX.E_GFX_TELEPORT,0,ret);
+
+
+
 
     ret.mIsEnemy = pEnemy;
+    //ret.mCurrentGfx = GFX.newInstance(oLevel,pX,pY,GFX.E_GFX_TELEPORT,0,ret);\
+    //ret.mCurrentState = E_STATE_TELEPORTING;
+    //ret.setVisible(false);
 
-    ret.mCurrentState = E_STATE_TELEPORTING;
+    ret.mCurrentGfx = null;
+    ret.mCurrentState = E_STATE_NORMAL;
+    ret.setVisible(true);
 
-    ret.mIsVisible    = false;
-
-    //needed by FSPainter ... I need some clear interfaces !!!
-    ret.mSelectedFrame = Vec.Vec2();
-
-
+    ret.setCurrentFrame();
     ret.mIsKeyPressed  = false;
 
 //todo mCurrDir
@@ -151,7 +159,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                 case Global.E_DIR_LEFT  : vPos.mX--; break;
                 case Global.E_DIR_DOWN  : vPos.mY++; break;
                 case Global.E_DIR_RIGHT : vPos.mX++; break;
-                default: console.log("onKeyEvent unknown"); this.mSelectedFrame.x = 0; break;
+                default: console.log("onKeyEvent unknown"); this.setCurrentFrame(); break;
             }
         }
 
@@ -166,9 +174,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     //motor enemy
     ret.onFire = (function()
     {
-        //just spawn a bullet
-        Bullet.newInstance(this);
-
+        this.mLevel.addDynObj(Bullet.newInstance(this));
     });
 
     ret.onMoveEvent = (function(eDir){
@@ -185,21 +191,24 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                 this.currDirFrame = 0;
             }
 
-            this.mSelectedFrame.mX = this.currDir * TNK_FRAMES_PER_DIR + (this.currDirFrame++)%TNK_FRAMES_PER_DIR;
+            var cFrm = this.currDir * TNK_FRAMES_PER_DIR + (this.currDirFrame++)%TNK_FRAMES_PER_DIR;
+            this.setCurrentFrame(Vec.Vec2(cFrm,0));
 
+            //TODO: move nicely
             var newPos = this.calcUpdatedPos(eDir,Vec.cctor(this.mCellPos));
 
-            if(this.mLevel.bIsInside2v(newPos,this.mCellDim)){
+            var cellDim = this.getCellDim();
 
-            var collidingCells = this.mLevel.collidesWithStatic2v(newPos,this.mCellDim);
+            if(this.mLevel.bIsInside2v(newPos,cellDim)){
 
-                if(collidingCells != null && collidingCells.length > 0){
+            var collidingCells = this.mLevel.collidesWithStatic2v(newPos,cellDim);
+            collidingCells.concat(this.mLevel.collidesWithDynamic2v(this));
+
+                if(collidingCells.length > 0){
                 //for the moment, do not update
-
                     if(this.mAI != null){
                         this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
                     }
-
                 }else
                 {
                     this.mCellPos = newPos;
@@ -221,6 +230,12 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     });
 
     ret.update = (function(tick){
+
+        //manually update paint the gfx
+        if(this.mCurrentGfx != null)
+        {
+            Global.cUpdatePaint(this.mCurrentGfx,tick);
+        }
 
         //move this to the updatable list
         if(this.mAI != null){
@@ -248,8 +263,6 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         }
 
     });
-
-    ret.mLevel.addDynObj(ret);
 
     return ret;
 }

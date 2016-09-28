@@ -1,4 +1,5 @@
 .import "BCCDoodad.js" as Doodad
+.import "BCCMultiFrameDoodad.js" as MFDoodad
 .import "BCCFrameSequencePainter.js" as FramePainter
 .import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
@@ -50,63 +51,50 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
 
     switch(eGFX){
     case E_GFX_TELEPORT :
-        __ret = Doodad.BCCDoodad2o4i3b(
+        __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    FramePainter.newInstance(Vec.Vec2(255,96),Vec.Vec2(16,16),Vec.Vec2(4,1)),
+                    Vec.Vec2(255,96),Vec.Vec2(16,16),Vec.Vec2(4,1),
                     oLevel,
-                    iX ,iY,
-                    4    , 4   ,
-                    true , true
+                    iX ,iY
                     );
         break;
     case E_GFX_SHILED:
-        __ret = Doodad.BCCDoodad2o4i3b(
+        __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    FramePainter.newInstance(Vec.Vec2(255,96 + 48),Vec.Vec2(16,16),Vec.Vec2(2,1)),
+                    Vec.Vec2(255,96 + 48),Vec.Vec2(16,16),Vec.Vec2(2,1),
                     oLevel,
-                    iX ,iY,
-                    4    , 4   ,
-                    true , true
+                    iX ,iY
                     );
         break;
      case E_GFX_SMALL_EXP:
-         __ret = Doodad.BCCDoodad2o4i3b(
+         __ret = MFDoodad.newInstance(
                      Doodad.E_DOODAD_EMPTY,
-                     FramePainter.newInstance(Vec.Vec2(255,96 + 32),Vec.Vec2(16,16),Vec.Vec2(3,1)),
+                     Vec.Vec2(255,96 + 32),Vec.Vec2(16,16),Vec.Vec2(3,1),
                      oLevel,
-                     iX ,iY,
-                     4    , 4   ,
-                     true , true
+                     iX ,iY
                      );
          break;
     case E_GFX_BIG_EXP:
-        __ret = Doodad.BCCDoodad2o4i3b(
+        __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    FramePainter.newInstance(Vec.Vec2(255 + 48 ,96 + 32),Vec.Vec2(32,32),Vec.Vec2(2,1)),
+                    Vec.Vec2(255 + 48 ,96 + 32),Vec.Vec2(32,32),Vec.Vec2(2,1),
                     oLevel,
-                    iX ,iY,
-                    8    , 8   ,
-                    true , true
+                    iX ,iY
                     );
         break;
     }
 
-
-
     //update related
     __ret.mCurrentState = E_STATE_RUNNING;
-    __ret.mListener = oListener;
-    __ret.mNoLoops = iNoLoops;
+    __ret.mListener = oListener != undefined && oListener != null ? oListener : oLevel;
+
+    __ret.mNoLoops  = iNoLoops != undefined ? iNoLoops : 0;
     __ret.mCurrentLoop = 0;
-    __ret.mFramDt = ANIM_FRAME_LEN[eGFX];
+
     __ret.mType = eGFX;
-    __ret.mStartTick = 0;/*Global.T_tick*/
-    __ret.mSelectedFrame = Vec.Vec2(ANIM_SEQZ[eGFX],0);// not okey .. need to def the anims
-    __ret.onGfxDestroyed_BCCDoodad = __ret.onGfxDestroyed;
-    __ret.onGfxDestroyed = (function(oPainter){
-        this.mLevel.remDynObj(this);
-        this.onGfxDestroyed_BCCDoodad(oPainter);
-    });
+    __ret.mStartTick = 0;
+
+    __ret.setCurrentFrame(Vec.Vec2(ANIM_SEQZ[eGFX],0));// not okey .. need to def the anims
 
     __ret.update = (function(tick){
 
@@ -116,44 +104,37 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
         }
 
        var dT = tick - this.mStartTick;
+
 //should I stablize the state here ??? i loose 2 frames till death just for sswitch .. .. anyway
         switch(this.mCurrentState)
         {
-        case E_STATE_RUNNING:
-        {
-            var frameCount= Math.floor(dT / ANIM_FRAME_LEN[this.mType]);
-            var frameNo = frameCount % ANIM_SEQZ[this.mType].length
-            //console.log(frameNo);
-
-            this.mCurrentLoop = Math.floor(frameCount / ANIM_SEQZ[this.mType].length);
-
-            if(__ret.mNoLoops == -1 || this.mCurrentLoop <= this.mNoLoops ){
-                this.mSelectedFrame.mX = ANIM_SEQZ[this.mType][frameNo];
-            }else
+            case E_STATE_RUNNING:
             {
-                if(this.mListener != null){
-                    this.mListener.onAnimSeqFinished(this);
-                    this.mCurrentState = E_STATE_FINISHING;
-                    this.mIsVisible = false;
+                var frameCount = Math.floor(dT / ANIM_FRAME_LEN[this.mType]);
+                var frameNo    = frameCount % ANIM_SEQZ[this.mType].length
+
+                this.mCurrentLoop = Math.floor(frameCount / ANIM_SEQZ[this.mType].length);
+
+                if(__ret.mNoLoops == -1 || this.mCurrentLoop <= this.mNoLoops ){
+                    //TODO?: also for Y, I don't seem to have any anims layed on Y
+                    this.setCurrentFrame( Vec.Vec2(ANIM_SEQZ[this.mType][frameNo],0));
+                }else
+                {
+                    if(this.mListener != null){
+                        this.mListener.onAnimSeqFinished(this);
+                        this.mCurrentState = E_STATE_FINISHED;
+                        this.setVisible(false);
+                    }
                 }
             }
+            break;
+            case E_STATE_FINISHED:
+            {
+                //do nothing ???
+            }
+            break;
         }
-        break;
-        case E_STATE_FINISHING:
-        {
-            this.mLCState = Global.E_DOODAD_LC_STATE_DESTROY_REQ;
-            this.mCurrentState = E_STATE_FINISHED;
-        }
-        break;
-        case E_STATE_FINISHED:
-        {
-            //do nothing ???
-        }
-        break;
-        }
-
     });
 
-    __ret.mLevel.addDynObj(__ret);
     return __ret;
 }

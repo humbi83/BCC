@@ -1,17 +1,18 @@
 .import "BCCDoodad.js" as Doodad
-//.import "BCCMainAtlasDoodadPainter.js" as AtlasPainter
+.import "BCCMultiFrameDoodad.js" as MFDoodad
 .import "BCCFrameSequencePainter.js" as FramePainter
 .import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
 .import "BCCGfx.js" as GFX
+.import "BCCLevel.js" as Level;
 
 //we consider 16ms / update
 
 var SPEED_CELLS_PER_TICK = 0.2;
 
-var E_STATE_ALIVE    = 0;
-var E_STATE_EXPLODES = 1;
-var E_STATE_EXPLODED = 2;
+var E_STATE_ALIVE     = 0;
+var E_STATE_EXPLODING = 1;
+var E_STATE_EXPLODED  = 2;
 
 function newInstance(oTank) {
 
@@ -19,44 +20,40 @@ function newInstance(oTank) {
 
     var vPos = oTank.mCellPos.vPlus(Vec.Vec2(1,1)).plus(vVel.vMulC(2));
 
-    var __ret = Doodad.BCCDoodad2o4i3b(
+    var __ret = MFDoodad.newInstance(
                 Doodad.E_DOODAD_BULLET,
-                FramePainter.newInstance(Vec.Vec2(320,100),Vec.Vec2(8,8),Vec.Vec2(4,1)),
+                Vec.Vec2(320,100),Vec.Vec2(8,8),Vec.Vec2(4,1),
                 oTank.mLevel,
                 vPos.mX ,vPos.mY,
-                2    , 2   ,
                 true , true
                 );
 
-    __ret.mKilledBy      = null;
     __ret.mCurrentState  = E_STATE_ALIVE;
-    __ret.mSelectedFrame = Vec.Vec2(oTank.currDir,0);
+
+    __ret.mListener = __ret.mLevel;
+
+    __ret.setCurrentFrame(Vec.Vec2(oTank.currDir,0));
+
     __ret.mSpawningTank  = oTank;
     __ret.mVel = vVel;
     __ret.mStartPos = vPos;
     // this doesn;t work I'll have some object passed arround for Global state
     __ret.mStartTick = 0;/*Global.T_tick*/
-    __ret.onGfxDestroyed_BCCDoodad = __ret.onGfxDestroyed;
-    __ret.onGfxDestroyed = (function(oPainter){
-        this.mLevel.remDynObj(this);
-        this.onGfxDestroyed_BCCDoodad(oPainter);
-    });
-    __ret.onAnimSeqFinished = (function(oAnimSeq){
-        this.mCurrentState = E_STATE_EXPLODED;
-    });
 
     __ret.explode    = (function(){
-        this.mIsVisible = false;
-        this.mCurrentState = E_STATE_EXPLODES;
 
-        var vExpPos = this.mCellPos.vPlus(Vec.Vec2(-1,-1)).plus(this.mVel.vMulC(2));
-        GFX.newInstance(this.mLevel, vExpPos.mX,vExpPos.mY, GFX.E_GFX_SMALL_EXP, 0, this);
+        if(this.canExplode()){
+            this.setVisible(false);
+            this.mCurrentState = E_STATE_EXPLODING; //basically dead
+
+            //spaw explosion && add it to the level for book keeping
+            var vExpPos = this.mCellPos.vPlus(Vec.Vec2(-1,-1)).plus(this.mVel.vMulC(2));
+            this.mLevel.addDynObj(GFX.newInstance(this.mLevel, vExpPos.mX,vExpPos.mY, GFX.E_GFX_SMALL_EXP));
+        }
     });
 
     __ret.canExplode =(function(){
-        return(
-                this.mCurrentState = E_STATE_ALIVE &&
-                this.mLCState == Global.E_DOODAD_LC_STATE_ALIVE);
+        return this.mCurrentState = E_STATE_ALIVE;
     });
 
     __ret.update = (function(tick){
@@ -70,70 +67,67 @@ function newInstance(oTank) {
 
         switch(this.mCurrentState) {
             case E_STATE_ALIVE:{
-                //for the moment
-                    this.mCellPos = this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)).
-                    floor();
 
-                    //var collCells = this.mLevel.collidesOn2v(this.mCellPos, this.mCellDim);
-                    var collCells = this.mLevel.collidesWithStatic2v(this.mCellPos , this.mCellDim);
-                    var collDyn   = this.mLevel.collidesWithDynamic2v(this);
+                    this.setPixXY(this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)));
 
-                    if(collDyn.length > 0)
+                    var cellDim = this.getCellDim();
+
+                    var collidingDoodads = this.mLevel.collidesWithStatic2v(this.mCellPos , cellDim);
+                    collidingDoodads.concat(this.mLevel.collidesWithDynamic2v(this));
+
+                    if(collidingDoodads.length > 0)
                     {
-                        //kill / suck life out of it
-                        for(var i = 0; i<collDyn.length ; i++)
+                        for(var i = 0; i<collidingDoodads.length ; i++)
                         {
-                            var dynObj = collDyn[i];
+                            var dynObj = collidingDoodads[i];
 
                             switch(dynObj.mDoodadType){
 
                             case Doodad.E_DOODAD_BULLET:{
-                                dynObj.explode();
-                                this.explode();
+                                if(dynObj.mSpawningTank != this.mSpawningTank)
+                                {
+                                    dynObj.explode();
+                                }
                             }break;
+
                             case Doodad.E_DOODAD_BRICK_WALL :{
+                                var pixPos = dynObj.getPixPos();
+                                this.mLevel.applyBrush( pixPos.mX, pixPox.mY, Level.E_BRUSH_EMPTY, 4,4);
                             }break;
-                            case Doodad.E_DOODAD_STONE_WALL :{
-                            }break;
+
                             case Doodad.E_DOODAD_TANK       :{
                                 if(dynObj != this.mSpawningTank){
-                                    dynObj.explode();
-                                    this.explode();
+                                    dynObj.explode();                                    
                                 }
-
                             }break;
-                            default: //do nothing break;
+
+                            case Doodad.E_DOODAD_HQ_ALIVE    :{
+                                this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_DEAD, 16,16);
+                            }break;
+                                default: //do nothing
+                                    break;
                             }
                         }
                     }
 
-                    var cExp = this.canExplode();
-                    var b2 = this.mKilledBy == null;
-
-                    //console.log("bul", cExp, b2 );
-
-                    if(
-                            //this.canExplode() &&
-                            //this.mKilledBy == null &&
-                            (
-                                collCells.length > 0 ||
-                                !this.mLevel.bIsInside2v(this.mCellPos, this.mCellDim)
-                             )
-                       )
-                       {
-                        //todo: check explode
-                           this.explode();
-
-                       }
+                    if( collidingDoodads.length > 0 || !this.mLevel.bIsInside2v(this.mCellPos, cellDim))
+                    {
+                        this.explode();
+                    }
 
             }
             break;
 
+            case E_STATE_EXPLODING:{
+                if(this.mListener != null){
+                    this.mListener.onAnimSeqFinished(this);
+                    this.mCurrentState = E_STATE_EXPLODED;
+                }
+            }
+                break;
             case E_STATE_EXPLODED:
-            {
-                this.mLCState = Global.E_DOODAD_LC_STATE_DESTORY_REQ;
-            }
-            break;
+                //do nothing
+                break;
         }
 
     });

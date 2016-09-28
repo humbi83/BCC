@@ -69,12 +69,9 @@ DISTFILES += \
     qml/BCCPUp.js \
     qml/BCCGfx.js \
     Req.txt \
-    qml/BCCVGfx.js \
-    qml/BCCVPainter.js \
     qml/BCCTankAI.js \
-    qml/BCCLevelCell2.js \
-    qml/BCCLevel2.js \
-    qml/BCCLevelPainter.js
+    qml/BCCLevelPainter.js \
+    qml/BCCMultiFrameDoodad.js
 
 HEADERS += \
     bccboard.h

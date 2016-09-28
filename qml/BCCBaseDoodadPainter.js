@@ -2,7 +2,8 @@
 .import "BCCGlobal.js" as Global
 .import QtQuick 2.7 as QQ
 
-function BCCBaseDoodadPainter(sQComponentPath) {
+//ALEX: do not forget all props m<Prop>, m<Prop>Invalid, paintM<Prop>, setMProp
+function newInstance(sQComponentPath) {
 
     var ret = sQComponentPath == undefined || sQComponentPath == null ? null :
                                                                         new Object({
@@ -22,8 +23,8 @@ function BCCBaseDoodadPainter(sQComponentPath) {
                           paintMPos          : (function(){
                               if(this.mPosInvalid || this.mIsInvalid)
                               {
-                                  this.qComponentInstance.x = this.mPos.mX * mScale;
-                                  this.qComponentInstance.y = this.mPos.mY * mScale;
+                                  this.qComponentInstance.x = this.mPos.mX * this.mScale;
+                                  this.qComponentInstance.y = this.mPos.mY * this.mScale;
                                   this.mPosInvalid = false;
                               }
                           }),
@@ -33,55 +34,72 @@ function BCCBaseDoodadPainter(sQComponentPath) {
                           paintMDim          :(function(){
                               if(this.mDimInvalid || this.mIsInvalid)
                               {
-                                    this.qComponentInstance.width = this.mDim.mX * mScale;
-                                    this.qComponentInstance.height= this.mDim.mY * mScale;
+                                    this.qComponentInstance.width = this.mDim.mX * this.mScale;
+                                    this.qComponentInstance.height= this.mDim.mY * this.mScale;
                                     this.mDimInvalid= false;
                               }
                            }),
 
                           mIsVisible         : true,
                           mIsVisibleInvalid  : true,
-                          paintMVisible      : (function(){
+                          paintMIsVisible      : (function(){
                               if(this.mIsVisibleInvalid || this.mIsInvalid){
-                                this.qComponentinstance.visible = this.mIsVisible;
+                                this.qComponentInstance.visible = this.mIsVisible;
                                 this.mIsVisibleInvalid = false;
                               }
                           }),
 
                           mIsInvalid  : true,
+                          invalidate:(function(){this.mIsInvalid = true;}),
+
+                          //Setters
                           setScale    :(function(fScale    ){ if(fScale     !== this.mScale    ) {this.mScale     = fScale;          this.mScaleInvalid     = true;}}),
                           setPos      :(function(vPos      ){ if(!vPos.bEquals (this.mPos      )){this.mPos       = Vec.cctor(vPos); this.mPosInvalid       = true;}}),
                           setDim      :(function(vDim      ){ if(!vDim.bEquals (this.mDim      )){this.mDim       = Vec.cctor(vDim); this.mDimInvalid       = true;}}),
                           setIsVisible:(function(bIsVisible){ if(bIsVisible !== this.mIsVisible) {this.mIsVisible = bIsVisible;      this.mIsVisibleInvalid = true;}}),
 
-                          invalidate:(function(){this.mIsInvalid = true;}),
+                          canPaint           : (function()
+                          {
+                              return Global.isOV(this.qComponentClass) &&
+                                      Global.isOV(this.qComponentInstance);
+                          }),
 
                           paint:(function(){
-                              // paintMXXX is a missnomer .. hmm
-                            this.paintMScale();
-                            this.paintMPos();
-                            this.paintMDim();
-                            this.paintMIsVisible();
-                            this.mIsInvalid = false;
+
+                              if(this.canPaint())
+                              {
+                                this.paintMScale();
+                                this.paintMPos();
+                                this.paintMDim();
+                                this.paintMIsVisible();
+                                this.mIsInvalid = false;
+                              }
+
                           }),
 
                           releaseInstance:(function(){
-                            this.qComponentinstance.visible = false;
+                              if(Global.isOV(this.qComponentInstance))
+                              {
+                                //is this even going to be passed below ? , have 16 on destroy to be sure
+                                this.qComponentInstance.visible = false;
                                 this.qComponentInstance.destroy(16);
                                 this.qComponentInstance = null;
+                              }
+
+                              if(Global.isOV(this.qComponentClass)){
+                                //will this work ??
+                                this.qComponentClass.destroy(32);
+                                this.qComponentClass    = null;
+                              }
                           })
 
     });
 
-    console.log(sQComponentPath);
-
     //this should be a singleton ... anyway
     ret.qComponentClass = Qt.createComponent(sQComponentPath);
 
-
     if (ret.qComponentClass.status == QQ.Component.Ready) {
-        ret.qComponentInstance       = ret.qComponentClass.createObject(root);
-        ret.qComponentInstance.scale = Global.LEVEL_SCALE;
+        ret.qComponentInstance       = ret.qComponentClass.createObject(root);        
     }else
     {
         console.log(component.errorString());

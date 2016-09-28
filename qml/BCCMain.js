@@ -10,7 +10,7 @@
 .import "BCCPUp.js" as PU
 .import "BCCGfx.js" as GFX
 
-.import "BCCLevelCell2.js" as Cell
+
 function BCCMain()
 {
     var ret = new Object({
@@ -34,41 +34,7 @@ function BCCMain()
                              mTank       : null,
                              mEnemyTanks : [],
                              mLevel      : null,
-//============
-                             //mCellsTmp   : [],
 
-                             initLevel:(function(){
-                                 var rows = new Array(1);
-
-                                 for(var i = 0; i < rows.length;i++)
-                                 {
-                                     var col = new Array(1);
-
-                                     for(var j=0;j<col.length;j++)
-                                     {
-                                         col[j] = Cell.newInstance(j,i,/*!!!!*/null);
-                                     }
-
-                                     rows[i] = col;
-                                 }
-                                 return rows;
-                             }),
-
-                             updateLevel:(function(){
-                                 var rows = this.mCellsTmp;
-
-                                 for(var i = 0; i < rows.length;i++)
-                                 {
-                                     var col = rows[i];
-
-                                     for(var j=0;j<col.length;j++)
-                                     {
-                                         Global.cUpdatePaint(col[j]);
-                                     }
-
-                                 }
-                             }),
-//================
                              mAvailableEnemyTanks : 20,
                              onTankDied  : (function(oTank)
                              {
@@ -123,20 +89,22 @@ function BCCMain()
 
                                  this.mTank = Tank.newInstance(this.mLevel,0,20,false);
 
-                                 this.mEnemyTanks.push(
-                                            Tank.newInstance(
-                                              this.mLevel,
-                                              8,4,
-                                              true)
-                                          );
+                                 //this.mEnemyTanks.push(
+                                 //           Tank.newInstance(
+                                 //             this.mLevel,
+                                 //             8,4,
+                                 //             true)
+                                 //         );
 
                                  //PU.newInstance(this.mLevel, 20 , 20 , 0);
-                                 //GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
+                                 //this.tmpGfx = GFX.newInstance(this.mLevel, 25, 25 , GFX.E_GFX_SMALL_EXP , -1 , null);
                                  //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);
                                  //GFX.newInstance(this.mLevel, 25, 34 , GFX.E_GFX_TELEPORT, -1 , null);
                                  //GFX.newInstance(this.mLevel, 30, 34 , GFX.E_GFX_BIG_EXP, -1 , null);
                                  //304,32 //ok
                                  //320,32 //lost
+
+
                              }),
 
                              update:(function(){
@@ -147,6 +115,10 @@ function BCCMain()
 
                                  //this.updateLevel();
                                  //hmm .. this is not good !!!
+                                 //this.tmpGfx.update(Global.T_tick);
+                                 //this.tmpGfx.paint();
+                                 //Global.cUpdatePaint(this.tmpGfx, Global.T_tick);
+
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );
 
