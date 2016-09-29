@@ -6,36 +6,135 @@ import OpenGLUnderQML 1.0
 import QtQml.StateMachine 1.0 as SM
 
 
-import "BCCVec.js" as Vec
+import "BCCVec.js"    as Vec
 import "BCCGlobal.js" as BCCGlobal
-import "BCCLevel.js" as BCCLevel
-//import "BCCSimpleDoodadPainter.js" as BCCSimpleDoodadPainter
-import "BCCMain.js" as BCCMain
+import "BCCLevel.js"  as BCCLevel
+import "BCCMain.js"   as BCCMain
 
 
 Window {
 
     SM.StateMachine{
         id:bccSM
-        initialState: sMainMenu
-        running: true
+        initialState: sMainMenu_Startup
+        property var mIsFirstTime : false
+        running: false
 
         SM.State{
-            id : sMainMenu
+            id : sMainMenu_Startup
+            initialState: scMainMenu_mIsFirstTime
             onEntered:{
+                console.log("sMainMenu_Startup entered")
                 rMainMenu.visible = true;
-                rMainMenu_ShowAnim.start();
                 levelStartAnimRes.visible = false;
             }
 
             onExited :{
-                rMainMenu.visible = true;
-                levelStartAnimRes.visible = false;
+                console.log("sMainMenu_Startup exited")
+                rMainMenu.visible = false;
+                levelStartAnimRes.visible = true;
+            }
+            //missing guard && missing conditional transitions .. wxx
+
+            SM.State{
+                id : scMainMenu_mIsFirstTime;
+
+                SM.TimeoutTransition{
+                    id: tTout_scMainMenu_mIsFirstTime
+                    timeout: 1
+                }
+
+                SM.SignalTransition{
+                    id: tSig_scMainMenu_mIsFirstTime
+                    targetState: bccSM.mIsFirstTime && !(bccSM.mIsFirstTime=false) ? sMainMenu_FirstTime : sMainMenu_List
+                    signal: tTout_scMainMenu_mIsFirstTime.onTriggered // will this work ???
+                }
+            }
+
+
+            SM.State {
+                id : sMainMenu_FirstTime
+                onEntered:{
+                    console.log("sMainMenu_FirstTime : entered")
+                    rMainMenu_ShowAnim.start();
+                }
+
+                onExited:{
+                    console.log("sMainMenu_FirstTime : exited")
+                }
+
+                SM.SignalTransition {
+                    targetState: sMainMenu_List
+                    signal: rMainMenu_ShowAnim.onStopped
+                }
+
+            }
+
+            SM.State {
+                property var mSelectedEntry : 0
+                id : sMainMenu_List
+                onEntered:{
+                    console.log("sMainMenu_List : entered")
+                    rMainMenu.y = rMainMenu.zY
+                    rMainMenu_List_Cursor.visible = true;
+                    rMainMenu_List_Cursor.setPos(mSelectedEntry);
+                }
+
+                SM.SignalTransition{
+                    signal: keyHandler.Keys.onUpPressed
+                    guard: sMainMenu_List.onUpPressed()
+                }
+
+                SM.SignalTransition{
+                    signal: keyHandler.Keys.onDownPressed
+                    guard: sMainMenu_List.onDownPressed()
+                }
+
+                SM.SignalTransition{
+                    targetState: sStartLevel
+                    signal: keyHandler.Keys.onReturnPressed
+                    guard: sMainMenu_List.onEnterPressed()
+                }
+
+                SM.SignalTransition{
+                    targetState: sStartLevel
+                    signal: keyHandler.Keys.onEnterPressed
+                    guard: sMainMenu_List.onEnterPressed()
+                }
+
+
+                function onUpPressed(){
+                    console.log("Up");
+                    mSelectedEntry = mSelectedEntry > 0 ? mSelectedEntry - 1 : mSelectedEntry;
+                    rMainMenu_List_Cursor.setPos(mSelectedEntry);
+                    return false;
+                }
+
+                function onDownPressed(){
+                    console.log("Down");
+                    mSelectedEntry = mSelectedEntry < 2 ? mSelectedEntry + 1 : mSelectedEntry;
+                    rMainMenu_List_Cursor.setPos(mSelectedEntry);
+                    return false;
+                }
+
+                function onEnterPressed(){
+                    console.log("Enter");
+                    //TODO: set this value to the game itself or something
+                    return true;
+                }
+
+                onExited:{
+                    console.log("sMainMenu_List : exited")
+                }
             }
         }
+
         SM.State{
             id : sStartLevel
             initialState: sStartLevel_sCloseAnim
+
+            onEntered: console.log("sStartLevel : entered")
+
             SM.State
             {
                 id: sStartLevel_sCloseAnim
@@ -77,7 +176,7 @@ Window {
 
 
 
-    id : "rootWindow"
+    id : rootWindow
     visible: true
     //832
     width: 1024;//(256 = 16 + 208 + 32)  * 4
@@ -102,20 +201,19 @@ Window {
     Item {
         id : keyHandler
         focus: true;
-        Keys.onPressed : myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);
-        Keys.onReleased: myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);
+        Keys.onPressed : {}//{myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);}
+        Keys.onReleased: {}//{myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);}
+        Keys.onUpPressed: {console.log("upPressed");}
+        //keypad enter
+        Keys.onEnterPressed: {console.log("enterPressed");}
+        //main key
+        Keys.onReturnPressed: {console.log("returnPressed");}
     }
 
     Squircle {
-        width: 832
-        height: 832
-        id : mapView;
-            SequentialAnimation on t {
-                NumberAnimation { to: 1; duration: 1000; easing.type: Easing.InQuad }
-                NumberAnimation { to: 0; duration: 1000; easing.type: Easing.OutQuad }
-                loops: Animation.Infinite
-                running: true
-            }
+            width: 832
+            height: 832
+            id : mapView;
         }
 
     Component.onCompleted: {     
@@ -123,9 +221,9 @@ Window {
         //Enable !!!!
        // myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
        // _BCCMainTimer.start();
+        bccSM.start();
 
     }
-
 
 
     Rectangle{
@@ -135,10 +233,13 @@ id : rMainMenu
         property var zX : 418
         property var zY : 400
 
-        SequentialAnimation on y {
-            id : rMainMenu_ShowAnim
-            NumberAnimation { to: rMainMenu.zY; duration: 4000; easing.type: Easing.InBounce }
-        }
+         NumberAnimation on y
+         {
+             id : rMainMenu_ShowAnim
+             to: rMainMenu.zY; duration: 4000; easing.type: Easing.InBounce
+             running: false;
+         }
+
 
 
         x  : 400 + 18
@@ -194,6 +295,16 @@ y:-50
             smooth : false
         }
 
+        BCCListCursor{
+            id: rMainMenu_List_Cursor
+            visible: true;
+            x: -64
+            property var yPos : [ 103 , 159  , 215 ]
+            function setPos(iIdx){
+                y=yPos[iIdx];
+            }
+        }
+
     }
 
 
@@ -210,17 +321,9 @@ y:-50
 
         property var mYH : 0//rootWindow.height/2 ;
 
-        SequentialAnimation on mYH {
-            id : anim1
-            NumberAnimation { to: rootWindow.height/2; duration: levelStartAnimRes.mDuration; easing.type: Easing.InQuad }
-            running: false
-        }
+        NumberAnimation on mYH{ running: false; id : anim1; to: rootWindow.height/2; duration: levelStartAnimRes.mDuration; easing.type: Easing.InQuad }
+        NumberAnimation on mYH {running: false; id : anim2; to: 0; duration:levelStartAnimRes.mDuration; easing.type: Easing.OutQuad }
 
-        SequentialAnimation on mYH {
-            id : anim2
-            NumberAnimation { to: 0; duration:levelStartAnimRes.mDuration; easing.type: Easing.OutQuad }
-            running: false
-        }
 
         //0 -> h/2
         Rectangle
@@ -278,8 +381,6 @@ y:-50
 
                 anchors.top:parent.top
                 anchors.topMargin:8
-
-
 
                 mOffsetX: 336
                 mOffsetY: 183
