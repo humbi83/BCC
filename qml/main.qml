@@ -17,15 +17,29 @@ Window {
 
     SM.StateMachine{
         id:bccSM
-        initialState: sStartLevel
+        initialState: sMainMenu
         running: true
+
+        SM.State{
+            id : sMainMenu
+            onEntered:{
+                rMainMenu.visible = true;
+                rMainMenu_ShowAnim.start();
+                levelStartAnimRes.visible = false;
+            }
+
+            onExited :{
+                rMainMenu.visible = true;
+                levelStartAnimRes.visible = false;
+            }
+        }
         SM.State{
             id : sStartLevel
             initialState: sStartLevel_sCloseAnim
             SM.State
             {
                 id: sStartLevel_sCloseAnim
-                onEntered:{anim1.start()}
+                onEntered:{anim1.start();}
 
                 SM.SignalTransition {
                                  targetState: sStartLevel_sWaitKeyPressedEnter
@@ -42,11 +56,20 @@ Window {
                     targetState: sStartLevel_sOpenAnim;
                     signal: keyHandler.Keys.onEnterPressed
                 }
+
+                SM.TimeoutTransition
+                {
+                    targetState: sStartLevel_sOpenAnim
+                    timeout: 3000
+                }
+
+                onExited: {rLevelStart_Stage1.visible = false;}
             }
+
             SM.State
             {
                 id: sStartLevel_sOpenAnim
-                onEntered: {anim2.start()}
+                onEntered: {anim2.start(); }
             }
         }
     }
@@ -88,39 +111,114 @@ Window {
         height: 832
         id : mapView;
             SequentialAnimation on t {
-                NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
-                NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
+                NumberAnimation { to: 1; duration: 1000; easing.type: Easing.InQuad }
+                NumberAnimation { to: 0; duration: 1000; easing.type: Easing.OutQuad }
                 loops: Animation.Infinite
                 running: true
             }
         }
 
     Component.onCompleted: {     
-        myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
-        _BCCMainTimer.start();
-       // someQ.applyBrush(16,16,256,0,16,16,2,3);
+
+        //Enable !!!!
+       // myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
+       // _BCCMainTimer.start();
+
     }
 
+
+
     Rectangle{
-        id : levelStartAnimRes
+
+id : rMainMenu
+
+        property var zX : 418
+        property var zY : 400
+
+        SequentialAnimation on y {
+            id : rMainMenu_ShowAnim
+            NumberAnimation { to: rMainMenu.zY; duration: 4000; easing.type: Easing.InBounce }
+        }
+
+
+        x  : 400 + 18
+        y  : zY + rootWindow.height
+        visible: false;
 
         color :"black"
         width : rootWindow.width ;
         height: rootWindow.height;
-        property var mDuration: 2000
+        property var mScale : 3.5
+
+        Image {
+
+            y : -300
+            id: rMainMenu_Phone
+            anchors.horizontalCenter: parent.Center
+
+            scale : rMainMenu.mScale
+            smooth : false
+            source: "../BCCMenuPhone.png"
+        }
+
+        Image {
+
+anchors.horizontalCenter: parent.Center
+
+x : -45
+y : -350
+                    id: rMainMenu_Mail
+                    scale  :rMainMenu.mScale
+                    smooth : false
+
+                    source: "../BCCMenuMail.png"
+                }
+
+
+        Image {
+
+            anchors.horizontalCenter: parent.Center
+y:-50
+            id: rMainMenu_List
+            scale : rMainMenu.mScale
+
+            smooth : false
+            source: "../BCCMenuMiddle.png"
+        }
+        Image {
+            y : 400
+            scale : rMainMenu.mScale
+            id: rMainMenu_ARR
+
+            source: "../BCCMenuBottom.png"
+            smooth : false
+        }
+
+    }
+
+
+    Rectangle{
+        id : levelStartAnimRes
+
+        visible: false;
+
+        color :"black"
+        width : rootWindow.width ;
+        height: rootWindow.height;
+        property var mDuration: 1000
 
 
         property var mYH : 0//rootWindow.height/2 ;
 
         SequentialAnimation on mYH {
             id : anim1
-            NumberAnimation { to: rootWindow.height/2; duration: 2000; easing.type: Easing.InQuad }
+            NumberAnimation { to: rootWindow.height/2; duration: levelStartAnimRes.mDuration; easing.type: Easing.InQuad }
             running: false
         }
 
         SequentialAnimation on mYH {
             id : anim2
-            NumberAnimation { to: 0; duration:2000; easing.type: Easing.OutQuad }
+            NumberAnimation { to: 0; duration:levelStartAnimRes.mDuration; easing.type: Easing.OutQuad }
             running: false
         }
 
@@ -146,25 +244,50 @@ Window {
             id : rLevelStart_Stage1
             visible:false;
             anchors.centerIn: levelStartAnimRes
+            color : "#636363"
+            width : 256
+            height: 32
+
 
             BBCAtlasFrame
             {
                 id : rLevelStart_Stage1_Stage
+
+                anchors.left: parent.left;
+                anchors.leftMargin: 60
+
+                anchors.top:parent.top
+                anchors.topMargin:12
+
+
                 mOffsetX: 328
                 mOffsetY: 176
-                mWidth:40
-                mHeight:8
+                mWidth  :40
+                mHeight :8
+                mResPath: "../res/general_org.png";
             }
 
             BBCAtlasFrame
             {
                 id : rLevelStart_Stage1_1
-                //x : rLevelStart_Stage1_Stage.width + 64
+
+                anchors.left: parent.left
+                //lM = 60 for what ever reason + 4*40(width prev item) +  16*4 empty space
+                //(i'm missing something regarding scaling in BBCAtlas + 160
+                anchors.leftMargin: 264
+
+                anchors.top:parent.top
+                anchors.topMargin:8
+
+
+
                 mOffsetX: 336
                 mOffsetY: 183
                 mWidth:8
                 mHeight:8
+                mResPath: "../res/general_org.png";
             }
+
 
 
 
