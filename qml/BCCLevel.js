@@ -78,10 +78,18 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
                              bIsInside2v:(function(vPos,vDim){
-                                 return vPos.mX >= 0 &&
-                                        vPos.mY >= 0 &&
-                                        vPos.mX + vDim.mX <=  this.mDim.mX &&
-                                        vPos.mY + vDim.mY <=  this.mDim.mY ;
+                                 //return vPos.mX >= 0 &&
+                                 //       vPos.mY >= 0 &&
+                                 //       vPos.mX + vDim.mX <=  this.mDim.mX &&
+                                 //       vPos.mY + vDim.mY <=  this.mDim.mY ;
+
+                                 var b1 =  vPos.mX >= 0 ;
+                                 var b2 =  vPos.mY >= 0 ;
+                                 var b3 =  vPos.mX + vDim.mX <=  this.mDim.mX ;
+                                 var b4 =  vPos.mY + vDim.mY <=  this.mDim.mY ;
+
+                                 var ret = b1 && b2 && b3 && b4;
+                                 return ret;
                              }),
 
                              //bullets will kill, they will check for collision
@@ -153,15 +161,17 @@ function BCCLevel(iDimX,iDimY){
 
                                  //should be an int, no hits or no stars needed or both
                                  var bIsDist = false;
+                                 var bIsPass = false;
+                                 var bIsNullDoodad = false;
 
                                  ///todo add to factory
                                  switch(eBrushType){
-                                    case E_BRUSH_HQ_ALIVE   : eDoodadType = Doodad.E_DOODAD_HQ_2F     ; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 304, 32, 16,16,1,1); break;
-                                    case E_BRUSH_HQ_DEAD    : eDoodadType = Doodad.E_DOODAD_HQ_2F     ; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 320, 32, 16,16,1,1); break;
+                                    case E_BRUSH_HQ_ALIVE   : eDoodadType = Doodad.E_DOODAD_HQ_ALIVE  ; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 304, 32, 16,16,1,1); break;
+                                    case E_BRUSH_HQ_DEAD    : eDoodadType = Doodad.E_DOODAD_HQ_DEAD   ; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 320, 32, 16,16,1,1); break;
                                     case E_BRUSH_BRICK_WALL : eDoodadType = Doodad.E_DOODAD_BRICK_WALL; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                     case E_BRUSH_STONE_WALL : eDoodadType = Doodad.E_DOODAD_STONE_WALL; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                     case E_BRUSH_EMPTY      : //fall through
-                                    default                 : mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    default                 : bIsNullDoodad = true; bIsPass = true; mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                  }
 
                                  ///Not nice
@@ -175,7 +185,7 @@ function BCCLevel(iDimX,iDimY){
                                      {
                                         //one doodad per cell, I should cut paint/update ??, Ill do the logic in bullet
                                          //I will need some hacking for HQ
-                                        var oDoodad = Doodad.newInstance(eDoodadType, null, this, iPosX, iPosY, iDimX, iDimY, bIsDist, false);
+                                        var oDoodad = bIsNullDoodad ? null : Doodad.newInstance(eDoodadType, null, this, j, i, 1, 1, bIsDist, false);
                                         this.mCells[i][j].mStationedDoodad = oDoodad;
                                      }
                                  }

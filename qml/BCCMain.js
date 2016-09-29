@@ -67,13 +67,20 @@ function BCCMain()
                                  this.mLevel.applyBrush(176,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
                                  this.mLevel.applyBrush(176,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
                                  this.mLevel.applyBrush( 80,  88, Level.E_BRUSH_BRICK_WALL, 16,16);
-                                 this.mLevel.applyBrush(112,  88, Level.E_BRUSH_BRICK_WALL, 12,16);// newl
+                                 this.mLevel.applyBrush(112,  88, Level.E_BRUSH_BRICK_WALL, 16,16);// newl
+
+                                 this.mLevel.applyBrush(  0, 104, Level.E_BRUSH_BRICK_WALL, 16, 8);
                                  this.mLevel.applyBrush(  0, 112, Level.E_BRUSH_STONE_WALL, 16, 8);
+
                                  this.mLevel.applyBrush( 32, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
                                  this.mLevel.applyBrush(144, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
+
+                                 this.mLevel.applyBrush(191, 104, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
                                  this.mLevel.applyBrush(191, 112, Level.E_BRUSH_STONE_WALL, 16, 8);//newl
+
                                  this.mLevel.applyBrush( 16, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
                                  this.mLevel.applyBrush( 16, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);
+
                                  this.mLevel.applyBrush( 48, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
                                  this.mLevel.applyBrush( 48, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
                                  this.mLevel.applyBrush(144, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
@@ -86,7 +93,9 @@ function BCCMain()
 
                                  //this.mLevel.applyBrush( 88, 184, Level.E_BRUSH_BRICK_WALL,  8,48);//fails
 
-                                 this.mLevel.applyBrush( 96, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);
+                                 this.mLevel.applyBrush( 88, 184, Level.E_BRUSH_BRICK_WALL, 32, 8);
+                                 this.mLevel.applyBrush( 88, 192, Level.E_BRUSH_BRICK_WALL, 32, 8);
+                                 this.mLevel.applyBrush( 88, 200, Level.E_BRUSH_BRICK_WALL, 32, 8);
 
                                  //this.mLevel.applyBrush(112, 184, Level.E_BRUSH_BRICK_WALL,  8,48);//newl//fails
 
@@ -100,79 +109,11 @@ function BCCMain()
                                  //             8,4,
                                  //             true)
                                  //         );
-
-
-                                 //this.fsColor = ColorPainter.newInstance("blue",64,64);
-                                 //this.fsColor.setPos(Vec.Vec2(100,100));
-                                 //this.fsColor.setScale(2);
-                                 //
-                                 //
-                                 //this.tmpDoodadA =     Doodad.newInstance(Doodad.E_DOODAD_TANK,
-                                 //     ColorPainter.newInstance("white",4,4),
-                                 //      this.mLevel, 0,0);
-                                 //this.tmpDoodadA.mPainter.setPos(Vec.Vec2(256,256));
-                                 //this.tmpDoodadA.mPainter.setDim(Vec.Vec2(16,16));
-                                 //this.tmpDoodadA.mPainter.setScale(4);
-                                 //
-                                 //this.tmpDoodad  =
-                                 //     Doodad.newInstance(Doodad.E_DOODAD_TANK,
-                                 //     FSPainter.newInstance(
-                                 //            Vec.Vec2( 0,  0),
-                                 //            Vec.Vec2(16, 16),
-                                 //            Vec.Vec2( 1,  8)
-                                 //            ),
-                                 //      this.mLevel, 6,6);
-                                 //this.tmpDoodad.mPainter.setScale(4);
-                                 //this.tmpDoodad.mPainter.setPos  (Vec.Vec2(128,128));
-
-
-                                 //this.tmpFP.setPos(Vec.Vec2(32,32));
-                                 //this.tmpFP.setIsVisible(true);
-
-
-
-                                 //PU.newInstance(this.mLevel, 20 , 20 , 0);
-                                 //this.tmpGfx = GFX.newInstance(this.mLevel, 0, 0 , GFX.E_GFX_SMALL_EXP , -1 , null);
-                                 //this.tmpGfx.mPainter.setScale(4);
-                                 //GFX.newInstance(this.mLevel, 25, 30 , GFX.E_GFX_SHILED, -1 , null);
-                                 //GFX.newInstance(this.mLevel, 25, 34 , GFX.E_GFX_TELEPORT, -1 , null);
-                                 //GFX.newInstance(this.mLevel, 30, 34 , GFX.E_GFX_BIG_EXP, -1 , null);
-                                 //304,32 //ok
-                                 //320,32 //lost
-
-
-
-                                 //this.tmpCpp = CFSPainter.newInstance(Vec.Vec2(),Vec.Vec2(16,16),Vec.Vec2(1,8));
-                                 ////max e 208 pe fiecare dir
-                                 //this.tmpCpp.setPos(Vec.Vec2(0,0));
-
                              }),
 
                              update:(function(){
 
-                                 //console.log(Global.T_tick);
                                  Global.T_tick = Global.T_tick+1;
-                                 //console.log(Global.T_tick);
-                                 //this.tmpCpp.setCurrentFrame(Vec.Vec2(Global.T_tick%8,0));
-                                 //this.tmpCpp.paint();
-
-                                 //this.updateLevel();
-                                 //hmm .. this is not good !!!
-
-                               //  this.tmpGfx.mPainter.setPos(Vec.Vec2(100,100));
-                               //
-                               // Global.cUpdatePaint(this.tmpGfx,Global.T_tick);
-                                 //this.tmpGfx.update(Global.T_tick);
-                                 //this.tmpGfx.paint();
-                                 //Global.cUpdatePaint(this.tmpGfx, Global.T_tick);
-
-                                 //this.fsColor.paint();
-                                 //this.tmpDoodadA.mPainter.invalidate();
-                                 //Global.cUpdatePaint(this.tmpDoodadA, Global.T_tick);
-                                 //
-                                 ////this.tmpDoodad.setCellPos(Vec.Vec2(Global.T_tick%6 + 6,Global.T_tick%6+6));
-                                 //Global.cUpdatePaint(this.tmpDoodad, Global.T_tick);
-
 
                                  Global.cUpdatePaint(this.mLevel, Global.T_tick );
                                  Global.cUpdatePaint(this.mTank , Global.T_tick );

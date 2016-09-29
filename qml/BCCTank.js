@@ -23,6 +23,7 @@ var E_STATE_NORMAL        = 2;
 var E_STATE_POWUP         = 3;//flashes red, I need 2 painters
 var E_STATE_EXPLODING     = 4;
 var E_STATE_EXPLODED      = 5;
+var E_STATE_FROZEN        = 6;
 
 
 //I will need 2 paintes
@@ -61,10 +62,14 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         return ret;
     });
 
+
+    //can i be in frozen + shield ?? no
     ret.canExplode = (function(){
         return (
             this.mCurrentState ==  E_STATE_NORMAL ||
-            this.mCurrentState ==  E_STATE_POWUP );
+            this.mCurrentState ==  E_STATE_POWUP  ||
+            this.mCurrentState ==  E_STATE_FROZEN
+                    );
     });
 /*
     if(this.mAI != null){
@@ -174,7 +179,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     //motor enemy
     ret.onFire = (function()
     {
-        this.mLevel.addDynObj(Bullet.newInstance(this));
+        //so what ..
+        if(this.canMove()){
+            this.mLevel.addDynObj(Bullet.newInstance(this));
+        }
     });
 
     ret.onMoveEvent = (function(eDir){
@@ -231,9 +239,12 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
     ret.update = (function(tick){
 
+        console.log(this.mLevel.mDynObjects);
+
         //manually update paint the gfx
         if(this.mCurrentGfx != null)
         {
+            this.mCurrentGfx.setCellPos(this.mCellPos);
             Global.cUpdatePaint(this.mCurrentGfx,tick);
         }
 

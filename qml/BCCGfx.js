@@ -53,7 +53,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
     case E_GFX_TELEPORT :
         __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    Vec.Vec2(255,96),Vec.Vec2(16,16),Vec.Vec2(4,1),
+                    Vec.Vec2(256,96),Vec.Vec2(16,16),Vec.Vec2(4,1),
                     oLevel,
                     iX ,iY
                     );
@@ -61,7 +61,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
     case E_GFX_SHILED:
         __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    Vec.Vec2(255,96 + 48),Vec.Vec2(16,16),Vec.Vec2(2,1),
+                    Vec.Vec2(256,96 + 48),Vec.Vec2(16,16),Vec.Vec2(2,1),
                     oLevel,
                     iX ,iY
                     );
@@ -69,7 +69,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
      case E_GFX_SMALL_EXP:
          __ret = MFDoodad.newInstance(
                      Doodad.E_DOODAD_EMPTY,
-                     Vec.Vec2(255,96 + 32),Vec.Vec2(16,16),Vec.Vec2(3,1),
+                     Vec.Vec2(256,96 + 32),Vec.Vec2(16,16),Vec.Vec2(3,1),
                      oLevel,
                      iX ,iY
                      );
@@ -77,7 +77,7 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
     case E_GFX_BIG_EXP:
         __ret = MFDoodad.newInstance(
                     Doodad.E_DOODAD_EMPTY,
-                    Vec.Vec2(255 + 48 ,96 + 32),Vec.Vec2(32,32),Vec.Vec2(2,1),
+                    Vec.Vec2(256 + 48 ,96 + 32),Vec.Vec2(32,32),Vec.Vec2(2,1),
                     oLevel,
                     iX ,iY
                     );

@@ -33,8 +33,8 @@ function newInstance(
 
                              mCellPos       : Vec.Vec2(),
                              getPixPos      : (function(){
-                                 return mPainter != null ? Vec.cctor(mPainter.mPos) :
-                                                           mCellPos.vMulC(Global.LEVEL_CELL_PIX_SZ);
+                                 return this.mPainter != null ? Vec.cctor(this.mPainter.mPos) :
+                                                           this.mCellPos.vMulC(Global.LEVEL_CELL_PIX_SZ);
                              }),
                              setPixXY       : (function(x,y){
                                  this.mCellPos = Global.pixXY2CellV(x,y);
@@ -63,7 +63,7 @@ function newInstance(
                              isVisible      : (function()         { if(this.mPainter != null) { return this.mPainter.mIsVisible;} }),
                              setVisible     : (function(bVisible) { if(this.mPainter != null) { this.mPainter.setIsVisible(bVisible);} } ),
 
-                             explode        : (function(){console.log("Doodad::explode ", mDoodadType);}),
+                             explode        : (function(){console.log("Doodad::explode ", this.mDoodadType);}),
                              canExplode     : (function(){return false;}),
 
                              paint          : (function(){if(this.mPainter != null){this.mPainter.paint();}}),

@@ -72,6 +72,7 @@ function cUpdatePaint(element, tick){
     cPaint(element);
 }
 
+
 function remObject(obj, array){
     var ret = false;
 
@@ -87,6 +88,8 @@ function remObject(obj, array){
            console.log(i);
            array.splice(i, 1);
            ret = true;
+           //breaking on first find, .. I might have memlk
+           //issues if i add something multiple times
            break;
        }
     }

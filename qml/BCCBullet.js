@@ -52,7 +52,7 @@ function newInstance(oTank) {
     });
 
     __ret.canExplode =(function(){
-        return this.mCurrentState = E_STATE_ALIVE;
+        return this.mCurrentState == E_STATE_ALIVE;
     });
 
     __ret.update = (function(tick){
@@ -67,7 +67,8 @@ function newInstance(oTank) {
         switch(this.mCurrentState) {
             case E_STATE_ALIVE:{
 
-                    this.setPixXY(this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)));
+                    var pixPos = this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)).mulC(4);
+                    this.setPixXY(pixPos.mX,pixPos.mY);
 
                     var cellDim = this.getCellDim();
 
@@ -91,7 +92,11 @@ function newInstance(oTank) {
 
                             case Doodad.E_DOODAD_BRICK_WALL :{
                                 var pixPos = dynObj.getPixPos();
-                                this.mLevel.applyBrush( pixPos.mX, pixPox.mY, Level.E_BRUSH_EMPTY, 4,4);
+                                var celPos = dynObj.mCellPos;
+                                var cell = this.mLevel.mCells[celPos.mY][celPos.mX];
+                                var dStationed = cell.mStationedDoodad;
+                                cell.mStationedDoodad = null;
+                                this.mLevel.applyBrush( pixPos.mX, pixPos.mY, Level.E_BRUSH_EMPTY, 4,4);
                             }break;
 
                             case Doodad.E_DOODAD_TANK       :{
@@ -104,6 +109,7 @@ function newInstance(oTank) {
                                 this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_DEAD, 16,16);
                             }break;
                                 default: //do nothing
+                                     console.log("stuff");
                                     break;
                             }
                         }
@@ -131,6 +137,5 @@ function newInstance(oTank) {
 
     });
 
-    __ret.mLevel.addDynObj(__ret);
     return __ret;
 }
