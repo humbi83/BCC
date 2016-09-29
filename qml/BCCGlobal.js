@@ -3,6 +3,8 @@
 var LEVEL_SCALE         =  4;
 var LEVEL_CELL_PIX_SZ   =  4;
 var TANK_PIX_SZ         = 16;
+var LEVEL_CELL_POS_X    = 4;
+var LEVEL_CELL_POS_Y    = 4;
 var LEVEL_NO_CELLS      = 13 * TANK_PIX_SZ / LEVEL_CELL_PIX_SZ;
 
 var NV_E_DIR    = -1;
@@ -78,14 +80,14 @@ function remObject(obj, array){
 
     var i = 0;
 /////////this is not working
-    console.log(array);
+  //  console.log(array);
     for(; i < array.length;i++)
     {
         var eleI = array[i];
 
        if(eleI === obj)
        {
-           console.log(i);
+          // console.log(i);
            array.splice(i, 1);
            ret = true;
            //breaking on first find, .. I might have memlk
@@ -94,7 +96,7 @@ function remObject(obj, array){
        }
     }
 
-    console.log(array);
+  //  console.log(array);
     return ret;
 }
 

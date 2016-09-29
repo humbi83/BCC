@@ -11,13 +11,17 @@ var E_STATE_MOVE       = 1;
 var E_STATE_CHANGE_DIR = 2;
 var E_STATE_SHOOT      = 3;
 
-var DT_180  = 5000 / 16 ;
-var DT_FIRE = 1000 / 16 ;
-var DT_MOV  = 200  / 16 ;
+var g_DT_180  = 5000;
+var g_DT_FIRE = 1000;
+var g_DT_MOV  = 200 ;
 
 function newInstance(oTank) {
 
     var ret = new Object({
+                             mDT_180 : g_DT_180  /_BCCMainTimer.interval,
+                             mDT_FIRE: g_DT_FIRE /_BCCMainTimer.interval,
+                             mDT_MOV : g_DT_MOV  /_BCCMainTimer.interval,
+
                             mMovTick          : 0,
                             mFireTick         : 0,
                             m180Tick          : 0,
@@ -62,12 +66,12 @@ function newInstance(oTank) {
 
                                 if(this.mCurrentState == E_STATE_MOVE){
 
-                                    if(dTFire >= DT_FIRE )
+                                    if(dTFire >= this.mDT_FIRE )
                                     {
                                         this.mFireTick = tick;
                                         this.mCurrentState = E_STATE_SHOOT;
                                     }else
-                                    if(dTMov >= DT_MOV){
+                                    if(dTMov >= this.mDT_MOV){
                                         this.mMovTick = tick;
                                         this.mTank.onMoveEvent(this.mCurrentDir);
                                     }

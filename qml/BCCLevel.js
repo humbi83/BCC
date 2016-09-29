@@ -9,6 +9,7 @@ var E_BRUSH_BRICK_WALL = 2;
 var E_BRUSH_STONE_WALL = 3;
 var E_BRUSH_HQ_ALIVE   = 4;
 var E_BRUSH_HQ_DEAD    = 5;
+var E_BRUSH_
 var SZ_E_BRUSH         = 6;
 
 Array.matrix = function(numrows, numcols, initial) {
@@ -28,7 +29,7 @@ function BCCLevel(iDimX,iDimY){
     var pDimX = iDimX == undefined ? Global.LEVEL_NO_CELLS : iDimX;
     var pDimY = iDimY == undefined ? Global.LEVEL_NO_CELLS : iDimY;
     var ret = new Object({
-
+                             mPos: Vec.Vec2(Global.LEVEL_CELL_POS_X,Global.LEVEL_CELL_POS_Y),
                              mDim: Vec.Vec2(pDimX,pDimY),
                              mDynObjects: [],                             
                              mCells : [],                             
@@ -83,10 +84,10 @@ function BCCLevel(iDimX,iDimY){
                                  //       vPos.mX + vDim.mX <=  this.mDim.mX &&
                                  //       vPos.mY + vDim.mY <=  this.mDim.mY ;
 
-                                 var b1 =  vPos.mX >= 0 ;
-                                 var b2 =  vPos.mY >= 0 ;
-                                 var b3 =  vPos.mX + vDim.mX <=  this.mDim.mX ;
-                                 var b4 =  vPos.mY + vDim.mY <=  this.mDim.mY ;
+                                 var b1 =  vPos.mX >= this.mPos.mX;
+                                 var b2 =  vPos.mY >= this.mPos.mY ;
+                                 var b3 =  vPos.mX + vDim.mX <=  this.mDim.mX + this.mPos.mX;
+                                 var b4 =  vPos.mY + vDim.mY <=  this.mDim.mY + this.mPos.mY;
 
                                  var ret = b1 && b2 && b3 && b4;
                                  return ret;
@@ -151,11 +152,14 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
 
-                             applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix)
+                             applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix, offX, offY)
                              {
+                                 var pOffX = offX == undefined ? this.mPos.mX : offX;
+                                 var pOffY = offY == undefined ? this.mPos.mY : offY;
+
                                  var eDoodadType = Doodad.E_DOODAD_EMPTY;
-                                 var iPosX   = Math.floor(xInPix/4);
-                                 var iPosY   = Math.floor(yInPix/4);
+                                 var iPosX   = pOffX + Math.floor(xInPix/4);
+                                 var iPosY   = pOffY + Math.floor(yInPix/4);
                                  var iDimX   = Math.floor(wInPix/4);
                                  var iDimY   = Math.floor(hInPix/4);
 
@@ -174,20 +178,22 @@ function BCCLevel(iDimX,iDimY){
                                     default                 : bIsNullDoodad = true; bIsPass = true; mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                  }
 
-                                 ///Not nice
+
                                  var limitI = iPosY + iDimY;
                                  var limitJ = iPosX + iDimX;
 
-                                 //ALEX: Do not forget to remove them !!!!!
-                                 for(var i=iPosY;i< limitI && i < this.mCells.length;i++)
-                                 {
-                                     for(var j=iPosX;j<limitJ && j < this.mCells[i].length;j++)
-                                     {
-                                        //one doodad per cell, I should cut paint/update ??, Ill do the logic in bullet
-                                         //I will need some hacking for HQ
-                                        var oDoodad = bIsNullDoodad ? null : Doodad.newInstance(eDoodadType, null, this, j, i, 1, 1, bIsDist, false);
-                                        this.mCells[i][j].mStationedDoodad = oDoodad;
-                                     }
+                                 if(this.bIsInside2v(Vec.Vec2(iPosX,iPosY),Vec.Vec2(iDimX,iDimY))){
+                                    //ALEX: Do not forget to remove them !!!!!
+                                    for(var i=iPosY;i< limitI && i < this.mCells.length;i++)
+                                    {
+                                        for(var j=iPosX;j<limitJ && j < this.mCells[i].length;j++)
+                                        {
+                                           //one doodad per cell, I should cut paint/update ??, Ill do the logic in bullet
+                                            //I will need some hacking for HQ
+                                           var oDoodad = bIsNullDoodad ? null : Doodad.newInstance(eDoodadType, null, this, j, i, 1, 1, bIsDist, false);
+                                           this.mCells[i][j].mStationedDoodad = oDoodad;
+                                        }
+                                    }
                                  }
                              })
                          });

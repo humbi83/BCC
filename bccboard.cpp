@@ -19,6 +19,7 @@ void Squircle::setT(qreal t)
     m_t = t;
     emit tChanged();
     if (window())
+        //this is important, maybe
         window()->update();
 }
 
@@ -112,8 +113,19 @@ static float* vert  = NULL;
 static int texSz = 0;
 static float* tex = NULL;
 
-#define __W 52
-#define __H 52
+
+#define __LB 4
+#define __GW 52
+#define __RB 8
+
+#define __TB 4
+#define __GH 52
+#define __LB 4
+
+
+
+#define __W (__LB + __GW + __RB)
+#define __H (__TB + __GH + __LB)
 
 #define __CELL_W 4
 #define __CELL_H 4
@@ -174,166 +186,7 @@ static void genBuffers2(int w, int h)
 static void genTex(int w,int h){
     texSz = w*h*12;
     tex = new float[texSz]{0.0f};
-#if 0
-    int idx = 0;
-    char buff[2048];
-    for(int i=0;i<h;i++)
-    {
-        for(int j=0;j<w;j++)
-        {
-
-            tex[ idx++ ] = 0;
-            tex[ idx++ ] = 0;
-            BLOG2();
-
-
-            tex[ idx++ ] = 0;
-            tex[ idx++ ] = 1 / float(w-j);
-            BLOG2();
-
-            tex[ idx++ ] = 1/float(w-j);
-            tex[ idx++ ] = 0;
-            BLOG2();
-
-            tex[ idx++ ] = 1/float(w-j);
-            tex[ idx++ ] = 0;
-            BLOG2();
-
-            tex[ idx++ ] = 0;
-            tex[ idx++ ] = 1/float(w-j);
-            BLOG2();
-
-            tex[ idx++ ] = 1/float(w-j);
-            tex[ idx++ ] = 1/float(w-j);
-            BLOG2();
-        }
-    }
-#endif
 }
-
-#if 0
-static void genBuffers(int w, int h){
-
-    char buff[2048];
-
-    int idx = 0;
-
-    verticesSz = (w+1) * (h+1) * 2;
-    vertices   = new float[verticesSz];
-
-#if 1
-
-    indicesSz = 3 * 2 * w * h;
-#else
-    //(4+ (w-1) * 2) * h + 2*(h-1)
-    indicesSz = 4*h + 2*h*w - 2;
-#endif
-
-    indices = new unsigned short[indicesSz];
-
-    //sprintf(buff,"%d %d %d %d\n",w, h, verticesSz, indicesSz );
-    //qDebug()<<buff;
-
-    for(int i = 0; i < h + 1 ; i++){
-        for(int j = 0; j < w + 1; j++){
-
-            vertices[idx++] = (float)j;
-            vertices[idx++] = (float)i;
-
-
-            //sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1),j,i);
-            //qDebug()<<buff;//<<"\n";
-        }
-    }
-
-
-    idx = 0;
-qDebug()<<"\n";
-
-#if 1
-
-#if 1
-    const int wp1 = w+1;
-    for(int i=0;i<h;i++)
-    {
-        //int a = i * (w+1);
-        //int a2 = a * 2;
-        for(int j=0;j<w;j++)
-        {
-            const int jp1 = i * wp1 + j /*+ 1*/;
-
-            indices[ idx++ ] = jp1;
-            indices[ idx++ ] = jp1 + wp1;
-            indices[ idx++ ] = jp1 +1;
-            sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
-            qDebug()<<buff;
-
-            indices[ idx++ ] = jp1 +1;
-            indices[ idx++ ] = jp1 + wp1;
-            indices[ idx++ ] = jp1 + wp1 +1;
-            sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
-            qDebug()<<buff;
-        }
-    }
-#else
-const int wp1 = w+1;
-for(int i=0;i<h;i++)
-{
-    //int a = i * (w+1);
-    //int a2 = a * 2;
-    for(int j=0;j<w;j++)
-    {
-        const int jp1 = i * wp1 + j /*+ 1*/;
-
-        indices[ idx++ ] = jp1;
-        indices[ idx++ ] = jp1 + wp1;
-        indices[ idx++ ] = jp1 +1;
-        sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
-        qDebug()<<buff;
-
-        indices[ idx++ ] = jp1 +1;
-        indices[ idx++ ] = jp1 + wp1;
-        indices[ idx++ ] = jp1 + wp1 +1;
-        sprintf(buff, "[%d,%d,%d] = {%d,%d,%d}",(idx-3),(idx-2),(idx-1),indices[idx-3], indices[idx-2], indices[idx-1] );
-        qDebug()<<buff;
-    }
-}
-#endif
-#else
-const int wp1 = w+1;
-for(int i=0;i<h;i++)
-{
-    //int a = i * (w+1);
-    //int a2 = a * 2;
-    for(int j=0;j<wp1;j++)
-    {
-        const int jp1 = i * wp1 + j /*+ 1*/;
-
-        if(j == 0 && i > 0){
-            indices[ idx++ ] = jp1;
-            sprintf(buff, "[%d] = {%d}", (idx-1), indices[idx-1] );
-            qDebug()<<buff;//<<"\n";
-        }
-
-
-        indices[ idx++ ] = jp1;
-        indices[ idx++ ] = jp1 + wp1;
-
-        sprintf(buff, "[%d,%d] = {%d,%d}",(idx-2),(idx-1), indices[idx-2], indices[idx-1] );
-        qDebug()<<buff;//<<"\n";
-
-        if(j == w && i+1 < h){
-            indices[ idx++ ] = jp1 + wp1;
-            sprintf(buff, "[%d] = {%d}",(idx-1),indices[idx-1] );
-            qDebug()<<buff;//<<"\n";
-        }
-    }
-}
-#endif
-}
-
-#endif
-
 
 void printFBuffer(float* fBuff, int buffsz)
 {
@@ -527,8 +380,8 @@ void SquircleRenderer::applyBrush(const BrushCall& params)
     int _tY      = int(floorf(CLAMP(float(params.tY     ),0.0f , 1024)));
     int _tW      = int(floorf(CLAMP(float(params.tW     ),1.0f , 1024)));
     int _tH      = int(floorf(CLAMP(float(params.tH     ),1.0f , 1024)));
-    int _repeatX = int(floorf(CLAMP(float(params.repeatX),1.0f ,   10)));
-    int _repeatY = int(floorf(CLAMP(float(params.repeatY),1.0f ,   10)));
+    int _repeatX = int(floorf(CLAMP(float(params.repeatX),1.0f ,   __W / __CELL_W)));
+    int _repeatY = int(floorf(CLAMP(float(params.repeatY),1.0f ,   __H / __CELL_H)));
 
     TexBrush* tb = TexBrush::newInstanceT(_tX,_tY,_tW,_tH,m_imageW,m_imageH);
 

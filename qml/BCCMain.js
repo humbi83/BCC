@@ -51,7 +51,51 @@ function BCCMain()
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
 
+                                 //It seems i have an OOB related problem on applyBrush, I might not check all
+                                 //only on y, it seems that I loop on x & no crash
                                  //this.mCellsTmp = this.initLevel();
+
+                                 //top
+                                 mapView.applyBrush(4,0,368,0,16,16,13,1);
+                                 //left
+                                 mapView.applyBrush(0,0,368,0,16,16,1,15);
+                                 //bottom
+                                 mapView.applyBrush(4,56,368,0,16,16,13,1);
+                                 //right
+                                 mapView.applyBrush(56,0,368,0,32,240,1,1);
+
+                                 //build basic font
+                                //328x183, 40x16 // all chars0-9
+
+                                 //pause /// 5x16 pos
+                                 //288x176 40x8
+                                 mapView.applyBrush(21 + 4,26 + 4,288,176,40,8,1,1);
+
+                                 //stage__1
+                                 mapView.applyBrush(54,0,328,176,40,8,1,1);
+
+                                //game over // y0->26
+                                mapView.applyBrush(26,26,288,184,32,16,1,1);
+
+
+                                 //level spawns ->4 types of tanks
+                                 //todo starting point
+                                 //map 1 ->
+
+                                //p1 376x136 16x16, 384x144 pos no lives
+                                 mapView.applyBrush(58,34,376,136,16,16,1,1);
+
+                                 //p2 376x160 16x16, 384x168 pos no lives
+                                 mapView.applyBrush(58,40,376,160,16,16,1,1);
+
+                                 //flag ( map no)
+                                 //376x184 16 24
+                                 mapView.applyBrush(58,46,376,184,16,24,1,1);
+
+
+
+                                 //EnemyTanks
+                                 mapView.applyBrush(58,6,320,192,8,8,2,10);
 
                                  this.mLevel.applyBrush( 16,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
                                  this.mLevel.applyBrush( 16,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
@@ -101,14 +145,14 @@ function BCCMain()
 
                                  this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel,0,0,false);
+                                 this.mTank = Tank.newInstance(this.mLevel,4,4,false);
 
-                                 //this.mEnemyTanks.push(
-                                 //           Tank.newInstance(
-                                 //             this.mLevel,
-                                 //             8,4,
-                                 //             true)
-                                 //         );
+                                 this.mEnemyTanks.push(
+                                            Tank.newInstance(
+                                              this.mLevel,
+                                              12,8,
+                                              true)
+                                          );
                              }),
 
                              update:(function(){

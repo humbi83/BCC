@@ -185,6 +185,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         }
     });
 
+
+    ret.pixX = 0;
+    ret.pixY = 0;
+
     ret.onMoveEvent = (function(eDir){
 
         if(eDir == Global.NV_E_DIR){
@@ -239,7 +243,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
     ret.update = (function(tick){
 
-        console.log(this.mLevel.mDynObjects);
+        //console.log(this.mLevel.mDynObjects);
 
         //manually update paint the gfx
         if(this.mCurrentGfx != null)
@@ -260,6 +264,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
         var dT = tick - this.mStartTick;
 
+        if(this.canMove())
+        {
+            ///this.
+        }
         switch(this.mCurrentState){
             case E_STATE_SHIELDED   :{
                 if(this.mCurrentGfx != null){

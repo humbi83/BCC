@@ -70,7 +70,9 @@ DISTFILES += \
     qml/BCCLevelPainter.js \
     qml/BCCMultiFrameDoodad.js \
     qml/BCCAtlasCPPPainter.js \
-    qml/BCCFrameSequenceCPPPainter.js
+    qml/BCCFrameSequenceCPPPainter.js \
+    qml/BCCGameMaster.js \
+    qml/BCCLevelStartAnim.js
 
 HEADERS += \
     bccboard.h
