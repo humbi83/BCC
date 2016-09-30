@@ -72,7 +72,6 @@ DISTFILES += \
     qml/BCCAtlasCPPPainter.js \
     qml/BCCFrameSequenceCPPPainter.js \
     qml/BCCGameMaster.js \
-    qml/BCCLevelStartAnim.js \
     qml/BCCListCursor.qml
 
 HEADERS += \

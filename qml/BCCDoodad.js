@@ -28,27 +28,48 @@ function newInstance(
 {
     var ret = new Object({
                              mDoodadType    : eType,
-                             mPainter       : oPainter, //todo: check if it works
-                             mLevel         : oLevel,
+                             mPainter       : oPainter,
+                             mLevel         : oLevel, // mPos this will be used to offset the painting
 
                              mCellPos       : Vec.Vec2(),
                              getPixPos      : (function(){
-                                 return this.mPainter != null ? Vec.cctor(this.mPainter.mPos) :
-                                                           this.mCellPos.vMulC(Global.LEVEL_CELL_PIX_SZ);
+
+                                 var ret = Vec.Vec2();
+
+                                 if(this.mPainter != undefined && this.mPainter != null)
+                                 {
+                                    ret = Vec.Vec2(this.mPainter.mPos.mX - this.mLevel.mPos.mX * Global.LEVEL_CELL_PIX_SZ,
+                                                   this.mPainter.mPos.mY - this.mLevel.mPos.mY * Global.LEVEL_CELL_PIX_SZ
+                                                   );
+                                 }else
+                                 {
+                                     //our values are not offseted
+                                     ret = this.mCellPos.vMulC(Global.LEVEL_CELL_PIX_SZ);
+                                 }
+
+                                 return ret;
+
                              }),
+
+                             //again, relative to the map pos
                              setPixXY       : (function(x,y){
                                  this.mCellPos = Global.pixXY2CellV(x,y);
                                  if(this.mPainter != null)
                                  {
                                      //painter maintains the unfloored values
-                                    this.mPainter.setPos(Vec.Vec2(x,y));
+                                    this.mPainter.setPos(Vec.Vec2(x + this.mLevel.mPos.mX * Global.LEVEL_CELL_PIX_SZ,
+                                                                  y + this.mLevel.mPos.mY * Global.LEVEL_CELL_PIX_SZ));
                                  }
                              }),
 
                              setCellPos     : (function(vPos){
                                this.mCellPos = Vec.cctor(vPos);
                                 if(this.mPainter != null){
-                                    this.mPainter.setPos(vPos.vMulC(Global.LEVEL_CELL_PIX_SZ).floor());
+                                    this.mPainter.setPos(vPos.
+                                                         vPlus(this.mLevel.mPos).
+                                                         mulC(Global.LEVEL_CELL_PIX_SZ).
+                                                         floor()
+                                                         );
                                 }
                              }),
 

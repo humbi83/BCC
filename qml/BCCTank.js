@@ -13,8 +13,8 @@ var TNK_FRAMES_PER_DIR= 2;
 
 
 
-var DT_TANK_TELEPORT  = 2000 / 16;
-var DT_TANK_SHIELDED  = 3000 / 16;
+var DT_TANK_TELEPORT  = 2000;
+var DT_TANK_SHIELDED  = 3000;
 
 
 var E_STATE_TELEPORTING   = 0;//2 sec
@@ -40,7 +40,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                 Vec.Vec2(16, 16),
                 Vec.Vec2( 1,  8),
                 oLevel,
-                pX,pY,                
+                pX, pY,
                 true,false
                 );
 
@@ -211,8 +211,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
             var cellDim = this.getCellDim();
 
-            if(this.mLevel.bIsInside2v(newPos,cellDim)){
+            var isInside = this.mLevel.bIsInside2v(newPos,cellDim);
+            console.log(isInside);
 
+            if(isInside){
             var collidingCells = this.mLevel.collidesWithStatic2v(newPos,cellDim);
             collidingCells.concat(this.mLevel.collidesWithDynamic2v(this));
 

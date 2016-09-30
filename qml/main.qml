@@ -25,14 +25,18 @@ Window {
             initialState: scMainMenu_mIsFirstTime
             onEntered:{
                 console.log("sMainMenu_Startup entered")
-                rMainMenu.visible = true;
+                rMainMenu.visible         = true;
                 levelStartAnimRes.visible = false;
+                mapView.visible           = false;
+                rGameOver.visible         = false;
             }
 
             onExited :{
                 console.log("sMainMenu_Startup exited")
-                rMainMenu.visible = false;
+                rMainMenu.visible         = false;
                 levelStartAnimRes.visible = true;
+                mapView.visible           = false;
+                rGameOver.visible         = false;
             }
             //missing guard && missing conditional transitions .. wxx
 
@@ -80,6 +84,13 @@ Window {
                     rMainMenu_List_Cursor.setPos(mSelectedEntry);
                 }
 
+                onExited:{
+                    console.log("sMainMenu_List : exited")
+                    mSelectedEntry = 0;
+                    rMainMenu_List_Cursor.visible = false;
+                    rMainMenu_List_Cursor.setPos(mSelectedEntry);
+                }
+
                 SM.SignalTransition{
                     signal: keyHandler.Keys.onUpPressed
                     guard: sMainMenu_List.onUpPressed()
@@ -122,10 +133,6 @@ Window {
                     //TODO: set this value to the game itself or something
                     return true;
                 }
-
-                onExited:{
-                    console.log("sMainMenu_List : exited")
-                }
             }
         }
 
@@ -133,23 +140,49 @@ Window {
             id : sStartLevel
             initialState: sStartLevel_sCloseAnim
 
-            onEntered: console.log("sStartLevel : entered")
+            onEntered: {
+                console.log("sStartLevel : entered")
+                rMainMenu.visible         = false;
+                levelStartAnimRes.visible = true;
+                mapView.visible           = false;
+                rGameOver.visible         = false;
+            }
 
             SM.State
             {
                 id: sStartLevel_sCloseAnim
-                onEntered:{anim1.start();}
+                onEntered:{
+                    anim1.start();
+                }
+                onExited:{
+                    rStartLevel_Stage1.visible = true;
+                }
 
                 SM.SignalTransition {
-                                 targetState: sStartLevel_sWaitKeyPressedEnter
-                                 signal: anim1.onStopped
-                             }
+                    targetState: sStartLevel_InitGame
+                    signal: anim1.onStopped
+                }
+            }
+
+
+
+            SM.State
+            {
+                id: sStartLevel_InitGame
+                SM.TimeoutTransition
+                {
+                    targetState: sStartLevel_sWaitKeyPressedEnter
+                    timeout: 64
+                }
+
+                onExited: {
+                    myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
+                }
             }
 
             SM.State
             {
                 id:sStartLevel_sWaitKeyPressedEnter
-                onEntered:{rLevelStart_Stage1.visible = true;}
 
                 SM.SignalTransition{
                     targetState: sStartLevel_sOpenAnim;
@@ -162,19 +195,70 @@ Window {
                     timeout: 3000
                 }
 
-                onExited: {rLevelStart_Stage1.visible = false;}
+                onExited: {rStartLevel_Stage1.visible = false;}
             }
 
             SM.State
             {
                 id: sStartLevel_sOpenAnim
-                onEntered: {anim2.start(); }
+                onEntered: {
+                    mapView.visible = true;
+                    anim2.start();
+                }
+
+                onExited: {
+                    rMainMenu.visible         = false;
+                    levelStartAnimRes.visible = false;
+                    mapView.visible           = true ;
+                    rGameOver.visible         = false;
+                }
+
+                SM.SignalTransition {
+                    targetState: sMainGame
+                    signal: anim2.onStopped
+                }
             }
         }
+
+        SM.State
+        {
+            id:sMainGame
+            onEntered:{
+                rMainMenu.visible         = false;
+                levelStartAnimRes.visible = false;
+                myBCCMain.visible         = true;
+                rGameOver.visible         = false;
+
+                _BCCMainTimer.start();
+            }
+
+
+
+            SM.SignalTransition{
+                id:tsMainGame_toGameOver
+                signal gameOverSignal
+                targetState: sGameOver;
+                //signal: onGameOverSignal
+            }
+
+            onExited: {
+                _BCCMainTimer.stop();
+                rMainMenu.visible         = false;
+                levelStartAnimRes.visible = false;
+                myBCCMain.visible         = false;
+                rGameOver.visible         = true ;
+            }
+        }
+
+        SM.State
+        {
+            id:sGameOver
+            onEntered: {
+
+            }
+
+        }
     }
-
-
-
 
     id : rootWindow
     visible: true
@@ -182,71 +266,49 @@ Window {
     width: 1024;//(256 = 16 + 208 + 32)  * 4
     height: 960; //(240 = 16+208 + 16) *4
     color: "black"
-    title: qsTr("Hello World")
+    title: qsTr("Battle City Clone")
 
-        property var myBCCMain : BCCMain.BCCMain();
-
-    //Rectangle{
-    //    color:"black"
-    //    width: rootWindow.width;
-    //    height: rootWindow.height;
-    //}
-
-    Timer {
-        id : _BCCMainTimer
-            interval: 32; running: true; repeat: true;triggeredOnStart: true
-            onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
-        }
+    property var myBCCMain : BCCMain.BCCMain();
 
     Item {
         id : keyHandler
-        focus: true;
-        Keys.onPressed : {}//{myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);}
-        Keys.onReleased: {}//{myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);}
-        Keys.onUpPressed: {console.log("upPressed");}
-        //keypad enter
-        Keys.onEnterPressed: {console.log("enterPressed");}
-        //main key
-        Keys.onReturnPressed: {console.log("returnPressed");}
+        focus: !_BCCMainTimer.running;
     }
 
-    Squircle {
-            width: 832
-            height: 832
-            id : mapView;
-        }
+    Item {
+        id : keyHandler_Game
+        focus: _BCCMainTimer.running;
+        Keys.onPressed : {console.log("keyPressed") ; if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);}}
+        Keys.onReleased: {console.log("keyReleased"); if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);}}
+    }
 
     Component.onCompleted: {     
-
-        //Enable !!!!
-       // myBCCMain.notify(myBCCMain.E_EVENT_INIT,null);
-       // _BCCMainTimer.start();
         bccSM.start();
 
+        //hmm.... that is not good
+        //tsMainGame_toGameOver.signal = tsMainGame_toGameOver.onGameOverSignal;
     }
 
 
-    Rectangle{
+    Item{
 
-id : rMainMenu
+        id : rMainMenu
 
         property var zX : 418
         property var zY : 400
 
-         NumberAnimation on y
-         {
-             id : rMainMenu_ShowAnim
-             to: rMainMenu.zY; duration: 4000; easing.type: Easing.InBounce
-             running: false;
-         }
-
-
+        NumberAnimation on y
+        {
+            id : rMainMenu_ShowAnim
+            to: rMainMenu.zY; duration: 4000; easing.type: Easing.InBounce
+            running: false;
+        }
 
         x  : 400 + 18
         y  : zY + rootWindow.height
         visible: false;
 
-        color :"black"
+//        color :"black"
         width : rootWindow.width ;
         height: rootWindow.height;
         property var mScale : 3.5
@@ -263,66 +325,82 @@ id : rMainMenu
         }
 
         Image {
-
-anchors.horizontalCenter: parent.Center
-
-x : -45
-y : -350
-                    id: rMainMenu_Mail
-                    scale  :rMainMenu.mScale
-                    smooth : false
-
-                    source: "../BCCMenuMail.png"
-                }
+            id: rMainMenu_Mail
+            x : -45
+            y : -350
+            anchors.horizontalCenter: parent.Center
+            scale  :rMainMenu.mScale
+            smooth : false
+            source: "../BCCMenuMail.png"
+        }
 
 
         Image {
-
-            anchors.horizontalCenter: parent.Center
-y:-50
             id: rMainMenu_List
+            y:-50
+            anchors.horizontalCenter: parent.Center
             scale : rMainMenu.mScale
-
             smooth : false
             source: "../BCCMenuMiddle.png"
         }
         Image {
+            id: rMainMenu_ARR
             y : 400
             scale : rMainMenu.mScale
-            id: rMainMenu_ARR
-
-            source: "../BCCMenuBottom.png"
             smooth : false
+            source: "../BCCMenuBottom.png"
         }
 
         BCCListCursor{
             id: rMainMenu_List_Cursor
-            visible: true;
+            visible: false;
             x: -64
+            y: 103
             property var yPos : [ 103 , 159  , 215 ]
             function setPos(iIdx){
                 y=yPos[iIdx];
             }
         }
-
     }
 
+    // ican have this as update and another anim inside the squircle as paint
+    //Timer {
+    //    id : _BCCMainTimer
+    //        interval: 32; running: true; repeat: true;triggeredOnStart: true
+    //        onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
+    //    }
+    Squircle {
+            width: 832
+            height: 832
+            id : mapView;
+            visible:false
 
-    Rectangle{
+            NumberAnimation on t{
+                id : _BCCMainTimer
+                from     : 0
+                to       : 1
+                loops    : Animation.Infinite
+                duration : 32
+                running: false//mapView.visible
+            }
+
+            onTChanged: myBCCMain.notify(myBCCMain.E_EVENT_TIMER);
+        }
+
+    Item{
         id : levelStartAnimRes
 
         visible: false;
 
-        color :"black"
         width : rootWindow.width ;
         height: rootWindow.height;
-        property var mDuration: 1000
+        property var mDuration: 500
 
 
         property var mYH : 0//rootWindow.height/2 ;
 
-        NumberAnimation on mYH{ running: false; id : anim1; to: rootWindow.height/2; duration: levelStartAnimRes.mDuration; easing.type: Easing.InQuad }
-        NumberAnimation on mYH {running: false; id : anim2; to: 0; duration:levelStartAnimRes.mDuration; easing.type: Easing.OutQuad }
+        NumberAnimation on mYH{ running: false; id : anim1; to: rootWindow.height/2; duration: levelStartAnimRes.mDuration}
+        NumberAnimation on mYH {running: false; id : anim2; to: 0                  ; duration: levelStartAnimRes.mDuration}
 
 
         //0 -> h/2
@@ -344,7 +422,7 @@ y:-50
 
         Rectangle{
 
-            id : rLevelStart_Stage1
+            id : rStartLevel_Stage1
             visible:false;
             anchors.centerIn: levelStartAnimRes
             color : "#636363"
@@ -354,7 +432,7 @@ y:-50
 
             BBCAtlasFrame
             {
-                id : rLevelStart_Stage1_Stage
+                id : rStartLevel_Stage1_Stage
 
                 anchors.left: parent.left;
                 anchors.leftMargin: 60
@@ -372,7 +450,7 @@ y:-50
 
             BBCAtlasFrame
             {
-                id : rLevelStart_Stage1_1
+                id : rStartLevel_Stage1_1
 
                 anchors.left: parent.left
                 //lM = 60 for what ever reason + 4*40(width prev item) +  16*4 empty space
@@ -388,11 +466,14 @@ y:-50
                 mHeight:8
                 mResPath: "../res/general_org.png";
             }
-
-
-
-
             //328x183, 40x16 // all chars0-9
+        }
+
+        Image{
+            id: rGameOver
+            scale : 2;
+            source: "../BCCGameOver.png"
+            visible : false
         }
 
         Component.onCompleted: {

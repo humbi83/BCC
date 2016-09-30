@@ -11,17 +11,13 @@ var E_STATE_MOVE       = 1;
 var E_STATE_CHANGE_DIR = 2;
 var E_STATE_SHOOT      = 3;
 
-var g_DT_180  = 5000;
-var g_DT_FIRE = 1000;
-var g_DT_MOV  = 200 ;
+var DT_180  = 5000;
+var DT_FIRE = 1000;
+var DT_MOV  = 200 ;
 
 function newInstance(oTank) {
 
     var ret = new Object({
-                             mDT_180 : g_DT_180  /_BCCMainTimer.interval,
-                             mDT_FIRE: g_DT_FIRE /_BCCMainTimer.interval,
-                             mDT_MOV : g_DT_MOV  /_BCCMainTimer.interval,
-
                             mMovTick          : 0,
                             mFireTick         : 0,
                             m180Tick          : 0,
@@ -30,6 +26,7 @@ function newInstance(oTank) {
                             mTank             : oTank,
                             mTankStatus       : E_TANK_STATUS_TELEPORTING,
                             mCurrentState     : E_STATE_WAIT_SMOV,
+
                             onTankStatusUpdate:(function(status){
                                 switch(status){
                                 case E_TANK_STATUS_MOVABLE:
@@ -38,7 +35,7 @@ function newInstance(oTank) {
                                     }
                                     break;
                                 case E_TANK_STATUS_BLOCKED_MOV:
-                                    this.mCurrentDir = (this.mCurrentDir+1) % Global.SZ_E_DIR;
+                                    this.mCurrentDir = (Global.getRandomInt(Global.E_DIR_UP,Global.SZ_E_DIR)) % Global.SZ_E_DIR;
                                     break;
                                     default: /*nothing*/ break;
                                 }
@@ -60,18 +57,18 @@ function newInstance(oTank) {
                                     this.mFireTick = tick;
                                 }
 
-                                var dT = tick - this.mStartTick;
+                                var dT     = tick - this.mStartTick;
                                 var dTMov  = tick - this.mMovTick ;
                                 var dTFire = tick - this.mFireTick;
 
                                 if(this.mCurrentState == E_STATE_MOVE){
 
-                                    if(dTFire >= this.mDT_FIRE )
+                                    if(dTFire >= DT_FIRE )
                                     {
                                         this.mFireTick = tick;
                                         this.mCurrentState = E_STATE_SHOOT;
                                     }else
-                                    if(dTMov >= this.mDT_MOV){
+                                    if(dTMov >= DT_MOV){
                                         this.mMovTick = tick;
                                         this.mTank.onMoveEvent(this.mCurrentDir);
                                     }

@@ -7,7 +7,7 @@
 
 //we consider 16ms / update
 
-var SPEED_CELLS_PER_TICK = 0.2;
+var SPEED_CELLS_PER_SEC = 52 / 3000;
 
 var E_STATE_ALIVE     = 0;
 var E_STATE_EXPLODING = 1;
@@ -67,7 +67,7 @@ function newInstance(oTank) {
         switch(this.mCurrentState) {
             case E_STATE_ALIVE:{
 
-                    var pixPos = this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_TICK)).mulC(4);
+                    var pixPos = this.mStartPos.vPlus(this.mVel.vMulC(dT*SPEED_CELLS_PER_SEC)).mulC(4);
                     this.setPixXY(pixPos.mX,pixPos.mY);
 
                     var cellDim = this.getCellDim();

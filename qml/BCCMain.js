@@ -41,12 +41,14 @@ function BCCMain()
                              mLevel      : null,
 
                              mAvailableEnemyTanks : 20,
+
                              onTankDied  : (function(oTank)
                              {
                                     //chek if we still have tanks
                              }),
                              init:(function(){
-                                 Global.T_tick = 0;
+                                 //someTranz.someSignal();
+
 
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
@@ -97,6 +99,7 @@ function BCCMain()
                                  //EnemyTanks
                                  mapView.applyBrush(58,6,320,192,8,8,2,10);
 
+                                 //OK this is relative to the start pof the level
                                  this.mLevel.applyBrush( 16,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
                                  this.mLevel.applyBrush( 16,  80, Level.E_BRUSH_BRICK_WALL, 16, 8);
                                  this.mLevel.applyBrush( 48,  16, Level.E_BRUSH_BRICK_WALL, 16,64);
@@ -145,28 +148,29 @@ function BCCMain()
 
                                  this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
-                                 this.mTank = Tank.newInstance(this.mLevel,4,4,false);
+                                 //should be part of the map..
+                                 this.mTank = Tank.newInstance(this.mLevel,0,0,false);
 
-                                 this.mEnemyTanks.push(
-                                            Tank.newInstance(
-                                              this.mLevel,
-                                              12,8,
-                                              true)
-                                          );
+                                 //this.mEnemyTanks.push(
+                                 //           Tank.newInstance(
+                                 //             this.mLevel,
+                                 //             12,8,
+                                 //             true)
+                                 //         );
                              }),
 
                              update:(function(){
 
-                                 Global.T_tick = Global.T_tick+1;
+                                 var tick = new Date().getTime();
 
-                                 Global.cUpdatePaint(this.mLevel, Global.T_tick );
-                                 Global.cUpdatePaint(this.mTank , Global.T_tick );
+                                 Global.cUpdatePaint(this.mLevel, tick );
+                                 Global.cUpdatePaint(this.mTank , tick );
 
                                  for(var i = 0; i < this.mEnemyTanks.length ; i++ )
                                  {
                                     if(this.mEnemyTanks[i] != null)
                                     {
-                                        Global.cUpdatePaint(this.mEnemyTanks[i] , Global.T_tick );
+                                        Global.cUpdatePaint(this.mEnemyTanks[i] , tick );
                                     }
                                  }
                              }),
@@ -174,7 +178,7 @@ function BCCMain()
                              onKeyEvent:(function(bDown , oEvent){
 
                                  //console.log(bDown, oEvent.isAutoRepeat);
-
+                                 console.log(bDown);
                                  if(bDown){
                                     switch(oEvent.nativeScanCode)
                                     {

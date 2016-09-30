@@ -79,17 +79,17 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
                              bIsInside2v:(function(vPos,vDim){
-                                 //return vPos.mX >= 0 &&
-                                 //       vPos.mY >= 0 &&
-                                 //       vPos.mX + vDim.mX <=  this.mDim.mX &&
-                                 //       vPos.mY + vDim.mY <=  this.mDim.mY ;
+                                 return vPos.mX >= 0 &&
+                                        vPos.mY >= 0 &&
+                                        vPos.mX + vDim.mX <=  this.mDim.mX &&
+                                        vPos.mY + vDim.mY <=  this.mDim.mY ;
 
-                                 var b1 =  vPos.mX >= this.mPos.mX;
-                                 var b2 =  vPos.mY >= this.mPos.mY ;
-                                 var b3 =  vPos.mX + vDim.mX <=  this.mDim.mX + this.mPos.mX;
-                                 var b4 =  vPos.mY + vDim.mY <=  this.mDim.mY + this.mPos.mY;
-
-                                 var ret = b1 && b2 && b3 && b4;
+                                 //var b1 =  vPos.mX >= this.mPos.mX;
+                                 //var b2 =  vPos.mY >= this.mPos.mY ;
+                                 //var b3 =  vPos.mX + vDim.mX <=  this.mDim.mX + this.mPos.mX;
+                                 //var b4 =  vPos.mY + vDim.mY <=  this.mDim.mY + this.mPos.mY;
+                                 //
+                                 //var ret = b1 && b2 && b3 && b4;
                                  return ret;
                              }),
 
@@ -128,21 +128,23 @@ function BCCLevel(iDimX,iDimY){
                              collidesWithStatic2v:(function(vPos,vDim){
                                  var __ret = [];
 
-                                 vPos = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
+                                 vPos = vPos.ivClampXY2iv(
+                                             Vec.Vec2(),
+                                             this.mDim.vPlusXY(-1,-1)
+                                             );
 
-                                 var iLimit = Global.clamp((vPos.mY + vDim.mY ),0,this.mDim.mY);
-                                 var jLimit = Global.clamp((vPos.mX + vDim.mX ),0,this.mDim.mX);
+                                 var iLimit = Global.clamp((vPos.mY + vDim.mY ), 0, this.mDim.mY);
+                                 var jLimit = Global.clamp((vPos.mX + vDim.mX ), 0, this.mDim.mX);
 
                                  for(var i = vPos.mY; i < iLimit;i++ ){
                                      for(var j = vPos.mX; j < jLimit ;j++ )
                                      {
                                          var __cell = this.mCells[i][j];
-                                         var __bla = __cell.mStationedDoodad ? __cell.mStationedDoodad : null;
 
-
-                                         if(__bla != null)
+                                         if(__cell.mStationedDoodad != null /*&& !__bla.mIsPassable*/)
                                          {
-                                            __ret.push(__bla);
+                                             console.log("pushed", __cell.mStationedDoodad);
+                                            __ret.push(__cell.mStationedDoodad);
                                          }
                                      }
                                  }
@@ -152,17 +154,18 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
 
-                             applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix, offX, offY)
+                             applyBrush:( function(xInPix, yInPix, eBrushType, wInPix, hInPix)
                              {
-                                 var pOffX = offX == undefined ? this.mPos.mX : offX;
-                                 var pOffY = offY == undefined ? this.mPos.mY : offY;
+
 
                                  var eDoodadType = Doodad.E_DOODAD_EMPTY;
-                                 var iPosX   = pOffX + Math.floor(xInPix/4);
-                                 var iPosY   = pOffY + Math.floor(yInPix/4);
+                                 var iPosX   = Math.floor(xInPix/4);
+                                 var iPosY   = Math.floor(yInPix/4);
                                  var iDimX   = Math.floor(wInPix/4);
                                  var iDimY   = Math.floor(hInPix/4);
 
+                                 var iBrushPosX = iPosX + this.mPos.mX;
+                                 var iBrushPosY = iPosY + this.mPos.mY;
                                  //should be an int, no hits or no stars needed or both
                                  var bIsDist = false;
                                  var bIsPass = false;
@@ -170,12 +173,12 @@ function BCCLevel(iDimX,iDimY){
 
                                  ///todo add to factory
                                  switch(eBrushType){
-                                    case E_BRUSH_HQ_ALIVE   : eDoodadType = Doodad.E_DOODAD_HQ_ALIVE  ; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 304, 32, 16,16,1,1); break;
-                                    case E_BRUSH_HQ_DEAD    : eDoodadType = Doodad.E_DOODAD_HQ_DEAD   ; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 320, 32, 16,16,1,1); break;
-                                    case E_BRUSH_BRICK_WALL : eDoodadType = Doodad.E_DOODAD_BRICK_WALL; bIsDist = true ; mapView.applyBrush(iPosX, iPosY, 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
-                                    case E_BRUSH_STONE_WALL : eDoodadType = Doodad.E_DOODAD_STONE_WALL; bIsDist = false; mapView.applyBrush(iPosX, iPosY, 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_HQ_ALIVE   : eDoodadType = Doodad.E_DOODAD_HQ_ALIVE  ; bIsDist = true ; mapView.applyBrush(iBrushPosX, iBrushPosY, 304, 32, 16,16,1,1); break;
+                                    case E_BRUSH_HQ_DEAD    : eDoodadType = Doodad.E_DOODAD_HQ_DEAD   ; bIsDist = false; mapView.applyBrush(iBrushPosX, iBrushPosY, 320, 32, 16,16,1,1); break;
+                                    case E_BRUSH_BRICK_WALL : eDoodadType = Doodad.E_DOODAD_BRICK_WALL; bIsDist = true ; mapView.applyBrush(iBrushPosX, iBrushPosY, 256,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    case E_BRUSH_STONE_WALL : eDoodadType = Doodad.E_DOODAD_STONE_WALL; bIsDist = false; mapView.applyBrush(iBrushPosX, iBrushPosY, 256, 16, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                     case E_BRUSH_EMPTY      : //fall through
-                                    default                 : bIsNullDoodad = true; bIsPass = true; mapView.applyBrush(Math.floor(xInPix/4), Math.floor(yInPix/4), 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
+                                    default                 : bIsNullDoodad = true; bIsPass = true; mapView.applyBrush(iBrushPosX, iBrushPosY, 336,  0, Global.clamp(wInPix, 4,16), Global.clamp(hInPix, 4, 16), Math.max(1,Math.floor(wInPix / 16)), Math.max(1,Math.floor(hInPix /16))); break;
                                  }
 
 

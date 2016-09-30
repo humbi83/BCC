@@ -14,9 +14,6 @@ var E_DIR_DOWN  =  2;
 var E_DIR_RIGHT =  3;
 var SZ_E_DIR    =  4;
 
-var T_tick = 0 ;
-var T_LEN  = 16;
-
 // I should have some cb with gfx node destroyed
 var E_DOODAD_LC_STATE_ALIVE       = 0;
 var E_DOODAD_LC_STATE_DESTROY_REQ = 1;
@@ -105,5 +102,10 @@ function isOV(object)
     return object != undefined && object != null;
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 

@@ -3,11 +3,8 @@
 .import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
 
-//we consider 16ms / update
-
-
 ///MUST EXTEND MFDoodad
-var FLASH_PER_TICK = 0.2;
+var FLASH_PER_TICK = 0.2 / 32;
 
 var E_PU_HEAD    = 0;
 var E_PU_CLOCK   = 1;

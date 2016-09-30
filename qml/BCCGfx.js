@@ -4,10 +4,6 @@
 .import "BCCVec.js" as Vec
 .import "BCCGlobal.js" as Global
 
-//we consider 16ms / update
-
-var FLASH_PER_TICK = 0.2;
-
 var E_GFX_TELEPORT   = 0;
 var E_GFX_SHILED     = 1;
 var E_GFX_SMALL_EXP  = 2;
@@ -32,10 +28,10 @@ var ANIM_SEQZ = [
 //in ticks
 //6 - 100
 var ANIM_FRAME_LEN = [
-            50/16,
-            50/16,
-            50/16,
-            50/16
+            50,
+            50,
+            50,
+            50
         ];
 //listener Should impl some if
 
