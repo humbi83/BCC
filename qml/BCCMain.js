@@ -27,35 +27,43 @@ function BCCMain()
                              E_EVENT_KEY_UP   : 4,
                              SZ_E_EVENT       : 5,
 
-                             E_KC_UP   : 328,
-                             E_KC_DOWN : 336,
-                             E_KC_LEFT : 331,
-                             E_KC_RIGHT: 333,
-                             E_KC_FIRE : 57 ,
+                             // p1 // arr lurd + space
+                             E_KC_P1_UP   : 328,
+                             E_KC_P1_DOWN : 336,
+                             E_KC_P1_LEFT : 331,
+                             E_KC_P1_RIGHT: 333,
+                             E_KC_P1_FIRE : 57 ,
+
+                             // p1 //num 4862 + 0
+                             E_KC_P1_ALT_UP   : 72,
+                             E_KC_P1_ALT_DOWN : 80,
+                             E_KC_P1_ALT_LEFT : 75,
+                             E_KC_P1_ALT_RIGHT: 77,
+                             E_KC_P1_ALT_FIRE : 82,
+
+                             // p2 // awsd + h
+                             E_KC_P2_UP   : 17,
+                             E_KC_P2_DOWN : 31,
+                             E_KC_P2_LEFT : 30,
+                             E_KC_P2_RIGHT: 32,
+                             E_KC_P2_FIRE : 35,
 
                              currentGameState: null,
                              pendingGameState: null,
 
-                             mTank       : null,
-                             mEnemyTanks : [],
                              mLevel      : null,
 
-                             mAvailableEnemyTanks : 20,
-
-                             onTankDied  : (function(oTank)
-                             {
-                                    //chek if we still have tanks
-                             }),
                              init:(function(){
                                  //someTranz.someSignal();
 
 
+                                 //move to MapXXX / init level instance with it
+
                                  console.log("init called");
                                  this.mLevel = Level.BCCLevel();
 
-                                 //It seems i have an OOB related problem on applyBrush, I might not check all
-                                 //only on y, it seems that I loop on x & no crash
-                                 //this.mCellsTmp = this.initLevel();
+                                 //It seems i have an OOB related problem on cpp applyBrush, I might not check all
+                                 //crashes only on y, it seems that I loop on x & no crash
 
                                  //top
                                  mapView.applyBrush(4,0,368,0,16,16,13,1);
@@ -71,13 +79,13 @@ function BCCMain()
 
                                  //pause /// 5x16 pos
                                  //288x176 40x8
-                                 mapView.applyBrush(21 + 4,26 + 4,288,176,40,8,1,1);
+                                 //mapView.applyBrush(21 + 4,26 + 4,288,176,40,8,1,1);
 
                                  //stage__1
-                                 mapView.applyBrush(54,0,328,176,40,8,1,1);
+                                 //mapView.applyBrush(54,0,328,176,40,8,1,1);
 
                                 //game over // y0->26
-                                mapView.applyBrush(26,26,288,184,32,16,1,1);
+                                //mapView.applyBrush(26,26,288,184,32,16,1,1);
 
 
                                  //level spawns ->4 types of tanks
@@ -122,8 +130,8 @@ function BCCMain()
                                  this.mLevel.applyBrush( 32, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
                                  this.mLevel.applyBrush(144, 104, Level.E_BRUSH_BRICK_WALL, 32,16);
 
-                                 this.mLevel.applyBrush(191, 104, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
-                                 this.mLevel.applyBrush(191, 112, Level.E_BRUSH_STONE_WALL, 16, 8);//newl
+                                 this.mLevel.applyBrush(192, 104, Level.E_BRUSH_BRICK_WALL, 16, 8);//newl
+                                 this.mLevel.applyBrush(192, 112, Level.E_BRUSH_STONE_WALL, 16, 8);//newl
 
                                  this.mLevel.applyBrush( 16, 136, Level.E_BRUSH_BRICK_WALL, 16,48);
                                  this.mLevel.applyBrush( 16, 184, Level.E_BRUSH_BRICK_WALL, 16, 8);
@@ -148,45 +156,50 @@ function BCCMain()
 
                                  this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
-                                 //should be part of the map..
-                                 this.mTank = Tank.newInstance(this.mLevel,0,0,false);
+                                 ////should be part of the map..
 
-                                 //this.mEnemyTanks.push(
-                                 //           Tank.newInstance(
-                                 //             this.mLevel,
-                                 //             12,8,
-                                 //             true)
-                                 //         );
+                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,16,48,Global.E_PLAYER_1   ));
+                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel, 0,48,Global.E_PLAYER_AI_X));
+                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48, 0,Global.E_PLAYER_AI_X));
+                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48,48,Global.E_PLAYER_AI_X));
+
                              }),
 
                              update:(function(){
 
                                  var tick = new Date().getTime();
 
-                                 Global.cUpdatePaint(this.mLevel, tick );
-                                 Global.cUpdatePaint(this.mTank , tick );
-
-                                 for(var i = 0; i < this.mEnemyTanks.length ; i++ )
-                                 {
-                                    if(this.mEnemyTanks[i] != null)
-                                    {
-                                        Global.cUpdatePaint(this.mEnemyTanks[i] , tick );
-                                    }
-                                 }
+                                 Global.cUpdatePaint(this.mLevel , tick );
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){
 
                                  //console.log(bDown, oEvent.isAutoRepeat);
-                                 console.log(bDown);
+
+                                 //onActionEvents:(function(ePlayer, eAction, value){
+
+                                 //}
+
+                                 //console.log(bDown);
                                  if(bDown){
                                     switch(oEvent.nativeScanCode)
                                     {
-                                        case this.E_KC_UP   : this.mTank.onMoveEvent(Global.E_DIR_UP    );break;
-                                        case this.E_KC_DOWN : this.mTank.onMoveEvent(Global.E_DIR_DOWN  );break;
-                                        case this.E_KC_LEFT : this.mTank.onMoveEvent(Global.E_DIR_LEFT  );break;
-                                        case this.E_KC_RIGHT: this.mTank.onMoveEvent(Global.E_DIR_RIGHT );break;
-                                        case this.E_KC_FIRE : this.mTank.onFire(); break;
+                                        case this.E_KC_P1_ALT_UP   :
+                                        case this.E_KC_P1_UP       : this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.E_DIR_UP    );break;
+                                        case this.E_KC_P1_ALT_DOWN :
+                                        case this.E_KC_P1_DOWN     : this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.E_DIR_DOWN  );break;
+                                        case this.E_KC_P1_ALT_LEFT :
+                                        case this.E_KC_P1_LEFT     : this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.E_DIR_LEFT  );break;
+                                        case this.E_KC_P1_ALT_RIGHT:
+                                        case this.E_KC_P1_RIGHT    : this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.E_DIR_RIGHT );break;
+                                        case this.E_KC_P1_ALT_FIRE :
+                                        case this.E_KC_P1_FIRE     : this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_FIRE); break;
+
+                                        case this.E_KC_P2_UP   : this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.E_DIR_UP    );break;
+                                        case this.E_KC_P2_DOWN : this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.E_DIR_DOWN  );break;
+                                        case this.E_KC_P2_LEFT : this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.E_DIR_LEFT  );break;
+                                        case this.E_KC_P2_RIGHT: this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.E_DIR_RIGHT );break;
+                                        case this.E_KC_P2_FIRE : this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_FIRE); break;
                                         default:
                                             console.log(oEvent.nativeScanCode); break;
                                     }
@@ -196,12 +209,24 @@ function BCCMain()
 
                                      switch(oEvent.nativeScanCode)
                                      {
-                                         case this.E_KC_UP   :
-                                         case this.E_KC_DOWN :
-                                         case this.E_KC_LEFT :
-                                         case this.E_KC_RIGHT:
-                                         case this.E_KC_FIRE :
-                                             this.mTank.onMoveEvent(Global.NV_E_DIR); break;
+                                        case this.E_KC_P1_ALT_UP   :
+                                        case this.E_KC_P1_UP       :
+                                        case this.E_KC_P1_ALT_DOWN :
+                                        case this.E_KC_P1_DOWN     :
+                                        case this.E_KC_P1_ALT_LEFT :
+                                        case this.E_KC_P1_LEFT     :
+                                        case this.E_KC_P1_ALT_RIGHT:
+                                        case this.E_KC_P1_RIGHT    :
+                                        case this.E_KC_P1_ALT_FIRE :
+                                        case this.E_KC_P1_FIRE     :
+                                             this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
+
+                                         case this.E_KC_P2_UP   :
+                                         case this.E_KC_P2_DOWN :
+                                         case this.E_KC_P2_LEFT :
+                                         case this.E_KC_P2_RIGHT:
+                                         case this.E_KC_P2_FIRE :
+                                             this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
                                      }
 
                                  }

@@ -50,6 +50,23 @@ function BCCLevel(iDimX,iDimY){
                                  return rows;
                              }),
 
+                             onActionEvents:(function(ePlayer, eAction, value){
+                                for(var i=0; i< this.mDynObjects.length;i++)
+                                {
+                                    var pDoodad = this.mDynObjects[i];
+                                    if(
+                                            pDoodad != null &&
+                                            pDoodad.mDoodadType == Doodad.E_DOODAD_TANK &&
+                                            pDoodad.mPlayerType == ePlayer){
+                                        switch(eAction){
+                                            case Global.E_ACTION_MOVE : pDoodad.onMoveEvent(value); break;
+                                            case Global.E_ACTION_FIRE : pDoodad.onFire(); break;
+                                            default: console.log("Level::onActionEvents");break;
+                                        }
+                                    }
+                                }
+                             }),
+
                              update:(function(tick){
                                  //for the moment I do not update / paint the static stuff
                                  for(var i=0; i<this.mDynObjects.length;i++){
@@ -97,36 +114,38 @@ function BCCLevel(iDimX,iDimY){
                              //so no check in tank, tanks only for collision with other tanks
                              collidesWithDynamic2v:(function(oDoodad, vPos, vDim){
 
-                                 var ret = [];
+                                 var collidesWithDynamic2v__ret = [];
 
-                                 if(oDoodad != null){
-                                    vPos = oDoodad.mCellPos;
-                                    vDim = oDoodad.getCellDim();
+                                 if(oDoodad != undefined && oDoodad != null){
+
+                                    var pPos = vPos == undefined || vPos == null ? oDoodad.mCellPos     : vPos;
+                                    var pDim = pDim == undefined || pDim == null ? oDoodad.getCellDim() : vDim;
+
+                                    for(var i=0; i < this.mDynObjects.length;i++)
+                                    {
+                                        var dynObj = this.mDynObjects[i];
+
+                                        if( dynObj != null && dynObj != oDoodad){
+
+                                                var bTouching = Global.rectOverlaps(
+                                                    pPos           , pDim,
+                                                    dynObj.mCellPos, dynObj.getCellDim());
+
+                                             if(bTouching)
+                                             {
+                                                    collidesWithDynamic2v__ret.push(dynObj);
+                                             }
+                                        }
+                                    }
                                  }
 
-                                 var vPosClmp = vPos.ivClampXY2iv(Vec.Vec2(), this.mDim.vPlusXY(-1,-1));
-
-                                 for(var i=0; i < this.mDynObjects.length;i++)
-                                 {
-                                     var dynObj = this.mDynObjects[i];
-
-                                     if( dynObj != null &&
-                                             (oDoodad != null && dynObj != oDoodad || oDoodad == null) &&
-
-                                             Global.rectOverlaps(
-                                                 vPos           , vDim,
-                                                 dynObj.mCellPos, dynObj.getCellDim())
-                                        ){
-                                                 ret.push(dynObj);
-                                          }
-                                 }
-
-                                 return ret;
+                                 //console.log(collidesWithDynamic2v__ret,collidesWithDynamic2v__ret[0]);
+                                 return collidesWithDynamic2v__ret;
 
                              }),
                              //No check for the moment !!!
                              collidesWithStatic2v:(function(vPos,vDim){
-                                 var __ret = [];
+                                 var collidesWithStatic2v__ret = [];
 
                                  vPos = vPos.ivClampXY2iv(
                                              Vec.Vec2(),
@@ -143,13 +162,14 @@ function BCCLevel(iDimX,iDimY){
 
                                          if(__cell.mStationedDoodad != null /*&& !__bla.mIsPassable*/)
                                          {
-                                             console.log("pushed", __cell.mStationedDoodad);
-                                            __ret.push(__cell.mStationedDoodad);
+                                             //console.log("pushed", __cell.mStationedDoodad);
+                                            collidesWithStatic2v__ret.push(__cell.mStationedDoodad);
                                          }
                                      }
                                  }
 
-                                 return __ret;
+                                 //console.log(collidesWithStatic2v__ret,collidesWithStatic2v__ret[0]);
+                                 return collidesWithStatic2v__ret;
 
                              }),
 

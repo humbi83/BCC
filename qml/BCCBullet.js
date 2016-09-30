@@ -42,6 +42,8 @@ function newInstance(oTank) {
     __ret.explode    = (function(){
 
         if(this.canExplode()){
+            this.mSpawningTank.mCanFire = true;
+
             this.setVisible(false);
             this.mCurrentState = E_STATE_EXPLODING; //basically dead
 
@@ -72,8 +74,9 @@ function newInstance(oTank) {
 
                     var cellDim = this.getCellDim();
 
-                    var collidingDoodads = this.mLevel.collidesWithStatic2v(this.mCellPos , cellDim);
-                    collidingDoodads.concat(this.mLevel.collidesWithDynamic2v(this));
+                    var collidingDoodads = Global.aConcat(
+                    this.mLevel.collidesWithStatic2v(this.mCellPos , cellDim),
+                    this.mLevel.collidesWithDynamic2v(this));
 
                     if(collidingDoodads.length > 0)
                     {
@@ -87,6 +90,7 @@ function newInstance(oTank) {
                                 if(dynObj.mSpawningTank != this.mSpawningTank)
                                 {
                                     dynObj.explode();
+                                    this.explode();
                                 }
                             }break;
 
@@ -97,25 +101,33 @@ function newInstance(oTank) {
                                 var dStationed = cell.mStationedDoodad;
                                 cell.mStationedDoodad = null;
                                 this.mLevel.applyBrush( pixPos.mX, pixPos.mY, Level.E_BRUSH_EMPTY, 4,4);
+                                this.explode();
                             }break;
 
+                            case Doodad.E_DOODAD_STONE_WALL :{
+                                //if(If this.mSpawningTank 3 stars .. // same as with brick)
+                                this.explode();
+                            }
+                            break;
                             case Doodad.E_DOODAD_TANK       :{
                                 if(dynObj != this.mSpawningTank){
                                     dynObj.explode();                                    
+                                    this.explode();
                                 }
                             }break;
 
                             case Doodad.E_DOODAD_HQ_ALIVE    :{
-                                this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_DEAD, 16,16);
+                                this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_DEAD, 16,16);                                
+                                this.explode();
                             }break;
                                 default: //do nothing
-                                     console.log("stuff");
+                                     //console.log("stuff");
                                     break;
                             }
                         }
                     }
 
-                    if( collidingDoodads.length > 0 || !this.mLevel.bIsInside2v(this.mCellPos, cellDim))
+                    if(!this.mLevel.bIsInside2v(this.mCellPos, cellDim))
                     {
                         this.explode();
                     }

@@ -15,12 +15,12 @@ var TNK_FRAMES_PER_DIR= 2;
 
 var DT_TANK_TELEPORT  = 2000;
 var DT_TANK_SHIELDED  = 3000;
-
+var DT_TANK_CELLS_PER_MS = 52 / 6000; // full map lenght in 6 sec
 
 var E_STATE_TELEPORTING   = 0;//2 sec
 var E_STATE_SHIELDED      = 1;////3 sec
 var E_STATE_NORMAL        = 2;
-var E_STATE_POWUP         = 3;//flashes red, I need 2 painters
+var E_STATE_POWUP         = 3;//flashes red
 var E_STATE_EXPLODING     = 4;
 var E_STATE_EXPLODED      = 5;
 var E_STATE_FROZEN        = 6;
@@ -28,11 +28,11 @@ var E_STATE_FROZEN        = 6;
 
 //I will need 2 paintes
 
-function newInstance(oLevel, iX, iY, bEnemy) {
+function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
-    var pX     = iX     != undefined ? iX     : 0;
-    var pY     = iY     != undefined ? iY     : 0;
-    var pEnemy = bEnemy != undefined ? bEnemy : true;
+    var pX     = iX       != undefined ? iX     : 0;
+    var pY     = iY       != undefined ? iY     : 0;
+    var pPlayer = ePlayer != undefined ? ePlayer : Global.E_PLAYER_AI_X;
 
     var ret = MFDoodad.newInstance(
                 Doodad.E_DOODAD_TANK,
@@ -46,7 +46,9 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
     //see what I should do regarding interfaces !!!
     //explode, canExplode
-    ret.mAI = pEnemy ? AI.newInstance(ret) : null;
+    ret.mListener = oListener != undefined && oListener != null ? oListener : oLevel;
+    ret.mCanFire = true;
+    ret.mAI = pPlayer == Global.E_PLAYER_AI_X ? AI.newInstance(ret) : null;
     ret.explode = (function(){
         var ret = false;
 
@@ -55,9 +57,12 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             this.mCurrentGfx   = GFX.newInstance(
                      this.mLevel,
                      this.mCellPos.mX, this.mCellPos.mY,
+                     GFX.E_GFX_BIG_EXP,
                      1, this);
             this.setVisible(false);
             ret = true;
+
+
         }
         return ret;
     });
@@ -101,7 +106,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
         {
         case E_STATE_TELEPORTING : {
 
-            if(!this.mIsEnemy){
+            if(this.mPlayerType != Global.E_PLAYER_AI_X){
                 this.shieldUp();
             }else
             {
@@ -123,10 +128,15 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             //do things
             if(this.isEnemy){
                 if(this.mAI != null){
-                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_DEAD);
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_DEAD);                    
                 }
             }else
             {
+            }
+
+            if(this.mListener != null){
+                //not the best name
+                this.mListener.onAnimSeqFinished(this);
             }
 
 
@@ -140,7 +150,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
 
 
 
-    ret.mIsEnemy = pEnemy;
+    ret.mPlayerType = pPlayer;
     ret.mCurrentGfx = GFX.newInstance(oLevel,pX,pY,GFX.E_GFX_TELEPORT,0,ret);
     ret.mCurrentState = E_STATE_TELEPORTING;
     ret.setVisible(false);
@@ -164,7 +174,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
                 case Global.E_DIR_LEFT  : vPos.mX--; break;
                 case Global.E_DIR_DOWN  : vPos.mY++; break;
                 case Global.E_DIR_RIGHT : vPos.mX++; break;
-                default: console.log("onKeyEvent unknown"); this.setCurrentFrame(); break;
+                default: console.log("calcUpdatedPos unknown"); this.setCurrentFrame(); break;
             }
         }
 
@@ -180,7 +190,10 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     ret.onFire = (function()
     {
         //so what ..
-        if(this.canMove()){
+        if(this.canMove() &&  this.mCanFire){
+
+            //will be true when Bullet Exp
+            this.mCanFire = false;
             this.mLevel.addDynObj(Bullet.newInstance(this));
         }
     });
@@ -189,6 +202,8 @@ function newInstance(oLevel, iX, iY, bEnemy) {
     ret.pixX = 0;
     ret.pixY = 0;
 
+
+    //TODO:ALEX move to update & animate movement
     ret.onMoveEvent = (function(eDir){
 
         if(eDir == Global.NV_E_DIR){
@@ -212,20 +227,24 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             var cellDim = this.getCellDim();
 
             var isInside = this.mLevel.bIsInside2v(newPos,cellDim);
-            console.log(isInside);
+            //console.log(isInside);
 
             if(isInside){
-            var collidingCells = this.mLevel.collidesWithStatic2v(newPos,cellDim);
-            collidingCells.concat(this.mLevel.collidesWithDynamic2v(this));
+            var staticCC = this.mLevel.collidesWithStatic2v(newPos,cellDim);
+                //console.log(staticCC,staticCC[0]);
+            var dynCC    = this.mLevel.collidesWithDynamic2v(this,newPos);
+                //console.log(dynCC,dynCC[0]);
 
-                if(collidingCells.length > 0){
+                if(staticCC.length > 0 || dynCC.length > 0){
                 //for the moment, do not update
-                    if(this.mAI != null){
-                        this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
-                    }
+                if(this.mAI != null){
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
+                }
                 }else
                 {
-                    this.setCellPos(newPos);
+                    this.setCellPos(newPos);                    
+                    //console.log("setPos",newPos.mX, newPos.mY);
+                    //console.log("mCEll", this.mCellPos.mX, this.mCellPos.mY);
                 }
             }else{
                 if(this.mAI != null){
@@ -283,7 +302,7 @@ function newInstance(oLevel, iX, iY, bEnemy) {
             case E_STATE_POWUP      :{}break;
             case E_STATE_EXPLODING  :{
             }break;
-            default: console.log("BBCTank::update::default!");
+            default: break;//console.log("BBCTank::update::default!");
         }
 
     });

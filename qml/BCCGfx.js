@@ -78,6 +78,9 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
                     iX ,iY
                     );
         break;
+    default:
+        console.log("unknown egfx");
+        break;
     }
 
     //update related

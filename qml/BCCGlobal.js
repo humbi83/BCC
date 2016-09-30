@@ -19,12 +19,46 @@ var E_DOODAD_LC_STATE_ALIVE       = 0;
 var E_DOODAD_LC_STATE_DESTROY_REQ = 1;
 var E_DOODAD_LC_STATE_DESTROYED   = 2;
 
+var NV_E_PLAYER   = 0;
+var E_PLAYER_1    = 1;
+var E_PLAYER_2    = 2;
+var E_PLAYER_AI_X = 3;
+var SZ_E_PLAYER   = 4;
+
+var NV_E_ACTION   =  0;
+var E_ACTION_MOVE =  1;
+var E_ACTION_FIRE =  2;
+var SZ_E_ACTION   =  3;
+
 //Move to some math js
 function clamp(val, min, max)
 {
     return val < min ? min : val > max? max : val;
 }
 
+
+function aConcat(array1 , array2)
+{
+    var ret = [];
+
+    if(array1 != undefined && array1 != null && array1.length > 0)
+    {
+        for(var i=0; i<array1.length ; i++)
+        {
+            ret.push(array1[i]);
+        }
+    }
+
+    if(array2 != undefined && array2 != null && array2.length > 0)
+    {
+        for(var i=0; i<array2.length ; i++)
+        {
+            ret.push(array2[i]);
+        }
+    }
+
+    return ret;
+}
 function rectOverlaps( vPos1, vDim1, vPos2, vDim2)
 {
     //RectA.Left < RectB.Right && RectA.Right > RectB.Left &&

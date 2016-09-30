@@ -278,8 +278,8 @@ Window {
     Item {
         id : keyHandler_Game
         focus: _BCCMainTimer.running;
-        Keys.onPressed : {console.log("keyPressed") ; if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);}}
-        Keys.onReleased: {console.log("keyReleased"); if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);}}
+        Keys.onPressed : {/*console.log("keyPressed") ; */if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_DOWN, event);}}
+        Keys.onReleased: {/*console.log("keyReleased"); */if(mapView.visible){myBCCMain.notify(myBCCMain.E_EVENT_KEY_UP  , event);}}
     }
 
     Component.onCompleted: {     
