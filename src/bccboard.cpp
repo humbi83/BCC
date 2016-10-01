@@ -5,14 +5,14 @@
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLContext>
 
-Squircle::Squircle()
+Bccboard::Bccboard()
     : m_t(0)
     , m_renderer(0)
 {
-    connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
+    connect(this, &QQuickItem::windowChanged, this, &Bccboard::handleWindowChanged);
 }
 
-void Squircle::setT(qreal t)
+void Bccboard::setT(qreal t)
 {
     if (t == m_t)
         return;
@@ -23,18 +23,18 @@ void Squircle::setT(qreal t)
         window()->update();
 }
 
-void Squircle::handleWindowChanged(QQuickWindow *win)
+void Bccboard::handleWindowChanged(QQuickWindow *win)
 {
     if (win) {
-        connect(win, &QQuickWindow::beforeSynchronizing, this, &Squircle::sync, Qt::DirectConnection);
-        connect(win, &QQuickWindow::sceneGraphInvalidated, this, &Squircle::cleanup, Qt::DirectConnection);
+        connect(win, &QQuickWindow::beforeSynchronizing, this, &Bccboard::sync, Qt::DirectConnection);
+        connect(win, &QQuickWindow::sceneGraphInvalidated, this, &Bccboard::cleanup, Qt::DirectConnection);
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
         win->setClearBeforeRendering(false);
     }
 }
 
-void Squircle::cleanup()
+void Bccboard::cleanup()
 {
     if (m_renderer) {
         delete m_renderer;
@@ -42,7 +42,7 @@ void Squircle::cleanup()
     }
 }
 
-SquircleRenderer::~SquircleRenderer()
+BccboardRenderer::~BccboardRenderer()
 {
     delete m_program;
     delete m_vertexBuffer;
@@ -50,11 +50,11 @@ SquircleRenderer::~SquircleRenderer()
     delete m_dynObjBuffer;
 }
 
-void Squircle::sync()
+void Bccboard::sync()
 {
     if (!m_renderer) {
-        m_renderer = new SquircleRenderer();
-        connect(window(), &QQuickWindow::beforeRendering, m_renderer, &SquircleRenderer::paint, Qt::DirectConnection);
+        m_renderer = new BccboardRenderer();
+        connect(window(), &QQuickWindow::beforeRendering, m_renderer, &BccboardRenderer::paint, Qt::DirectConnection);
     }
 
     m_renderer->m_callQueue.clear();
@@ -370,7 +370,7 @@ static int g_texCoordsLocation;
 #define _CLAMP(v,l,h) (v < l ? l : ( v > h ? h : v))
 #define CLAMP(v,l,h) _CLAMP((v),(l),(h))
 
-void SquircleRenderer::applyBrush(const BrushCall& params)
+void BccboardRenderer::applyBrush(const BrushCall& params)
 {
     //TODO:ALEX make these ints
     //TODO:ALEX add real bounds !
@@ -419,7 +419,7 @@ void SquircleRenderer::applyBrush(const BrushCall& params)
     delete tb;
 }
 //called before paint !
-void Squircle::applyBrush(
+void Bccboard::applyBrush(
         qreal cellX, qreal cellY,
         qreal tX, qreal tY,
         qreal tW, qreal tH,
@@ -524,7 +524,7 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<
     delete [] buffer;
 }
 
-void SquircleRenderer::atlasOp   (const AtlasImageOps& callParams){
+void BccboardRenderer::atlasOp   (const AtlasImageOps& callParams){
     m_dynImagesDirty = true;
 
     switch (callParams.opType) {
@@ -545,7 +545,7 @@ void SquircleRenderer::atlasOp   (const AtlasImageOps& callParams){
     }
 }
 
-void Squircle::atlasOp   (
+void Bccboard::atlasOp   (
         int opType,
         int id    ,
         int posX  ,
@@ -569,7 +569,7 @@ void Squircle::atlasOp   (
     m_callQueueAIOP.append(aioCall);
 }
 
-void SquircleRenderer::paint()
+void BccboardRenderer::paint()
 {
     if (!m_program) {
 

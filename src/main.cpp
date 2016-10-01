@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<Squircle>("OpenGLUnderQML", 1, 0, "Squircle");
+    qmlRegisterType<Bccboard>("OpenGLUnderQML", 1, 0, "Bccboard");
 
 
     QQmlApplicationEngine engine;

@@ -422,13 +422,13 @@ Window {
         }
     }
 
-    // ican have this as update and another anim inside the squircle as paint
+    // ican have this as update and another anim inside the bccboard as paint
     //Timer {
     //    id : _BCCMainTimer
     //        interval: 32; running: true; repeat: true;triggeredOnStart: true
     //        onTriggered: myBCCMain.notify(myBCCMain.E_EVENT_TIMER,_BCCMainTimer);
     //    }
-    Squircle {
+    Bccboard {
             width: 832
             height: 832
             id : mapView;

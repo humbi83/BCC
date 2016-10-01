@@ -37,12 +37,12 @@ struct BrushCall{
     qreal repeatY;
 };
 
-class SquircleRenderer : public QObject, protected QOpenGLFunctions
+class BccboardRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    SquircleRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0), m_dynObjBuffer(0), m_imageW(0), m_imageH(0) { }
-    ~SquircleRenderer();
+    BccboardRenderer() : m_t(0), m_program(0), m_vertexBuffer(0),m_textureBuffer(0), m_dynObjBuffer(0), m_imageW(0), m_imageH(0) { }
+    ~BccboardRenderer();
 
     void setT(qreal t) { m_t = t; }
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
@@ -75,7 +75,7 @@ private:
     int m_imageH;
 };
 
-class Squircle : public QQuickItem
+class Bccboard : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
@@ -83,7 +83,7 @@ class Squircle : public QQuickItem
     QList<BrushCall> m_callQueue;
     QList<AtlasImageOps> m_callQueueAIOP;
 public:
-    Squircle();
+    Bccboard();
 
     qreal t() const { return m_t; }
     void setT(qreal t);
@@ -118,7 +118,7 @@ private slots:
 
 private:
     qreal m_t;
-    SquircleRenderer *m_renderer;
+    BccboardRenderer *m_renderer;
 };
 
 #endif // BCCBOARD_H
