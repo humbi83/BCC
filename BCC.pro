@@ -3,13 +3,14 @@ TEMPLATE = app
 QT += qml quick
 CONFIG += c++11
 
-SOURCES += main.cpp \
-    bccboard.cpp
+INCLUDEPATH += include
+HEADERS += include/bccboard.h
 
-#RESOURCES +=
+SOURCES += src/main.cpp
+SOURCES += src/bccboard.cpp
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH = qml
+QML_IMPORT_PATH += qml
 
 # Default rules for deployment.
 include(deployment.pri)
@@ -17,63 +18,71 @@ include(deployment.pri)
 DISTFILES += \
     qml/MainForm.ui.qml \
     qml/BBCAtlas.qml \
-    qml/main.qml \
-    res/general.png \
-    res/misc.png \
-    qml/BBCBoard.qml \
-    qml/BBCListElement.qml \
-    qml/BBCList.qml \
-    qml/BBCTank.qml \
-    qml/BBCLevel.qml \
-    qml/BBCLevel1.qml \
-    qml/BBCLevelCell.qml \
     qml/BBCAtlasFrame.qml \
     qml/BBCAtlasFrameList.qml \
     qml/BBCBase.qml \
-    qml/BBCIVec.qml \
-    qml/BBCRect.qml \
+    qml/BBCBoard.qml \
     qml/BBCFactory.qml \
-    qml/BCCDoodad.js \
-    qml/BCCLevel.js \
-    qml/BCCGlobal.js \
-    qml/BCCMain.js \
-    qml/BCCLevelCell.js \
-    qml/BCCColorDoodadPainter.js \
-    qml/BCCBaseDoodadPainter.js \
-    qml/BCCMainAtlasDoodadPainter.js \
-    qml/BCCVec.js \
+    qml/BBCIVec.qml \
+    qml/BBCLevel.qml \
+    qml/BBCLevel1.qml \
+    qml/BBCLevelCell.qml \
+    qml/BBCList.qml \
+    qml/BBCListElement.qml \
+    qml/BBCRect.qml \
     qml/BBCRectangle.qml \
-    res/BCSnd1.mp3 \
-    res/BCSnd2.mp3 \
-    res/BCSnd3.mp3 \
-    res/BCSnd4.mp3 \
-    res/BCSnd5.mp3 \
-    res/BCSnd6.mp3 \
-    res/BCSnd7.mp3 \
-    res/BCSnd8.mp3 \
-    res/BCSnd9.mp3 \
-    res/BCSnd10.mp3 \
-    res/BCSnd11.mp3 \
-    res/BCSnd12.mp3 \
-    res/BCSnd13.mp3 \
-    res/BCSnd14.mp3 \
-    res/BCSnd15.mp3 \
-    res/BCSnd16.mp3 \
-    res/BCSnd17.mp3 \
-    qml/BCCTank.js \
-    qml/BCCFrameSequencePainter.js \
-    qml/BCCBullet.js \
-    qml/BCCPUp.js \
-    qml/BCCGfx.js \
-    Req.txt \
-    qml/BCCTankAI.js \
-    qml/BCCLevelPainter.js \
-    qml/BCCMultiFrameDoodad.js \
-    qml/BCCAtlasCPPPainter.js \
-    qml/BCCFrameSequenceCPPPainter.js \
-    qml/BCCGameMaster.js \
+    qml/BBCTank.qml \
     qml/BCCListCursor.qml \
-    qml/BCCDoodadFactory.js
+    qml/main.qml \
+    js/BCCAtlasCPPPainter.js \
+    js/BCCBaseDoodadPainter.js \
+    js/BCCBullet.js \
+    js/BCCColorDoodadPainter.js \
+    js/BCCDoodad.js \
+    js/BCCDoodadFactory.js \
+    js/BCCFrameSequenceCPPPainter.js \
+    js/BCCFrameSequencePainter.js \
+    js/BCCGameMaster.js \
+    js/BCCGfx.js \
+    js/BCCGlobal.js \
+    js/BCCLevel.js \
+    js/BCCLevelCell.js \
+    js/BCCLevelPainter.js \
+    js/BCCMain.js \
+    js/BCCMainAtlasDoodadPainter.js \
+    js/BCCMultiFrameDoodad.js \
+    js/BCCPUp.js \
+    js/BCCTank.js \
+    js/BCCTankAI.js \
+    js/BCCVec.js \
+    res/BCCGameOver.png \
+    res/BCCMenuBottom.png \
+    res/BCCMenuListCursorFrames.png \
+    res/BCCMenuMail.png \
+    res/BCCMenuMiddle.png \
+    res/BCCMenuPhone.png \
+    res/general.png \
+    res/general_org.png
 
-HEADERS += \
-    bccboard.h
+
+CONFIG(debug, debug|release) {
+    DESTDIR = $$OUT_PWD/debug
+} else {
+    DESTDIR = $$OUT_PWD/release
+}
+
+
+#For what ever reason "make install" is not called. Maybe it's a windows thing
+#for Windows add Run Settings/ Depl / jom -f Makefile.[Debug|Release] install
+
+qml.path  = $$shell_path($$DESTDIR/qml)
+qml.files = $$shell_path($$_PRO_FILE_PWD_/qml/*)
+INSTALLS += qml
+
+js.path  = $$shell_path($$DESTDIR/js)
+js.files = $$shell_path($$_PRO_FILE_PWD_/js/*)
+INSTALLS += js
+
+res.path  = $$shell_path($$DESTDIR/res)
+res.files = $$shell_path($$_PRO_FILE_PWD_/res/*)
+INSTALLS += res

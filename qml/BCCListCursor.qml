@@ -10,7 +10,7 @@ import QtQuick 2.0
     mOffsetY : mFrameData[Math.floor(mCurrentFrame)][1];
     mWidth   : 16;
     mHeight  : 16;
-    mResPath: "../BCCMenuListCursorFrames.png";
+    mResPath: "../res/BCCMenuListCursorFrames.png";
 
     NumberAnimation on mCurrentFrame {
         from : 0

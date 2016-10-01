@@ -6,10 +6,10 @@ import OpenGLUnderQML 1.0
 import QtQml.StateMachine 1.0 as SM
 
 
-import "BCCVec.js"    as Vec
-import "BCCGlobal.js" as BCCGlobal
-import "BCCLevel.js"  as BCCLevel
-import "BCCMain.js"   as BCCMain
+import "../js/BCCVec.js"    as Vec
+import "../js/BCCGlobal.js" as BCCGlobal
+import "../js/BCCLevel.js"  as BCCLevel
+import "../js/BCCMain.js"   as BCCMain
 
 
 Window {
@@ -380,7 +380,7 @@ Window {
 
             scale : rMainMenu.mScale
             smooth : false
-            source: "../BCCMenuPhone.png"
+            source: "../res/BCCMenuPhone.png"
         }
 
         Image {
@@ -390,7 +390,7 @@ Window {
             anchors.horizontalCenter: parent.Center
             scale  :rMainMenu.mScale
             smooth : false
-            source: "../BCCMenuMail.png"
+            source: "../res/BCCMenuMail.png"
         }
 
 
@@ -400,14 +400,14 @@ Window {
             anchors.horizontalCenter: parent.Center
             scale : rMainMenu.mScale
             smooth : false
-            source: "../BCCMenuMiddle.png"
+            source: "../res/BCCMenuMiddle.png"
         }
         Image {
             id: rMainMenu_ARR
             y : 400
             scale : rMainMenu.mScale
             smooth : false
-            source: "../BCCMenuBottom.png"
+            source: "../res/BCCMenuBottom.png"
         }
 
         BCCListCursor{
@@ -537,7 +537,7 @@ Window {
                 scale : 2;
                 x : 300 - 44
                 y : 300 - 38
-                source: "../BCCGameOver.png"
+                source: "../res/BCCGameOver.png"
                 fillMode: Image.Stretch
                 smooth: false;
             }
@@ -547,7 +547,7 @@ Window {
                 y : 170
                 scale  :rMainMenu.mScale
                 smooth : false
-                source: "../BCCMenuMail.png"
+                source: "../res/BCCMenuMail.png"
             }
 
             Image {
@@ -555,15 +555,15 @@ Window {
                 y : 729
                 scale : rMainMenu.mScale
                 smooth : false
-                source: "../BCCMenuPhone.png"
+                source: "../res/BCCMenuPhone.png"
             }
 
 
         }
 
 //////// KINDA WORKS
-    Audio {
-           id: channel1
-           source: "../res/BCSnd1.mp3"
-       }
+    //Audio {
+    //       id: channel1
+    //       source: "../res/BCSnd1.mp3"
+    //   }
 }
