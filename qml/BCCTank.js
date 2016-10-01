@@ -33,12 +33,13 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
     var pX     = iX       != undefined ? iX     : 0;
     var pY     = iY       != undefined ? iY     : 0;
     var pPlayer = ePlayer != undefined ? ePlayer : Global.E_PLAYER_AI_X;
-
+    var tOffX = pPlayer == Global.E_PLAYER_AI_X ? 8*16 : 0;
+    var tOffY = pPlayer == Global.E_PLAYER_AI_X ? 4*16 : 0;
     var ret = MFDoodad.newInstance(
                 Doodad.E_DOODAD_TANK,
-                Vec.Vec2( 0,  0),
-                Vec.Vec2(16, 16),
-                Vec.Vec2( 1,  8),
+                Vec.Vec2(tOffX,  tOffY),
+                Vec.Vec2(   16,     16),
+                Vec.Vec2(    1,      8),
                 oLevel,
                 pX, pY,
                 true,false
@@ -56,7 +57,7 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
             this.mCurrentState = E_STATE_EXPLODING;
             this.mCurrentGfx   = GFX.newInstance(
                      this.mLevel,
-                     this.mCellPos.mX, this.mCellPos.mY,
+                     this.mCellPos.mX-2, this.mCellPos.mY-2,
                      GFX.E_GFX_BIG_EXP,
                      1, this);
             this.setVisible(false);
@@ -230,21 +231,20 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
             //console.log(isInside);
 
             if(isInside){
-            var staticCC = this.mLevel.collidesWithStatic2v(newPos,cellDim);
-                //console.log(staticCC,staticCC[0]);
-            var dynCC    = this.mLevel.collidesWithDynamic2v(this,newPos);
-                //console.log(dynCC,dynCC[0]);
+                var staticCC = this.mLevel.collidesWithStatic2v(newPos,cellDim);
+                var dynCC    = this.mLevel.collidesWithDynamic2v(this,newPos);
 
-                if(staticCC.length > 0 || dynCC.length > 0){
-                //for the moment, do not update
-                if(this.mAI != null){
-                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
-                }
-                }else
+                var allPassable = staticCC.length == 0;
+
+                for(var i = 0 ; i<dynCC.length && allPassable; i++)
                 {
-                    this.setCellPos(newPos);                    
-                    //console.log("setPos",newPos.mX, newPos.mY);
-                    //console.log("mCEll", this.mCellPos.mX, this.mCellPos.mY);
+                    allPassable = dynCC[i].mIsPassable;
+                }
+
+                if(allPassable){
+                    this.setCellPos(newPos);
+                }else if(this.mAI != null){
+                    this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
                 }
             }else{
                 if(this.mAI != null){

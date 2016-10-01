@@ -135,7 +135,7 @@ function isOV(object)
 {
     return object != undefined && object != null;
 }
-
+//min included, max excluded
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);

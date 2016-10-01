@@ -9,7 +9,7 @@ var E_BRUSH_BRICK_WALL = 2;
 var E_BRUSH_STONE_WALL = 3;
 var E_BRUSH_HQ_ALIVE   = 4;
 var E_BRUSH_HQ_DEAD    = 5;
-var E_BRUSH_
+//var E_BRUSH_ ... what was this for here ???
 var SZ_E_BRUSH         = 6;
 
 Array.matrix = function(numrows, numcols, initial) {
@@ -24,11 +24,12 @@ Array.matrix = function(numrows, numcols, initial) {
     return arr;
 }
 
-function BCCLevel(iDimX,iDimY){
+function BCCLevel(iDimX, iDimY, oGameMaster){
 
     var pDimX = iDimX == undefined ? Global.LEVEL_NO_CELLS : iDimX;
-    var pDimY = iDimY == undefined ? Global.LEVEL_NO_CELLS : iDimY;
+    var pDimY = iDimY == undefined ? Global.LEVEL_NO_CELLS : iDimY;    
     var ret = new Object({
+                             mGameMaster : oGameMaster,
                              mPos: Vec.Vec2(Global.LEVEL_CELL_POS_X,Global.LEVEL_CELL_POS_Y),
                              mDim: Vec.Vec2(pDimX,pDimY),
                              mDynObjects: [],                             
@@ -67,7 +68,12 @@ function BCCLevel(iDimX,iDimY){
                                 }
                              }),
 
+
+                             getGameMaster : (function(){return this.mGameMaster;}),
+
                              update:(function(tick){
+
+                                 this.mGameMaster.update(tick);
                                  //for the moment I do not update / paint the static stuff
                                  for(var i=0; i<this.mDynObjects.length;i++){
                                      Global.cUpdate(this.mDynObjects[i], tick)
@@ -75,6 +81,7 @@ function BCCLevel(iDimX,iDimY){
                              }),
 
                              paint:(function() {
+                                 this.mGameMaster.paint();
                                  for(var i=0; i<this.mDynObjects.length;i++){
                                      Global.cPaint(this.mDynObjects[i])
                                  }
@@ -82,12 +89,14 @@ function BCCLevel(iDimX,iDimY){
 
 
                              //TODO: ALEX: rm also from other lists !!!!!
-                             addDynObj:(function(object){                                 
+                             addDynObj:(function(object){
                                 this.mDynObjects.push(object);
+                                this.mGameMaster.onDoodadAdded(object);
                              }),
 
                              remDynObj:(function(oDoodad){
-                                 return Global.remObject(oDoodad, this.mDynObjects);
+                                 Global.remObject(oDoodad, this.mDynObjects);
+                                 this.mGameMaster.onDoodadRemoved(oDoodad);
                              }),
 
                              onAnimSeqFinished : (function(oDynDoodad){
@@ -112,6 +121,15 @@ function BCCLevel(iDimX,iDimY){
 
                              //bullets will kill, they will check for collision
                              //so no check in tank, tanks only for collision with other tanks
+                             isSpaceAvailable:(function(vPos,vDim){
+                                var sArr = this.collidesWithStatic2v(vPos,vDim);
+                                var dArr = this.collidesWithDynamic2v(Doodad.newInstance(),vPos,vDim);
+
+                                console.log(sArr.length,dArr.length,(sArr.length + dArr.length) == 0);
+
+                                return (sArr.length + dArr.length) == 0;
+
+                             }),
                              collidesWithDynamic2v:(function(oDoodad, vPos, vDim){
 
                                  var collidesWithDynamic2v__ret = [];
@@ -119,7 +137,7 @@ function BCCLevel(iDimX,iDimY){
                                  if(oDoodad != undefined && oDoodad != null){
 
                                     var pPos = vPos == undefined || vPos == null ? oDoodad.mCellPos     : vPos;
-                                    var pDim = pDim == undefined || pDim == null ? oDoodad.getCellDim() : vDim;
+                                    var pDim = vDim == undefined || vDim == null ? oDoodad.getCellDim() : vDim;
 
                                     for(var i=0; i < this.mDynObjects.length;i++)
                                     {

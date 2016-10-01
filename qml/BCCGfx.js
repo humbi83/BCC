@@ -95,6 +95,10 @@ function newInstance(oLevel, iX, iY, eGFX, iNoLoops, oListener) {
 
     __ret.setCurrentFrame(Vec.Vec2(ANIM_SEQZ[eGFX],0));// not okey .. need to def the anims
 
+
+    //not nice, I am not passing the params down towards the atlas painter
+    __ret.setCellPos(Vec.Vec2(iX,iY));
+
     __ret.update = (function(tick){
 
         //hmm .. globals .. not ok..

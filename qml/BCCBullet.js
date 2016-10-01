@@ -110,15 +110,19 @@ function newInstance(oTank) {
                             }
                             break;
                             case Doodad.E_DOODAD_TANK       :{
-                                if(dynObj != this.mSpawningTank){
+                                if(
+                                        dynObj             != this.mSpawningTank &&
+                                        dynObj.mPlayerType != this.mSpawningTank.mPlayerType
+                                        ){
                                     dynObj.explode();                                    
                                     this.explode();
                                 }
                             }break;
 
-                            case Doodad.E_DOODAD_HQ_ALIVE    :{
+                            case Doodad.E_DOODAD_HQ_ALIVE    :{                                
                                 this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_DEAD, 16,16);                                
                                 this.explode();
+                                this.mLevel.getGameMaster().onBaseKilled();
                             }break;
                                 default: //do nothing
                                      //console.log("stuff");

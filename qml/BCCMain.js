@@ -11,12 +11,14 @@
 .import "BCCGfx.js" as GFX
 .import "BCCAtlasCPPPainter.js" as CAtlasPainter
 .import "BCCFrameSequenceCPPPainter.js" as CFSPainter
+.import "BCCGameMaster.js" as GameMaster
 
 
 function BCCMain()
 {
     var ret = new Object({
 
+                             mGameMaster : null,
                              nextId : 0,
                              getNextID: (function(){return this.nextId++;}),
 
@@ -60,7 +62,14 @@ function BCCMain()
                                  //move to MapXXX / init level instance with it
 
                                  console.log("init called");
-                                 this.mLevel = Level.BCCLevel();
+
+                                 this.mGameMaster = GameMaster.newInstance(null);
+                                 this.mLevel = Level.BCCLevel(
+                                            Global.LEVEL_NO_CELLS,
+                                            Global.LEVEL_NO_CELLS,
+                                            this.mGameMaster
+                                          );
+                                 this.mGameMaster.mLevel = this.mLevel;
 
                                  //It seems i have an OOB related problem on cpp applyBrush, I might not check all
                                  //crashes only on y, it seems that I loop on x & no crash
@@ -156,12 +165,12 @@ function BCCMain()
 
                                  this.mLevel.applyBrush( 96, 192, Level.E_BRUSH_HQ_ALIVE  , 16,16);//handle undefined
 
-                                 ////should be part of the map..
+                                 ////should be part of the map.. or, more rec, GameMaster..
 
-                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,16,48,Global.E_PLAYER_1   ));
-                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel, 0,48,Global.E_PLAYER_AI_X));
-                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48, 0,Global.E_PLAYER_AI_X));
-                                 this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48,48,Global.E_PLAYER_AI_X));
+                                 //this.mLevel.addDynObj(Tank.newInstance(this.mLevel,16,48,Global.E_PLAYER_1   ));
+                                 //this.mLevel.addDynObj(Tank.newInstance(this.mLevel, 0,48,Global.E_PLAYER_AI_X));
+                                 //this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48, 0,Global.E_PLAYER_AI_X));
+                                 //this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48,48,Global.E_PLAYER_AI_X));
 
                              }),
 

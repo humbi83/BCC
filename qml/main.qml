@@ -17,7 +17,8 @@ Window {
     SM.StateMachine{
         id:bccSM
         initialState: sMainMenu_Startup
-        property var mIsFirstTime : false
+        property var mIsFirstTime : true
+        property var mGameState : 0
         running: false
 
         SM.State{
@@ -64,12 +65,18 @@ Window {
                 }
 
                 onExited:{
+                    rMainMenu_ShowAnim.complete();
                     console.log("sMainMenu_FirstTime : exited")
                 }
 
                 SM.SignalTransition {
                     targetState: sMainMenu_List
                     signal: rMainMenu_ShowAnim.onStopped
+                }
+
+                SM.SignalTransition {
+                    targetState: sMainMenu_List
+                    signal: keyHandler.Keys.onPressed
                 }
 
             }
@@ -131,7 +138,7 @@ Window {
                 function onEnterPressed(){
                     console.log("Enter");
                     //TODO: set this value to the game itself or something
-                    return true;
+                    return mSelectedEntry == 0;
                 }
             }
         }
@@ -223,6 +230,8 @@ Window {
         SM.State
         {
             id:sMainGame
+            initialState: sMainGame_Loop1
+
             onEntered:{
                 rMainMenu.visible         = false;
                 levelStartAnimRes.visible = false;
@@ -232,15 +241,6 @@ Window {
                 _BCCMainTimer.start();
             }
 
-
-
-            SM.SignalTransition{
-                id:tsMainGame_toGameOver
-                signal gameOverSignal
-                targetState: sGameOver;
-                //signal: onGameOverSignal
-            }
-
             onExited: {
                 _BCCMainTimer.stop();
                 rMainMenu.visible         = false;
@@ -248,17 +248,76 @@ Window {
                 myBCCMain.visible         = false;
                 rGameOver.visible         = true ;
             }
+
+            SM.State{
+                id:sMainGame_Loop1
+                onEntered: {console.log("Loop1 B", bccSM.mGameState);}
+                onExited:  {console.log("Loop1 E", bccSM.mGameState);}
+
+                SM.TimeoutTransition{
+                    id:tTout_sMainGame_Loop1
+                    timeout: 1000
+                }
+
+                SM.SignalTransition{
+                    targetState: bccSM.mGameState < 2? sMainGame_Loop2 : sGameOver
+                    signal: tTout_sMainGame_Loop1.onTriggered
+                }
+            }
+
+
+            SM.State{
+                id:sMainGame_Loop2
+
+                onEntered: {console.log("Loop2 B", bccSM.mGameState);}
+                onExited:  {console.log("Loop2 E", bccSM.mGameState);}
+
+                SM.TimeoutTransition{
+                    id:tTout_sMainGame_Loop2
+                    timeout: 1000
+                }
+
+                SM.SignalTransition{
+                    targetState: bccSM.mGameState < 2? sMainGame_Loop1 : sGameOver
+                    signal: tTout_sMainGame_Loop2.onTriggered
+                }
+            }
+
         }
 
         SM.State
         {
             id:sGameOver
             onEntered: {
+                rMainMenu.visible         = false;
+                levelStartAnimRes.visible = false;
+                myBCCMain.visible         = false;
+                rGameOver.visible         = true ;
+            }
 
+            SM.TimeoutTransition{
+                targetState: sExit
+                timeout: 60000
+            }
+
+            SM.SignalTransition{
+                targetState: sExit
+                signal: keyHandler.Keys.onPressed
             }
 
         }
+
+        SM.State
+        {
+            id:sExit
+            onEntered: {
+                rootWindow.close();
+            }
+        }
+
     }
+
+
 
     id : rootWindow
     visible: true
@@ -468,18 +527,39 @@ Window {
             }
             //328x183, 40x16 // all chars0-9
         }
-
-        Image{
-            id: rGameOver
-            scale : 2;
-            source: "../BCCGameOver.png"
-            visible : false
-        }
-
-        Component.onCompleted: {
-            //anim1.start();
-        }
     }
+
+
+        Item{
+            id: rGameOver
+            visible: false
+            Image{
+                scale : 2;
+                x : 300 - 44
+                y : 300 - 38
+                source: "../BCCGameOver.png"
+                fillMode: Image.Stretch
+                smooth: false;
+            }
+
+            Image {
+                x : 374
+                y : 170
+                scale  :rMainMenu.mScale
+                smooth : false
+                source: "../BCCMenuMail.png"
+            }
+
+            Image {
+                x : 457
+                y : 729
+                scale : rMainMenu.mScale
+                smooth : false
+                source: "../BCCMenuPhone.png"
+            }
+
+
+        }
 
 //////// KINDA WORKS
     Audio {

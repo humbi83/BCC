@@ -2,7 +2,6 @@
 .import "BCCMainAtlasDoodadPainter.js" as AtlasPainter
 .import "BCCColorDoodadPainter.js" as ColorPainter
 .import "BCCGlobal.js" as Global
-//.import "BCCLevelPainert.js" as LevelPainter
 
 var NV_E_DOODAD               = 0;
 var E_DOODAD_EMPTY            = 1;
