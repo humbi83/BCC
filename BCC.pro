@@ -4,9 +4,16 @@ QT += qml quick
 CONFIG += c++11
 
 INCLUDEPATH += include
-HEADERS += include/bccboard.h
+HEADERS += include/bccboard.h \
+    include/bccglobals.h \
+    include/bcctexbrush.h \
+    include/bcctexcoords.h \
+    include/bccboardrenderer.h
 
-SOURCES += src/main.cpp
+SOURCES += src/main.cpp \
+    src/bcctexcoords.cpp \
+    src/bcctexbrush.cpp \
+    src/bccboardrenderer.cpp
 SOURCES += src/bccboard.cpp
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -19,18 +26,12 @@ DISTFILES += \
     qml/MainForm.ui.qml \
     qml/BBCAtlas.qml \
     qml/BBCAtlasFrame.qml \
-    qml/BBCAtlasFrameList.qml \
     qml/BBCBase.qml \
     qml/BBCBoard.qml \
-    qml/BBCFactory.qml \
     qml/BBCIVec.qml \
-    qml/BBCLevel.qml \
-    qml/BBCLevel1.qml \
-    qml/BBCLevelCell.qml \
     qml/BBCList.qml \
     qml/BBCListElement.qml \
     qml/BBCRect.qml \
-    qml/BBCRectangle.qml \
     qml/BBCTank.qml \
     qml/BCCListCursor.qml \
     qml/main.qml \
@@ -62,7 +63,8 @@ DISTFILES += \
     res/BCCMenuMiddle.png \
     res/BCCMenuPhone.png \
     res/general.png \
-    res/general_org.png
+    res/general_org.png \
+    qml/BBCRectangle.qml
 
 
 CONFIG(debug, debug|release) {
