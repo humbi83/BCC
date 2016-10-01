@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
 import QtMultimedia 5.5
 import OpenGLUnderQML 1.0
+
 import QtQml.StateMachine 1.0 as SM
 
 
@@ -13,6 +14,11 @@ import "../js/BCCMain.js"   as BCCMain
 
 
 Window {
+//splitting qmls ...
+
+    //BBCStateMachine{
+    //    id : bccSM
+    //}
 
     SM.StateMachine{
         id:bccSM

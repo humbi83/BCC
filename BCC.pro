@@ -64,7 +64,8 @@ DISTFILES += \
     res/BCCMenuPhone.png \
     res/general.png \
     res/general_org.png \
-    qml/BBCRectangle.qml
+    qml/BBCRectangle.qml \
+    qml/BBCStateMachine.qml
 
 
 CONFIG(debug, debug|release) {
