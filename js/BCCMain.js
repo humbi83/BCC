@@ -173,12 +173,17 @@ function BCCMain()
                                  //this.mLevel.addDynObj(Tank.newInstance(this.mLevel,48,48,Global.E_PLAYER_AI_X));
 
                              }),
-
+                                mPrevTick : 0,
+                                mPrevTickKeys : 0,
                              update:(function(){
 
                                  var tick = new Date().getTime();
 
-                                 Global.cUpdatePaint(this.mLevel , tick );
+                                  if(tick - this.mPrevTick >= 32){
+
+                                     Global.cUpdatePaint(this.mLevel , tick );
+                                     this.mPrevTick = tick;
+                                  }
                              }),
 
                              onKeyEvent:(function(bDown , oEvent){
@@ -191,6 +196,18 @@ function BCCMain()
 
                                  //console.log(bDown);
                                  if(bDown){
+
+                                     if(oEvent.isAutoRepeat)
+                                     {
+                                         var tick = new Date().getTime();
+
+                                          if(tick - this.mPrevTickKeys >= 32){
+                                             this.mPrevTickKeys = tick;
+                                          }else
+                                          {
+                                            return;
+                                          }
+                                     }
                                     switch(oEvent.nativeScanCode)
                                     {
                                         case this.E_KC_P1_ALT_UP   :
@@ -216,27 +233,27 @@ function BCCMain()
                                  else if(!bDown && !oEvent.isAutoRepeat)
                                  {
 
-                                     switch(oEvent.nativeScanCode)
-                                     {
-                                        case this.E_KC_P1_ALT_UP   :
-                                        case this.E_KC_P1_UP       :
-                                        case this.E_KC_P1_ALT_DOWN :
-                                        case this.E_KC_P1_DOWN     :
-                                        case this.E_KC_P1_ALT_LEFT :
-                                        case this.E_KC_P1_LEFT     :
-                                        case this.E_KC_P1_ALT_RIGHT:
-                                        case this.E_KC_P1_RIGHT    :
-                                        case this.E_KC_P1_ALT_FIRE :
-                                        case this.E_KC_P1_FIRE     :
-                                             this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
-
-                                         case this.E_KC_P2_UP   :
-                                         case this.E_KC_P2_DOWN :
-                                         case this.E_KC_P2_LEFT :
-                                         case this.E_KC_P2_RIGHT:
-                                         case this.E_KC_P2_FIRE :
-                                             this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
-                                     }
+                                     //switch(oEvent.nativeScanCode)
+                                     //{
+                                     //   case this.E_KC_P1_ALT_UP   :
+                                     //   case this.E_KC_P1_UP       :
+                                     //   case this.E_KC_P1_ALT_DOWN :
+                                     //   case this.E_KC_P1_DOWN     :
+                                     //   case this.E_KC_P1_ALT_LEFT :
+                                     //   case this.E_KC_P1_LEFT     :
+                                     //   case this.E_KC_P1_ALT_RIGHT:
+                                     //   case this.E_KC_P1_RIGHT    :
+                                     //   case this.E_KC_P1_ALT_FIRE :
+                                     //   case this.E_KC_P1_FIRE     :
+                                     //        this.mLevel.onActionEvents(Global.E_PLAYER_1,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
+                                     //
+                                     //    case this.E_KC_P2_UP   :
+                                     //    case this.E_KC_P2_DOWN :
+                                     //    case this.E_KC_P2_LEFT :
+                                     //    case this.E_KC_P2_RIGHT:
+                                     //    case this.E_KC_P2_FIRE :
+                                     //        this.mLevel.onActionEvents(Global.E_PLAYER_2,Global.E_ACTION_MOVE,Global.NV_E_DIR    );break;
+                                     //}
 
                                  }
                              }),

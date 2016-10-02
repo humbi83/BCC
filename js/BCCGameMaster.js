@@ -9,7 +9,7 @@
 .import "BCCVec.js" as Vec
 
 var ENEMY_TANKS_MAX_ACTIVE     =    4;
-var ENEMY_TANKS_TELE_TIMEOUT   = 3000;//check game for time & if it is from the last ene death
+var ENEMY_TANKS_TELE_TIMEOUT   = 6000;//check game for time & if it is from the last ene death
 var ENEMY_TANKS_TELE_MAX_TRYZ  = 10;
 var ENEMY_TANKS_TELE_TRYZ_WAIT = 1000;
 

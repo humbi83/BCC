@@ -244,11 +244,14 @@ Window {
                 myBCCMain.visible         = true;
                 rGameOver.visible         = false;
 
-                _BCCMainTimer.start();
+                //_BCCMainTimer.start();
+                _BCCMainTimer.running = true;
             }
 
             onExited: {
-                _BCCMainTimer.stop();
+                //_BCCMainTimer.stop();
+                _BCCMainTimer.running = false;
+
                 rMainMenu.visible         = false;
                 levelStartAnimRes.visible = false;
                 myBCCMain.visible         = false;
@@ -303,7 +306,7 @@ Window {
 
             SM.TimeoutTransition{
                 targetState: sExit
-                timeout: 60000
+                timeout: 5000
             }
 
             SM.SignalTransition{
@@ -316,9 +319,17 @@ Window {
         SM.State
         {
             id:sExit
-            onEntered: {
-                rootWindow.close();
+
+            SM.TimeoutTransition{
+                id : sExit_T
+                timeout: 3000
             }
+
+            SM.SignalTransition{
+                signal: sExit_T.onTriggered
+                guard: {rootWindow.close(); true;}
+            }
+
         }
 
     }
@@ -440,10 +451,19 @@ Window {
             id : mapView;
             visible:false
 
+            //Timer {
+            // id : _BCCMainTimer
+            //    interval: 32; running: false; repeat: true;triggeredOnStart: true
+            //    onTriggered: {
+            //        mapView.t = mapView.t + 0.00001;
+            //        myBCCMain.notify(myBCCMain.E_EVENT_TIMER);
+            //    }
+            //}
+
             NumberAnimation on t{
                 id : _BCCMainTimer
                 from     : 0
-                to       : 1000
+                to       : 1
                 loops    : Animation.Infinite
                 duration : 1000
                 running: false//mapView.visible

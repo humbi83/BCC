@@ -22,8 +22,8 @@ public:
     Q_INVOKABLE void atlasOp   (
             int opType,
             int id    ,
-            int posX  ,
-            int posY  ,
+            qreal posX  ,
+            qreal posY  ,
             int tX    ,
             int tY    ,
             int tW    ,

@@ -77,8 +77,8 @@ void Bccboard::applyBrush(
 void Bccboard::atlasOp   (
         int opType,
         int id    ,
-        int posX  ,
-        int posY  ,
+        qreal posX  ,
+        qreal posY  ,
         int tX    ,
         int tY    ,
         int tW    ,
@@ -95,7 +95,7 @@ void Bccboard::atlasOp   (
         tW    ,
         tH
     };
-    qDebug()<<"PosX,Y "<<posX<<","<<posY;
+    //qDebug()<<"PosX,Y "<<posX<<","<<posY;
     m_callQueueAIOP.append(aioCall);
 }
 

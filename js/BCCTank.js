@@ -45,8 +45,9 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
                 true,false
                 );
 
-    //see what I should do regarding interfaces !!!
-    //explode, canExplode
+
+    //ret.log = console.log;
+    ret.log = (function(){});
     ret.mListener = oListener != undefined && oListener != null ? oListener : oLevel;
     ret.mCanFire = true;
     ret.mAI = pPlayer == Global.E_PLAYER_AI_X ? AI.newInstance(ret) : null;
@@ -141,10 +142,10 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
             }
 
 
-            console.log("BCCTank::onAnumSeqFinished::E_STATE_EXPLODING");
+            this.log("BCCTank::onAnumSeqFinished::E_STATE_EXPLODING");
         } break;
 
-        default                  : console.log("BCCTank::onAnimSeqFinished::default");break;
+        default                  : this.log("BCCTank::onAnimSeqFinished::default");break;
         }
     });
 
@@ -175,12 +176,7 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
                 case Global.E_DIR_LEFT  : __ret =  Vec.Vec2(-1, 0);/*mX--;*/ break;
                 case Global.E_DIR_DOWN  : __ret =  Vec.Vec2( 0, 1);/*mY++;*/ break;
                 case Global.E_DIR_RIGHT : __ret =  Vec.Vec2( 1, 0);/*mX++;*/ break;
-
-            //case Global.E_DIR_LEFT      : __ret =  Vec.Vec2( 0,-1);/*mY--;*/ break;
-            //case Global.E_DIR_UP        : __ret =  Vec.Vec2(-1, 0);/*mX--;*/ break;
-            //case Global.E_DIR_DOWN  : __ret =  Vec.Vec2( 0, 1);/*mY++;*/ break;
-            //case Global.E_DIR_RIGHT : __ret =  Vec.Vec2( 1, 0);/*mX++;*/ break;
-                default: console.log("calcUpdatedPos unknown"); this.setCurrentFrame(); break;
+                default: this.log("calcUpdatedPos unknown"); this.setCurrentFrame(); break;
             }
         }
 
@@ -216,18 +212,18 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
         if(eDir == Global.NV_E_DIR){
            // channel1.stop();
            ///ret.mTargetCell = this.mCellPos;
-            console.log(0);
+            this.log(0);
         }else
         {
             //channel1.source = "../res/tank1.wav"
             //channel1.play();
 
-            console.log(1);
+            this.log(1);
             var dirChanged = false;
             var isCurrentlyStationary = this.mTargetDir.mX == 0 && this.mTargetDir.mY == 0;
 
             if(this.currDir != eDir){
-                console.log(2);
+                this.log(2);
                 this.currDir = eDir;
                 this.currDirFrame = 0;
                 dirChanged = true;
@@ -248,7 +244,7 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
 
             if(isNewTargetCellInside){
-                console.log(3);
+                this.log(3);
                 var staticCC = this.mLevel.collidesWithStatic2v(newTargetCell,cellDim);
                 var dynCC    = this.mLevel.collidesWithDynamic2v(this,newTargetCell);
 
@@ -261,9 +257,9 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
                 if(allPassable){
 
-                    console.log(4);
+                    this.log(4);
                     if(dirChanged){
-                        console.log(5);
+                        this.log(5);
                         this.setCellPos(this.mCellPos);
                         this.mPrevTick = 0;
                     }
@@ -290,21 +286,21 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
                     );
     });
 
-    ret.spd = 52 / 10000;
+    ret.spd = 52 / 8000;
 
     ret.mPrevTick = 0;
     ret.updatePos = (function(tick){
 
         if(this.mTargetDir.mX != 0 || this.mTargetDir.mY != 0){
 
-            console.log("6_1", this.mTargetDir    .mX, this.mTargetDir    .mY);
-            console.log("6_2", this.mCellPos      .mX, this.mCellPos      .mY);
-            console.log("6_3", this.mTargetCell   .mX, this.mTargetCell   .mY);
-            console.log("6_4", this.mCurrentPixPos.mX, this.mCurrentPixPos.mY);
+            this.log("6_1", this.mTargetDir    .mX, this.mTargetDir    .mY);
+            this.log("6_2", this.mCellPos      .mX, this.mCellPos      .mY);
+            this.log("6_3", this.mTargetCell   .mX, this.mTargetCell   .mY);
+            this.log("6_4", this.mCurrentPixPos.mX, this.mCurrentPixPos.mY);
 
             if(this.mPrevTick == 0)
             {
-                console.log(7);
+                this.log(7);
                 this.mCurrentPixPos = this.getPixPos();
                 this.mPrevTick = tick;
             }
@@ -312,29 +308,29 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
             var dT = tick - this.mPrevTick;
             //all pix posz are relative to level
             var targetPixPos = this.mTargetCell.vMulC(Global.LEVEL_CELL_PIX_SZ);
-            console.log("8_0", targetPixPos.mX, targetPixPos.mY );
+            this.log("8_0", targetPixPos.mX, targetPixPos.mY );
 
             if( !targetPixPos.bEquals(this.mCurrentPixPos))
             {
                 var sDt = ret.spd * dT;
-                console.log("8_1",sDt, ret.spd, dT);
+                this.log("8_1",sDt, ret.spd, dT);
 
                 var dCellXY = this.mTargetDir.vMulC(sDt);
                 var dPixXY  = dCellXY.vMulC(Global.LEVEL_CELL_PIX_SZ);
 
-                console.log("8_2",dCellXY.mX, dCellXY.mY, dPixXY.mX, dPixXY.mY);
+                this.log("8_2",dCellXY.mX, dCellXY.mY, dPixXY.mX, dPixXY.mY);
 
                 var newPixPos = dPixXY.vPlus(this.mCurrentPixPos);
 
                 var diffPos   = targetPixPos.vMinus(newPixPos).vMulCW(this.mTargetDir);
                 var xySum = diffPos.mX + diffPos.mY;
 
-                console.log("8_3",xySum, newPixPos.mX, newPixPos.mY);
+                this.log("8_3",xySum, newPixPos.mX, newPixPos.mY);
 
                 //we overshot, I should not do it over dscrt steps but recomp from the beg, lots of errors add up
                 if(xySum < 0){
 
-                    console.log("9_1");
+                    this.log("9_1");
                     this.mCurrentPixPos = Vec.cctor(targetPixPos);
                     this.setPixPos(this.mCurrentPixPos);
                     //I should compute the mag here
@@ -344,14 +340,14 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
                 }else
                 {
-                    console.log(10);
+                    this.log(10);
                     this.setPixPos(newPixPos);
                     this.mCurrentPixPos = newPixPos;
                     this.mPrevTick = tick;
                 }
             }else
             {
-                console.log("9_2");
+                this.log("9_2");
                 this.mCurrentPixPos = Vec.cctor(targetPixPos);
                 this.setPixPos(this.mCurrentPixPos);
                 //I should compute the mag here
@@ -366,7 +362,7 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
     ret.update = (function(tick){
 
-        //console.log(this.mLevel.mDynObjects);
+        //this.log(this.mLevel.mDynObjects);
 
         //manually update paint the gfx
         if(this.mCurrentGfx != null)
@@ -407,7 +403,7 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
             case E_STATE_POWUP      :{}break;
             case E_STATE_EXPLODING  :{
             }break;
-            default: break;//console.log("BBCTank::update::default!");
+            default: break;//this.log("BBCTank::update::default!");
         }
 
     });

@@ -13,7 +13,7 @@ var E_STATE_SHOOT      = 3;
 
 var DT_180  = 5000;
 var DT_FIRE = 1000;
-var DT_MOV  = 200 ;
+var DT_MOV  = 60 ;
 
 function newInstance(oTank) {
 
@@ -43,7 +43,7 @@ function newInstance(oTank) {
 
                             update:(function(tick){
 
-                                return;
+                                //return;
 
                                 if(this.mStartTick == 0){
                                     this.mStartTick = tick;
