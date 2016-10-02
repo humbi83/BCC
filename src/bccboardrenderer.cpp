@@ -72,7 +72,7 @@ void BccboardRenderer::applyBrush(const BrushCall& params)
 }
 
 
-
+//TODO: floats !!!!
 void BccboardRenderer::atlasOp   (const AtlasImageOps& callParams){
     m_dynImagesDirty = true;
 
@@ -327,11 +327,14 @@ static void genDynVertData(QOpenGLFunctions* oglFunc, bPtr& qBuffer, const QMap<
     QMapIterator<int, AtlasImageOps> i(map);
     while (i.hasNext()) {
         i.next();
+        static const float cellH = float(__CELL_H);
+        static const float cellW = float(__CELL_W);
 
-        float x = float(i.value().posX) / __CELL_W;
-        float y = (__H * __CELL_H - i.value().posY - i.value().tH)/ __CELL_H;
-        float w = float(i.value().tW  ) / __CELL_W;
-        float h = float(i.value().tH  ) / __CELL_H;
+
+        float x = float(i.value().posX) / cellW;
+        float y = (float(__H) * cellH - float(i.value().posY) - float(i.value().tH))/ cellH;
+        float w = float(i.value().tW  ) / cellW;
+        float h = float(i.value().tH  ) / cellH;
 
         float tx = i.value().tX / 400.0f;
         float ty = (256.0f - i.value().tY - i.value().tH ) / 256.0f;
