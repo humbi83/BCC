@@ -43,6 +43,8 @@ function newInstance(oTank) {
 
                             update:(function(tick){
 
+                                return;
+
                                 if(this.mStartTick == 0){
                                     this.mStartTick = tick;
                                 }

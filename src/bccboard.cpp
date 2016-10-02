@@ -95,6 +95,7 @@ void Bccboard::atlasOp   (
         tW    ,
         tH
     };
+    qDebug()<<"PosX,Y "<<posX<<","<<posY;
     m_callQueueAIOP.append(aioCall);
 }
 

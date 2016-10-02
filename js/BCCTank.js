@@ -167,19 +167,24 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
     ret.currDir      = Global.NV_E_DIR;
     ret.currDirFrame = 0;
 
-    ret.calcUpdatedPos = ( function(eDir,vPos){
-
+    ret.lutDirToVec = ( function(eDir){
+        var __ret = Vec.Vec2();
         if(this.canMove()){
             switch(eDir){
-                case Global.E_DIR_UP    : vPos.mY--; break;
-                case Global.E_DIR_LEFT  : vPos.mX--; break;
-                case Global.E_DIR_DOWN  : vPos.mY++; break;
-                case Global.E_DIR_RIGHT : vPos.mX++; break;
+                case Global.E_DIR_UP    : __ret =  Vec.Vec2( 0,-1);/*mY--;*/ break;
+                case Global.E_DIR_LEFT  : __ret =  Vec.Vec2(-1, 0);/*mX--;*/ break;
+                case Global.E_DIR_DOWN  : __ret =  Vec.Vec2( 0, 1);/*mY++;*/ break;
+                case Global.E_DIR_RIGHT : __ret =  Vec.Vec2( 1, 0);/*mX++;*/ break;
+
+            //case Global.E_DIR_LEFT      : __ret =  Vec.Vec2( 0,-1);/*mY--;*/ break;
+            //case Global.E_DIR_UP        : __ret =  Vec.Vec2(-1, 0);/*mX--;*/ break;
+            //case Global.E_DIR_DOWN  : __ret =  Vec.Vec2( 0, 1);/*mY++;*/ break;
+            //case Global.E_DIR_RIGHT : __ret =  Vec.Vec2( 1, 0);/*mX++;*/ break;
                 default: console.log("calcUpdatedPos unknown"); this.setCurrentFrame(); break;
             }
         }
 
-        return vPos;
+        return __ret;
     });
 
 
@@ -200,8 +205,9 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
     });
 
 
-    ret.pixX = 0;
-    ret.pixY = 0;
+    ret.mTargetDir    = Vec.Vec2(0,0);
+    ret.mTargetCell   = ret.mCellPos;
+    ret.mCurrentPixPos= ret.getPixPos();
 
 
     //TODO:ALEX move to update & animate movement
@@ -209,30 +215,42 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
 
         if(eDir == Global.NV_E_DIR){
            // channel1.stop();
+           ///ret.mTargetCell = this.mCellPos;
+            console.log(0);
         }else
         {
             //channel1.source = "../res/tank1.wav"
             //channel1.play();
 
+            console.log(1);
+            var dirChanged = false;
+            var isCurrentlyStationary = this.mTargetDir.mX == 0 && this.mTargetDir.mY == 0;
+
             if(this.currDir != eDir){
+                console.log(2);
                 this.currDir = eDir;
                 this.currDirFrame = 0;
+                dirChanged = true;
             }
 
             var cFrm = this.currDir * TNK_FRAMES_PER_DIR + (this.currDirFrame++)%TNK_FRAMES_PER_DIR;
             this.setCurrentFrame(Vec.Vec2(cFrm,0));
 
-            //TODO: move nicely
-            var newPos = this.calcUpdatedPos(eDir,Vec.cctor(this.mCellPos));
+            var newTargetDir  = this.lutDirToVec(eDir);
 
-            var cellDim = this.getCellDim();
+            //if ret mag != 0 .. do stuff
 
-            var isInside = this.mLevel.bIsInside2v(newPos,cellDim);
-            //console.log(isInside);
+            var newTargetCell = this.mCellPos.vPlus(newTargetDir);
 
-            if(isInside){
-                var staticCC = this.mLevel.collidesWithStatic2v(newPos,cellDim);
-                var dynCC    = this.mLevel.collidesWithDynamic2v(this,newPos);
+            var cellDim = this.getCellDim(); // this is kinda const
+
+            var isNewTargetCellInside = this.mLevel.bIsInside2v(newTargetCell,cellDim);
+
+
+            if(isNewTargetCellInside){
+                console.log(3);
+                var staticCC = this.mLevel.collidesWithStatic2v(newTargetCell,cellDim);
+                var dynCC    = this.mLevel.collidesWithDynamic2v(this,newTargetCell);
 
                 var allPassable = staticCC.length == 0;
 
@@ -242,7 +260,17 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
                 }
 
                 if(allPassable){
-                    this.setCellPos(newPos);
+
+                    console.log(4);
+                    if(dirChanged){
+                        console.log(5);
+                        this.setCellPos(this.mCellPos);
+                        this.mPrevTick = 0;
+                    }
+
+                    this.mTargetDir  = newTargetDir;
+                    this.mTargetCell = newTargetCell;
+
                 }else if(this.mAI != null){
                     this.mAI.onTankStatusUpdate(AI.E_TANK_STATUS_BLOCKED_MOV);
                 }
@@ -261,6 +289,80 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
         this.mCurrentState == E_STATE_POWUP
                     );
     });
+
+    ret.spd = 52 / 10000;
+
+    ret.mPrevTick = 0;
+    ret.updatePos = (function(tick){
+
+        if(this.mTargetDir.mX != 0 || this.mTargetDir.mY != 0){
+
+            console.log("6_1", this.mTargetDir    .mX, this.mTargetDir    .mY);
+            console.log("6_2", this.mCellPos      .mX, this.mCellPos      .mY);
+            console.log("6_3", this.mTargetCell   .mX, this.mTargetCell   .mY);
+            console.log("6_4", this.mCurrentPixPos.mX, this.mCurrentPixPos.mY);
+
+            if(this.mPrevTick == 0)
+            {
+                console.log(7);
+                this.mCurrentPixPos = this.getPixPos();
+                this.mPrevTick = tick;
+            }
+
+            var dT = tick - this.mPrevTick;
+            //all pix posz are relative to level
+            var targetPixPos = this.mTargetCell.vMulC(Global.LEVEL_CELL_PIX_SZ);
+            console.log("8_0", targetPixPos.mX, targetPixPos.mY );
+
+            if( !targetPixPos.bEquals(this.mCurrentPixPos))
+            {
+                var sDt = ret.spd * dT;
+                console.log("8_1",sDt, ret.spd, dT);
+
+                var dCellXY = this.mTargetDir.vMulC(sDt);
+                var dPixXY  = dCellXY.vMulC(Global.LEVEL_CELL_PIX_SZ);
+
+                console.log("8_2",dCellXY.mX, dCellXY.mY, dPixXY.mX, dPixXY.mY);
+
+                var newPixPos = dPixXY.vPlus(this.mCurrentPixPos);
+
+                var diffPos   = targetPixPos.vMinus(newPixPos).vMulCW(this.mTargetDir);
+                var xySum = diffPos.mX + diffPos.mY;
+
+                console.log("8_3",xySum, newPixPos.mX, newPixPos.mY);
+
+                //we overshot, I should not do it over dscrt steps but recomp from the beg, lots of errors add up
+                if(xySum < 0){
+
+                    console.log("9_1");
+                    this.mCurrentPixPos = Vec.cctor(targetPixPos);
+                    this.setPixPos(this.mCurrentPixPos);
+                    //I should compute the mag here
+                    this.mTargetDir = Vec.Vec2();
+                    this.mTargetCell = Vec.cctor(this.mCellPos);
+                    this.mPrevTick = 0; // I need to settle on what it means not to move / no need to move
+
+                }else
+                {
+                    console.log(10);
+                    this.setPixPos(newPixPos);
+                    this.mCurrentPixPos = newPixPos;
+                    this.mPrevTick = tick;
+                }
+            }else
+            {
+                console.log("9_2");
+                this.mCurrentPixPos = Vec.cctor(targetPixPos);
+                this.setPixPos(this.mCurrentPixPos);
+                //I should compute the mag here
+                this.mTargetDir = Vec.Vec2();
+                this.mTargetCell = Vec.cctor(this.mCellPos);
+                this.mPrevTick = 0; // I need to settle on what it means not to move / no need to move
+            }
+        }
+    });
+
+
 
     ret.update = (function(tick){
 
@@ -289,16 +391,19 @@ function newInstance(oLevel, iX, iY, ePlayer, oListener) {
         {
             ///this.
         }
+
         switch(this.mCurrentState){
             case E_STATE_SHIELDED   :{
                 if(this.mCurrentGfx != null){
-                    this.mCurrentGfx.mCellPos.setV(this.mCellPos);
+                    this.mCurrentGfx.setCellPos(this.mCellPos);
                 }
-            }break;
+            }
+            //fallthrough
             case E_STATE_NORMAL     :{
-
+                this.updatePos(tick);
                 this.mPainter.invalidate();
             }break;
+
             case E_STATE_POWUP      :{}break;
             case E_STATE_EXPLODING  :{
             }break;

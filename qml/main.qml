@@ -257,8 +257,8 @@ Window {
 
             SM.State{
                 id:sMainGame_Loop1
-                onEntered: {console.log("Loop1 B", bccSM.mGameState);}
-                onExited:  {console.log("Loop1 E", bccSM.mGameState);}
+                onEntered: {/*console.log("Loop1 B", bccSM.mGameState);*/}
+                onExited:  {/*console.log("Loop1 E", bccSM.mGameState);*/}
 
                 SM.TimeoutTransition{
                     id:tTout_sMainGame_Loop1
@@ -275,8 +275,8 @@ Window {
             SM.State{
                 id:sMainGame_Loop2
 
-                onEntered: {console.log("Loop2 B", bccSM.mGameState);}
-                onExited:  {console.log("Loop2 E", bccSM.mGameState);}
+                onEntered: {/*console.log("Loop2 B", bccSM.mGameState);*/}
+                onExited:  {/*console.log("Loop2 E", bccSM.mGameState);*/}
 
                 SM.TimeoutTransition{
                     id:tTout_sMainGame_Loop2
@@ -443,9 +443,9 @@ Window {
             NumberAnimation on t{
                 id : _BCCMainTimer
                 from     : 0
-                to       : 1
+                to       : 1000
                 loops    : Animation.Infinite
-                duration : 32
+                duration : 1000
                 running: false//mapView.visible
             }
 

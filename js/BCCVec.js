@@ -53,6 +53,14 @@ function Vec2(iX,iY) {
                                              );
                              }),
 
+                             vMinus: (function(oVec2){
+                                 return Vec2(
+                                 this.mX - oVec2.mX,
+                                 this.mY - oVec2.mY
+                                             );
+                             }),
+
+
                              vPlusXY: (function(iX,iY){
                                  return Vec2(
                                  this.mX + iX,
