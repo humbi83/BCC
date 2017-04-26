@@ -2,6 +2,7 @@ TEMPLATE = app
 
 QT += qml quick
 CONFIG += c++11
+CONFIG += static
 
 INCLUDEPATH += include
 HEADERS += include/bccboard.h \
